@@ -1,4 +1,4 @@
-three_fizer
+Threefizer
 ===========
 
 A simple unix command line utitily to encrypt and decrypt files with threefish
