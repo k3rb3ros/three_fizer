@@ -1,5 +1,4 @@
 CC=clang
-PP=clang++
 INCLUDES=-Isrc/include
 CFLAGS=$(OPTFLAGS) $(INCLUDES) -Wall -Wextra -pedantic -g -DDEBUG
 LDFLAGS=
@@ -12,11 +11,8 @@ all: $(BINARY) $(OBJECTS)
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.cpp.o:
-	$(PP) $(CFLAGS) -c $< -o $@
-
 $(BINARY): $(OBJECTS)
-	$(PP) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
 
 clean:
 	rm $(BINARY) *.o
