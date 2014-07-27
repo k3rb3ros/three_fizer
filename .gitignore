@@ -16,6 +16,7 @@
 *.lib
 
 # Executables
+threefizer
 *.exe
 *.out
 *.app

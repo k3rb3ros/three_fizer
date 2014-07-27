@@ -3,39 +3,8 @@
 * threefizer command line file encryption/decryption utilitiy
 */
 
+#include "include/cbc.h"
 #include "include/threefizer.h"
-
-#define BADARG -1 //Bad arguement
-
-//Valid arguement types
-#define BLOCK_SIZE 1
-#define DECRYPT 2
-#define ENCRYPT 3
-#define PW 4
-#define PW_FILE 5
-
-#define SAFE 1
-#define SECURE 2
-#define FUTURE_PROOF 3
-
-#define USAGE "Usage: threefizer <options> filename"
-
-typedef struct //A kvp structure
-{ 
-	char *key; 
-	int val;
-} kvp_t;
-
-static kvp_t arguments[] = //a lookup table of argument types
-{
-	{"-bs", BLOCK_SIZE}, {"-d", DECRYPT}, {"-e", ENCRYPT}, {"-p", PW}, {"-pf", PW_FILE}
-};
-
-static kvp_t block_sizes[] = //a lookup table of cipher block sizes
-{
-	{ "256", SAFE }, { "512", SECURE }, { "1024", FUTURE_PROOF },
-	{ "SAFE", SAFE }, { "SECURE", SECURE }, { "FUTURE_PROOF", FUTURE_PROOF } 	
-};
 
 int lookup(char* key, kvp_t table[], int size)
 {
@@ -53,17 +22,20 @@ int parseArgs(int argc, int* count, char* argv[]) //Look for accepted arguments 
 	int status = 1;
 	if(*(count) < argc)
 	{
-		switch (lookup(argv[*(count)], arguments, 5))
+		switch (lookup(argv[*(count)], arguments, N_ARG_FLAGS))
 		{	
 			//Block size arguements
-			case BLOCK_SIZE: 
-				printf("Block Size");
+			case BLOCK_SIZE:
+				if(*(count)+1 < argc) //If there is another arguement supplied then attempt to parse it
+				{
+					parseBlockSize(argv[++(*count)]); //parse the block size
+				}
 			break;
 			case DECRYPT:
-				printf("DECRYPT");
+				cbc_decrypt();
 			break;
 			case ENCRYPT:
-				printf("ENCRYPT");
+				cbc_encrypt();
 			break;
 			case PW:
 				printf("Read password and convert it to key");
@@ -79,6 +51,24 @@ int parseArgs(int argc, int* count, char* argv[]) //Look for accepted arguments 
 	}
 	return status;
 } 
+
+int parseBlockSize(char* bs)
+{
+	int block_size = -1;
+	switch (lookup(bs, block_sizes, N_BLOCK_SIZES))
+	{
+		case SAFE: block_size = 256;
+		break;
+		case SECURE: block_size = 512;
+		break;
+		case FUTURE_PROOF: block_size = 1024;
+		break;
+		case BADARG:
+		default: block_size = 512;
+		break;
+	}
+	return block_size;
+}
 
 int main(int argc, char*argv[])
 {
