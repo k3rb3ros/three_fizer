@@ -1,6 +1,7 @@
 #ifndef THREEFIZER_H
 #define THREEFIZER_H
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -24,6 +25,9 @@
 //Numerical constants
 #define N_ARG_FLAGS sizeof(arguments)/sizeof(kvp_t)
 #define N_BLOCK_SIZES sizeof(block_sizes)/sizeof(kvp_t)
+
+static int block_size = 512;
+
 typedef struct //A kvp structure
 {
         char *key;
