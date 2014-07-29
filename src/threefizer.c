@@ -29,10 +29,10 @@ int parseArgs(int argc, int* count, char* argv[]) //Look for accepted arguments 
         }
 	break;
 	case DECRYPT: //TODO ask user for password to continue decrypt
-	    cbc_decrypt(NULL, NULL, 0);
+	    cbc_decrypt(block_size, "", "", 0);
 	break;
 	case ENCRYPT: //TODO ask user for password to continue encrypt
-	    cbc_encrypt(NULL, NULL, 0);
+	    cbc_encrypt(block_size, "ab", "", 0);
 	break;
 	case PW:
 	    printf("Read password and convert it to key");
