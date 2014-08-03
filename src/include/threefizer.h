@@ -1,9 +1,9 @@
 #ifndef THREEFIZER_H
 #define THREEFIZER_H
 
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include <stdint.h> //uint types
+#include <stdio.h> //printf()
+#include <string.h> //strcmp(), 
 
 //Invalid arguement type
 #define BADARG -1
@@ -30,13 +30,14 @@ static int block_size = 512;
 
 typedef struct //A kvp structure
 {
-        char *key;
-        int val;
+    char *key;
+    int val;
 } kvp_t;
 
 static kvp_t arguments[] = //a lookup table of argument types
 {
-        { "-bs", BLOCK_SIZE }, { "-d", DECRYPT }, { "-e", ENCRYPT }, { "-p", PW }, { "-pf", PW_FILE }
+    { "-bs", BLOCK_SIZE }, { "-d", DECRYPT }, { "-e", ENCRYPT }, { "-p", PW },
+    { "-pf", PW_FILE }
 };
 
 static kvp_t block_sizes[] = //a lookup table of cipher block sizes
@@ -47,7 +48,7 @@ static kvp_t block_sizes[] = //a lookup table of cipher block sizes
 
 int lookup(char* key, kvp_t table[], int size); //Looks up the value for a KVP by Key Value
 
-int parseArgs(int argc, int* count, char* argv[]);
+int parseArgs(int argc, int* count, char* argv[]); //parses arguement into actions
 
 int parseBlockSize(char* bs); //An overglorified way of using a switch to parse strings
 

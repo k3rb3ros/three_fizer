@@ -24,11 +24,11 @@ SkeinSize_t SkeinSize(int32_t block_size)
 
 uint8_t* hash(uint8_t* input, uint32_t digest_length, int32_t block_size)
 {
-	struct SkeinCtx skein_state; //Skein state
+    struct SkeinCtx skein_state; //Skein state
     uint8_t* digest = calloc(digest_length, sizeof(uint8_t));
 
     skeinCtxPrepare(&skein_state, SkeinSize(block_size));
-    skeinInit(&skein_state, block_size/8);
+    skeinInit(&skein_state, block_size);
     skeinUpdate(&skein_state, input, strlen((char*) input));
     skeinFinal(&skein_state, (uint8_t*)digest);
 

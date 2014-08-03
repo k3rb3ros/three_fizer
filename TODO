@@ -1,0 +1,17 @@
+* Check if password is defined in paramaters if it is not then prompt the user to enter one or abort
+
+* Add generic file IO functionality with seeking and partial reads and writes *DONE*
+
+* Add random number pulling for IV that pulls from /dev/hw_random if it exists or /dev/urandom *DONE*
+
+* Break file reads/writes into block operations to speed up Disk/IO *DONE*
+
+* break up encryption into super blocks to encrypt files that are larger then ram size
+
+* finish cbc mode encrypt and decrypt functions
+
+* Add asynchronous writing to encryption
+
+* parallelize decryption for speed increase
+
+* use getopts and the std linux way of reading params

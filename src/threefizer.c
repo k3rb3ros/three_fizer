@@ -72,12 +72,12 @@ int parseBlockSize(char* bs)
 
 int main(int argc, char*argv[])
 {
-    static int count = 1;
+    static int count = 0;
     static int ret_status = 0;	
 
     if (argc > 1)
     {
-        for (count; count<argc; ++count)
+        while(++count<argc)
 	{
 	    if (parseArgs(argc, &count, argv) < 0)
 	    {

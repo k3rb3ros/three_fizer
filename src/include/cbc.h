@@ -1,15 +1,11 @@
 #ifndef CBC_H
 #define CBC_H
 
-#include "skeinApi.h"
-#include "threefishApi.h"
-#include "threefizer.h"
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "threefishApi.h" //threefish encrypt and decrypt functions
+#include <stdint.h> //uint types
+#include <stdio.h> //printf()
+#include <stdlib.h> //free()
 
-//TODO Finish these functions
 //Cipher block chaining mode for threefish encryption and decryption
 //Skein is used internally to hash the password into a full length key
 
