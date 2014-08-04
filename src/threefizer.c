@@ -6,9 +6,9 @@
 #include "include/cbc.h"
 #include "include/threefizer.h"
 
-int lookup(char* key, kvp_t table[], int size)
+int32_t lookup(char* key, kvp_t table[], int32_t size)
 {
-    for(int i=0; i<size; ++i)
+    for(int32_t i=0; i<size; ++i)
     {
         kvp_t* sym = &table[i];
 	if (strcmp(sym->key, key) == 0) { return sym->val; }
@@ -16,9 +16,9 @@ int lookup(char* key, kvp_t table[], int size)
     return BADARG;
 }
 
-int parseArgs(int argc, int* count, char* argv[]) //Look for accepted arguments and try to parse them
+int32_t parseArgs(int argc, int* count, char* argv[]) //Look for accepted arguments and try to parse them
 {
-    int status = 1;
+    int32_t status = 1;
     switch (lookup(argv[*(count)], arguments, N_ARG_FLAGS))
     {	
         //Block size arguements
@@ -29,13 +29,24 @@ int parseArgs(int argc, int* count, char* argv[]) //Look for accepted arguments 
         }
 	break;
 	case DECRYPT: //TODO ask user for password to continue decrypt
-	    cbc_decrypt(block_size, "", "", 0);
+	    cbcDecryptInPlace(block_size, password, "", 0);
 	break;
 	case ENCRYPT: //TODO ask user for password to continue encrypt
-	    cbc_encrypt(block_size, "ab", "", 0);
+	    cbcEncryptInPlace(block_size, password, "", 0);
 	break;
 	case PW:
-	    printf("Read password and convert it to key");
+	if(*(count)+1 < argc) //If there is another arguement supplied then attempt to parse it
+        {
+            if(strlen(argv[++(*count)]) > 6)
+            {
+                password = (uint8_t*)argv[(*count)];
+	        printf("\npassword accepted\n");
+            }
+            else
+            {
+                printf("Password not supplied or whimpy password entered\ntry something over 6 characters\n");
+            }
+        }
 	break;
 	case PW_FILE:
 	    printf("Ready password file and convert it to key");
@@ -52,9 +63,9 @@ int parseArgs(int argc, int* count, char* argv[]) //Look for accepted arguments 
 	return status;
 } 
 
-int parseBlockSize(char* bs)
+uint32_t parseBlockSize(char* bs)
 {
-    int block_size = -1;
+    uint32_t block_size = UINT32_MAX;
     switch (lookup(bs, block_sizes, N_BLOCK_SIZES))
     {
         case SAFE: block_size = 256;
@@ -72,8 +83,8 @@ int parseBlockSize(char* bs)
 
 int main(int argc, char*argv[])
 {
-    static int count = 0;
-    static int ret_status = 0;	
+    static int32_t count = 0;
+    static int32_t ret_status = 0;	
 
     if (argc > 1)
     {

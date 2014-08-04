@@ -33,8 +33,8 @@ bool writeFile(const char* fname, uint8_t* data, uint64_t data_size)
 
     if(my_write == NULL) { return false; }
 
-    fwrite(data, sizeof(uint8_t), data_size, write);
-    fclose(write);
+    fwrite(data, sizeof(uint8_t), data_size, my_write);
+    fclose(my_write);
    
     if(ferror(my_write)) { return false; }
 
@@ -63,8 +63,7 @@ uint8_t* readFile(const char* fname)
 
     if(my_read == NULL) { return NULL; };
 
-    fseek(my_read, 0L, SEEK_END);
-    uint64_t file_size = (my_read);
+    uint64_t file_size = fseek(my_read, 0L, SEEK_END);
     rewind(my_read);
 
     uint8_t* data = calloc(file_size, sizeof(uint8_t));

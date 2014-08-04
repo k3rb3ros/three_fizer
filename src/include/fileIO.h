@@ -4,6 +4,7 @@
 #include <stdbool.h> //bool type
 #include <stdio.h> //fread(), fwrite() and fclose(), calloc()
 #include <stdint.h> //uint types
+#include <stdlib.h> //calloc()
 #include <unistd.h> //fseek() 
 
 int seek_point;

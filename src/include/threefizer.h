@@ -26,12 +26,14 @@
 #define N_ARG_FLAGS sizeof(arguments)/sizeof(kvp_t)
 #define N_BLOCK_SIZES sizeof(block_sizes)/sizeof(kvp_t)
 
-static int block_size = 512;
+static uint8_t* password = NULL;
+
+static uint32_t block_size = 512;
 
 typedef struct //A kvp structure
 {
     char *key;
-    int val;
+    int32_t val;
 } kvp_t;
 
 static kvp_t arguments[] = //a lookup table of argument types
@@ -46,10 +48,10 @@ static kvp_t block_sizes[] = //a lookup table of cipher block sizes
         { "SAFE", SAFE }, { "SECURE", SECURE }, { "FUTURE_PROOF", FUTURE_PROOF }
 };
 
-int lookup(char* key, kvp_t table[], int size); //Looks up the value for a KVP by Key Value
+int32_t lookup(char* key, kvp_t table[], int32_t size); //Looks up the value for a KVP by Key Value
 
 int parseArgs(int argc, int* count, char* argv[]); //parses arguement into actions
 
-int parseBlockSize(char* bs); //An overglorified way of using a switch to parse strings
+uint32_t parseBlockSize(char* bs); //An overglorified way of using a switch to parse strings
 
 #endif 
