@@ -1,46 +1,59 @@
 #ifndef THREEFIZER_H
 #define THREEFIZER_H
 
+#include <argp.h> //argp_parse()
+#include <argz.h> //argz
 #include <stdint.h> //uint types
 #include <stdio.h> //printf()
+#include <stdlib.h> //memalloc(). free()
 #include <string.h> //strcmp(), 
 
 //Invalid arguement type
 #define BADARG -1
-//Valid arguement types
-#define BLOCK_SIZE 1
-#define DECRYPT 2
-#define ENCRYPT 3
-#define PW 4
-#define PW_FILE 5
 
 //Block size types
-#define SAFE 1
-#define SECURE 2
-#define FUTURE_PROOF 3
-
-//Constant Strings
-#define USAGE "Usage: threefizer <options> filename"
+#define SAFE 256
+#define SECURE 512
+#define FUTURE_PROOF 1024
 
 //Numerical constants
-#define N_ARG_FLAGS sizeof(arguments)/sizeof(kvp_t)
 #define N_BLOCK_SIZES sizeof(block_sizes)/sizeof(kvp_t)
 
-static uint8_t* password = NULL;
+/*
+**********************************
+*  Constants and data structures
+**********************************
+*/
 
-static uint32_t block_size = 512;
+//program version
+const char* argp_program_version = "threefizer 0.2";
 
-typedef struct //A kvp structure
+const char* argp_program_bug_address = "<M.or.riser.ryan@gmail.com>"; //support email
+
+extern struct argp argp;
+
+//program documentation
+const static char doc[] = "A simple file encryption program that uses Threefish and Skein internally\n";
+
+//a description of the arguments we accept
+const static char args_doc[] = "[FILE]...";
+
+extern struct argp_option options[]; //Argp options
+
+typedef struct //A kvp structure used to speed up string to int conversion
 {
     char *key;
-    int32_t val;
+    int val;
 } kvp_t;
 
-static kvp_t arguments[] = //a lookup table of argument types
+typedef struct //arguements passed to argp and containing argz
 {
-    { "-bs", BLOCK_SIZE }, { "-d", DECRYPT }, { "-e", ENCRYPT }, { "-p", PW },
-    { "-pf", PW_FILE }
-};
+    bool encrypt;
+    char* argz;
+    int block_size;
+    size_t argz_len;
+    uint8_t* password;
+} arguments;
 
 static kvp_t block_sizes[] = //a lookup table of cipher block sizes
 {
@@ -48,10 +61,16 @@ static kvp_t block_sizes[] = //a lookup table of cipher block sizes
         { "SAFE", SAFE }, { "SECURE", SECURE }, { "FUTURE_PROOF", FUTURE_PROOF }
 };
 
-int32_t lookup(char* key, kvp_t table[], int32_t size); //Looks up the value for a KVP by Key Value
+static error_t parse_opt (int key, char *arg, struct argp_state* state);
 
-int parseArgs(int argc, int* count, char* argv[]); //parses arguement into actions
+/*
+************************
+* Function prototypes
+************************
+*/
 
-uint32_t parseBlockSize(char* bs); //An overglorified way of using a switch to parse strings
+int lookup(char* key, kvp_t table[], int32_t size); //Looks up the value for a KVP by Key Value
+
+int parseBlockSize(char* bs);
 
 #endif 

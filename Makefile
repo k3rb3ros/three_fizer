@@ -1,6 +1,6 @@
 CC=clang
 INCLUDES=-Isrc/include
-CFLAGS=$(OPTFLAGS) $(INCLUDES) -Wall -Wextra -pedantic -g -DDEBUG
+CFLAGS=$(OPTFLAGS) $(INCLUDES) -std=c11 -Wall -Wextra -pedantic -g -DDEBUG
 LDFLAGS=
 SOURCES=src/*.c*
 OBJECTS=$(SOURCES:.c=.o)

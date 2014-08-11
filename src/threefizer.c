@@ -6,9 +6,9 @@
 #include "include/cbc.h"
 #include "include/threefizer.h"
 
-int32_t lookup(char* key, kvp_t table[], int32_t size)
+int lookup(char* key, kvp_t table[], int size)
 {
-    for(int32_t i=0; i<size; ++i)
+    for(int i=0; i<size; ++i)
     {
         kvp_t* sym = &table[i];
 	if (strcmp(sym->key, key) == 0) { return sym->val; }
@@ -16,91 +16,89 @@ int32_t lookup(char* key, kvp_t table[], int32_t size)
     return BADARG;
 }
 
-int32_t parseArgs(int argc, int* count, char* argv[]) //Look for accepted arguments and try to parse them
+static error_t parse_opt(int key, char* arg, struct argp_state* state)
 {
-    int32_t status = 1;
-    switch (lookup(argv[*(count)], arguments, N_ARG_FLAGS))
-    {	
-        //Block size arguements
-	case BLOCK_SIZE:
-	if(*(count)+1 < argc) //If there is another arguement supplied then attempt to parse it
+    arguments *a = state->input;
+    switch(key)
+    {
+        case ARGP_KEY_ARG:
 	{
-	    block_size = parseBlockSize(argv[++(*count)]); //parse the block size
-        }
-	break;
-	case DECRYPT: //TODO ask user for password to continue decrypt
-	    cbcDecryptInPlace(block_size, password, "", 0);
-	break;
-	case ENCRYPT: //TODO ask user for password to continue encrypt
-	    cbcEncryptInPlace(block_size, password, "", 0);
-	break;
-	case PW:
-	if(*(count)+1 < argc) //If there is another arguement supplied then attempt to parse it
+            argz_add(&a->argz, &a->argz_len, arg);
+            printf("adding argument {%s}", arg);
+	}
+        break;
+	case ARGP_KEY_INIT:
         {
-            if(strlen(argv[++(*count)]) > 6)
-            {
-                password = (uint8_t*)argv[(*count)];
-	        printf("\npassword accepted\n");
-            }
-            else
-            {
-                printf("Password not supplied or whimpy password entered\ntry something over 6 characters\n");
-            }
+            a->encrypt = true;
+            a->argz=NULL;
+            a->block_size = SECURE;
+            a->argz_len = 0;
+            a->password = NULL;
+	}
+        break;
+        case ARGP_KEY_END:
+        {
+            size_t count = argz_count(a->argz, a->argz_len);
+            if (count < 1) { argp_failure (state, 1, 0, "too few arguments"); }
         }
+        break;
+        case 'b': a->block_size = parseBlockSize(arg);
 	break;
-	case PW_FILE:
-	    printf("Ready password file and convert it to key");
-	break;
-	case BADARG:
-	    printf(USAGE);
-	    status = -1;
-	break;
-	default :
-	    printf(USAGE);
-	    status = -1;
+        case 'd': a->encrypt = false;
+        break;
+        case 'e': a->encrypt = true;
+        break;
+        case 'p':
+        {
+            if(strlen(arg) > 6)
+            {
+                a->password = (uint8_t *)arg;
+            }
+            else { argp_failure(state, 1, 1, "password is too short"); }
+        }
+        break;
+        case 'P':
+        {
+        }
+        break;
+        default:
         break;
     }
-	return status;
-} 
+    return 0;
+}
 
-uint32_t parseBlockSize(char* bs)
+int parseBlockSize(char* bs)
 {
-    uint32_t block_size = UINT32_MAX;
-    switch (lookup(bs, block_sizes, N_BLOCK_SIZES))
-    {
-        case SAFE: block_size = 256;
-	break;
-	case SECURE: block_size = 512;
-	break;
-	case FUTURE_PROOF: block_size = 1024;
-	break;
-	case BADARG:
-	default: block_size = 512;
-	break;
-    }
-    return block_size;
+    int _block_size = lookup(bs, block_sizes, N_BLOCK_SIZES);
+    if(_block_size == BADARG) return SECURE;
+    return _block_size;
 }
 
 int main(int argc, char*argv[])
 {
-    static int32_t count = 0;
-    static int32_t ret_status = 0;	
-
-    if (argc > 1)
+    struct argp_option options[] = 
     {
-        while(++count<argc)
-	{
-	    if (parseArgs(argc, &count, argv) < 0)
-	    {
-	        ret_status = 2;
-                break;
-	    }
-	}
-    }
-    else
+        { 0, 0, 0, 0, "Functional Options (encrypt is default)", 1 },
+        { "decrypt", 'd', 0, 0, "Decrypt the specified file(s)" },
+        { "encrypt", 'e', 0, 0, "Encrypt the specified file(s)" },
+        { 0, 0, 0, 0, "Property Options", 2 },
+        { "blocksize", 'b', "BlockSize", 0, "Specify the block size of the cipher and hash" },
+        { "password", 'p', "Password", 0, "Specify a password from the command line" },
+        { "passwordfile", 'P', "PasswordFile", 0, "Specify a password file" },
+        { 0 }
+    };
+    struct argp argp = { options, parse_opt, args_doc, doc };
+    arguments arguments;
+    if(argp_parse(&argp, argc, argv, 0, 0, &arguments) ==0)
     {
-        printf(USAGE);
-	ret_status = 1;
+      const char *prev = NULL;
+      char* arg = 0;
+      while((arg = argz_next(arguments.argz, arguments.argz_len, prev)))
+      {
+       prev = arg;
+      }
+      free(arguments.argz);
+      //if(arguments.password != NULL) { free(arguments.password); }
     }
-    return ret_status;
+    return 0;
 }
