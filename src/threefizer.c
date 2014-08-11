@@ -3,18 +3,7 @@
 * threefizer command line file encryption/decryption utilitiy
 */
 
-#include "include/cbc.h"
 #include "include/threefizer.h"
-
-int lookup(char* key, kvp_t table[], int size)
-{
-    for(int i=0; i<size; ++i)
-    {
-        kvp_t* sym = &table[i];
-	if (strcmp(sym->key, key) == 0) { return sym->val; }
-    }	
-    return BADARG;
-}
 
 static error_t parse_opt(int key, char* arg, struct argp_state* state)
 {
@@ -23,16 +12,24 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
     {
         case ARGP_KEY_ARG:
 	{
-            argz_add(&a->argz, &a->argz_len, arg);
-            printf("adding argument {%s}", arg);
+            if(exists(arg))
+            {
+                argz_add(&a->argz, &a->argz_len, arg);
+	    }
+            else
+            {
+                 char msg[MAX_FILE_LENGTH] = { 0 }; 
+                 sprintf(msg, "unable to open file: %s", arg);
+                 argp_failure(state, 1, 1, msg);
+            }
 	}
         break;
 	case ARGP_KEY_INIT:
         {
             a->encrypt = true;
             a->argz=NULL;
-            a->block_size = SECURE;
             a->argz_len = 0;
+            a->skein_size = NULL;
             a->password = NULL;
 	}
         break;
@@ -42,7 +39,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             if (count < 1) { argp_failure (state, 1, 0, "too few arguments"); }
         }
         break;
-        case 'b': a->block_size = parseBlockSize(arg);
+        case 'b': a->skein_size = getSkeinSize(arg);
 	break;
         case 'd': a->encrypt = false;
         break;
@@ -54,7 +51,8 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             {
                 a->password = (uint8_t *)arg;
             }
-            else { argp_failure(state, 1, 1, "password is too short"); }
+            else { 
+                     argp_failure(state, 1, 1, "password is too short, try something less whimpy"); }
         }
         break;
         case 'P':
@@ -65,13 +63,6 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
         break;
     }
     return 0;
-}
-
-int parseBlockSize(char* bs)
-{
-    int _block_size = lookup(bs, block_sizes, N_BLOCK_SIZES);
-    if(_block_size == BADARG) return SECURE;
-    return _block_size;
 }
 
 int main(int argc, char*argv[])

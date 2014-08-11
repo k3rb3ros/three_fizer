@@ -1,21 +1,21 @@
 #include "include/cbc.h"
 
-void cbcDecryptInPlace(int32_t block_size, uint8_t* password, uint64_t* cipher_text, uint64_t size)
+void cbcDecryptInPlace(int32_t block_size, uint8_t* key, uint64_t* cipher_text, uint64_t size)
 {
-    if(password != NULL && size % block_size == 0)
+    //if(password != NULL && size % block_size == 0) //this should be moved outside cbc
     {
-        uint8_t* key = hash(password, block_size/8, block_size);
+        //uint8_t* key = hash(password, block_size/8, block_size);
 
-	free(key);
+	//free(key);
     }
 }
 
-void cbcEncryptInPlace(int32_t block_size, uint8_t* password, uint64_t* plain_text, uint64_t size)
+void cbcEncryptInPlace(int32_t block_size, uint8_t* key, uint64_t* plain_text, uint64_t size)
 {
-    if(password != NULL && size % block_size == 0)
+    //if(password != NULL && size % block_size == 0) 
     {
         uint8_t* initialization_vector = getRand(block_size/8);
-        uint8_t* key = hash(password, block_size/8, block_size);
+        //uint8_t* key = hash(password, block_size/8, block_size); //this shoudl be moved outside cbc
 
         printf("Key: ");
         for(uint16_t i=0; i<block_size/8; ++i)
@@ -29,9 +29,5 @@ void cbcEncryptInPlace(int32_t block_size, uint8_t* password, uint64_t* plain_te
         }
         free(initialization_vector);
         free(key);
-    }
-    else
-    {
-        fprintf(stderr, "Plain text size is not a mulitple of block size unable to continue\n");
     }
 }

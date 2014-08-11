@@ -14,11 +14,11 @@
 /*
 * This function assumes cipher_text has been allocated and is a padded multiple of block size
 */
-void cbcDecryptInPlace(int32_t block_size, uint8_t* password, uint64_t* cipher_text, uint64_t size);
+void cbcDecryptInPlace(int32_t block_size, uint8_t* key, uint64_t* cipher_text, uint64_t size);
 
 /*
 * This function assumes plain_text has been allocated and is a padded multiple of block size
 */
-void cbcEncryptInPlace(int32_t block_size, uint8_t* password, uint64_t* plain_text, uint64_t size);
+void cbcEncryptInPlace(int32_t block_size, uint8_t* key, uint64_t* plain_text, uint64_t size);
 
 #endif

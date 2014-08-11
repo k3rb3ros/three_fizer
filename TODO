@@ -1,4 +1,4 @@
-* Check if password is defined in paramaters if it is not then prompt the user to enter one or abort
+* Check if password is defined in parameters if it is not then prompt the user to enter one or abort
 
 * Add generic file IO functionality with seeking and partial reads and writes *DONE*
 
@@ -14,4 +14,4 @@
 
 * parallelize decryption for speed increase
 
-* use getopts and the std linux way of reading params
+* use argp to standardize parameters *DONE*

@@ -3,21 +3,16 @@
 
 #include <argp.h> //argp_parse()
 #include <argz.h> //argz
+#include <cbc.h> //cbc_decrypt, cbc_encrypt()
+#include <fileIO.h> //exists()
 #include <stdint.h> //uint types
 #include <stdio.h> //printf()
 #include <stdlib.h> //memalloc(). free()
-#include <string.h> //strcmp(), 
-
-//Invalid arguement type
-#define BADARG -1
-
-//Block size types
-#define SAFE 256
-#define SECURE 512
-#define FUTURE_PROOF 1024
+#include <string.h> //strcmp()
+#include "util.h" //getSkeinSize()
 
 //Numerical constants
-#define N_BLOCK_SIZES sizeof(block_sizes)/sizeof(kvp_t)
+#define MAX_FILE_LENGTH 256
 
 /*
 **********************************
@@ -50,8 +45,8 @@ typedef struct //arguements passed to argp and containing argz
 {
     bool encrypt;
     char* argz;
-    int block_size;
     size_t argz_len;
+    SkeinSize_t skein_size;
     uint8_t* password;
 } arguments;
 
