@@ -20,23 +20,25 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             {
                  char msg[MAX_FILE_LENGTH] = { 0 }; 
                  sprintf(msg, "unable to open file: %s", arg);
-                 argp_failure(state, 1, 1, msg);
+                 argp_failure(state, 1, 0, msg);
             }
 	}
         break;
 	case ARGP_KEY_INIT:
         {
+            a->free = false;
             a->encrypt = true;
             a->argz=NULL;
             a->argz_len = 0;
             a->skein_size = NULL;
             a->password = NULL;
+            a->pw_length = 0;
 	}
         break;
         case ARGP_KEY_END:
         {
             size_t count = argz_count(a->argz, a->argz_len);
-            if (count < 1) { argp_failure (state, 1, 0, "too few arguments"); }
+            if (count < 1) { argp_failure (state, 1, 1, "too few arguments"); }
         }
         break;
         case 'b': a->skein_size = getSkeinSize(arg);
@@ -50,13 +52,24 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             if(strlen(arg) > 6)
             {
                 a->password = (uint8_t *)arg;
+                a->pw_length = strlen(arg);
             }
             else { 
-                     argp_failure(state, 1, 1, "password is too short, try something less whimpy"); }
+                     argp_failure(state, 1, 2, "password is too short, try something less whimpy"); }
         }
         break;
         case 'P':
         {
+            if(exists(arg))
+            {
+                a->free = true;
+		a->password = readFile(arg);
+                //a->pw_length = ; //write a function to get the length of a file
+            }
+            else
+            {
+                argp_failure(state, 1, 3, "Unable to read password file");
+            }
         }
         break;
         default:
@@ -67,6 +80,8 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 
 int main(int argc, char*argv[])
 {
+    arguments arguments;
+    int status = 0;
     struct argp_option options[] = 
     {
         { 0, 0, 0, 0, "Functional Options (encrypt is default)", 1 },
@@ -79,17 +94,27 @@ int main(int argc, char*argv[])
         { 0 }
     };
     struct argp argp = { options, parse_opt, args_doc, doc };
-    arguments arguments;
-    if(argp_parse(&argp, argc, argv, 0, 0, &arguments) ==0)
+    status = argp_parse(&argp, argc, argv, 0, 0, &arguments);
+    if(status == 0)
     {
       const char *prev = NULL;
       char* arg = 0;
-      while((arg = argz_next(arguments.argz, arguments.argz_len, prev)))
+      while((arg = argz_next(arguments.argz, arguments.argz_len, prev))) //parse argz 
       {
        prev = arg;
+       if(exists(arg))
+       {
+           status = run_cipher(&arguments, arg);
+           //preform the requested action on each file entered into the command line
+       }
+       else
+       {
+           fprintf(stderr, "Unable to open file %s for cipher operation\n", arg);
+           status = 4;
+       }
       }
       free(arguments.argz);
-      //if(arguments.password != NULL) { free(arguments.password); }
+      if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv
     }
-    return 0;
+    return status;
 }
