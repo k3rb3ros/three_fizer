@@ -5,9 +5,8 @@
 #include <stdio.h> //fread(), fwrite() and fclose(), calloc()
 #include <stdint.h> //uint types
 #include <stdlib.h> //calloc()
+#include <sys/stat.h> //stat()
 #include <unistd.h> //fseek() 
-
-int seek_point;
 
 bool exists(const char* fname);
 
@@ -23,4 +22,5 @@ uint8_t* readFile(const char* fname);
 
 uint8_t* readBlock(uint64_t data_size, FILE* read);
 
+uint64_t getSize(const char* fname);
 #endif

@@ -30,7 +30,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             a->encrypt = true;
             a->argz=NULL;
             a->argz_len = 0;
-            a->skein_size = NULL;
+            a->skein_size = Skein512;
             a->password = NULL;
             a->pw_length = 0;
 	}
@@ -64,7 +64,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             {
                 a->free = true;
 		a->password = readFile(arg);
-                //a->pw_length = ; //write a function to get the length of a file
+                a->pw_length = getSize(arg); //write a function to get the length of a file
             }
             else
             {
@@ -104,6 +104,7 @@ int main(int argc, char*argv[])
        prev = arg;
        if(exists(arg))
        {
+           if (arguments.password == NULL) { arguments.password = askPassword(); }
            status = run_cipher(&arguments, arg);
            //preform the requested action on each file entered into the command line
        }

@@ -2,7 +2,11 @@
 #define UTIL_H
 
 #include "skeinApi.h"
-#include <string.h> //strcmpr()
+#include <stdbool.h> //bool type
+#include <stdlib.h> //free()
+#include <stdio.h> //printf()
+#include <string.h> //strcmp()
+#include <termios.h> 
 
 //Invalid argument type
 #define BADARG -1
@@ -11,6 +15,8 @@
 #define SAFE 256
 #define SECURE 512
 #define FUTURE_PROOF 1024
+
+#define BUFF_SIZE 1024
 
 //Compile time size of our lookup table
 #define N_BLOCK_LOOKUP sizeof(block_lookup)/sizeof(keyBlock_t)
@@ -31,5 +37,9 @@ static keyBlock_t block_lookup[] = //alookup table containing skein/threefish ci
 };
 
 SkeinSize_t getSkeinSize(char* key);
+
+uint8_t* askPassword();
+
+void zeroFill(void* buffer, uint64_t length);
 
 #endif

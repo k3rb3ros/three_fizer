@@ -15,7 +15,7 @@ typedef struct //arguments passed to argp containing argz (all non optional args
     size_t argz_len;
     SkeinSize_t skein_size;
     uint8_t* password;
-    uint32_t pw_length;
+    uint64_t pw_length;
 } arguments;
 
 typedef struct
@@ -27,9 +27,9 @@ typedef struct
 
 int run_cipher(arguments* args, char* filename);
 
-bool decrypt(uint8_t* filename, uint8_t* password, uint32_t pw_length, SkeinSize_t skein_size);
+bool decrypt(uint8_t* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t skein_size);
 
-bool encrypt(uint8_t* filename, uint8_t* password, uint32_t pw_length, SkeinSize_t skein_size);
+bool encrypt(uint8_t* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t skein_size);
 
 
 #endif

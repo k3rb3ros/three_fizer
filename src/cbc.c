@@ -10,7 +10,7 @@ void cbcDecryptInPlace(SkeinSize_t skein_size, uint8_t* key, uint64_t* cipher_te
 
 void cbcEncryptInPlace(SkeinSize_t skein_size, uint8_t* key, uint64_t* plain_text, uint64_t size)
 {
-    if(key != NULL && size % skein_size == 0) 
+    if(key != NULL )//&&/size % skein_size == 0 ) 
     {
         uint8_t* initialization_vector = getRand(skein_size/8);
 
@@ -25,6 +25,5 @@ void cbcEncryptInPlace(SkeinSize_t skein_size, uint8_t* key, uint64_t* plain_tex
             printf("%x ", initialization_vector[k]);
         }
         free(initialization_vector);
-        free(key);
     }
 }

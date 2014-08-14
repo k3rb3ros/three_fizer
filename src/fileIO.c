@@ -74,3 +74,10 @@ uint8_t* readFile(const char* fname)
 
     return data;
 }
+
+uint64_t getSize(const char* fname)
+{
+    struct stat st;
+    stat(fname, &st);
+    return st.st_size;
+}
