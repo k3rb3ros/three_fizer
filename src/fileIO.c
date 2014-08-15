@@ -29,16 +29,21 @@ bool writeBlock(uint8_t* data, uint64_t data_size, FILE* write)
 
 bool writeFile(const char* fname, uint8_t* data, uint64_t data_size)
 {
+    bool status = true;
     FILE* my_write = fopen(fname, "wb");
 
-    if(my_write == NULL) { return false; }
+    if(my_write == NULL)
+    {
+        status = false; 
+        return status; 
+    }
 
     fwrite(data, sizeof(uint8_t), data_size, my_write);
-    fclose(my_write);
    
-    if(ferror(my_write)) { return false; }
+    if(ferror(my_write)) { status = false; }
+    fclose(my_write);
 
-    return true;
+    return status;
 }
 
 uint8_t* readBlock(uint64_t data_size, FILE* read)
@@ -68,9 +73,11 @@ uint8_t* readFile(const char* fname)
 
     uint8_t* data = calloc(file_size, sizeof(uint8_t));
     fread(data, sizeof(data), file_size, my_read);
+    if(ferror(my_read)) 
+    {
+        perror("File Read Error unable to continue\n");
+    }
     fclose(my_read);
-
-    if(ferror(my_read)) { return data; }
 
     return data;
 }

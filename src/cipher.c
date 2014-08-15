@@ -3,10 +3,6 @@
 cipher initCipher(uint8_t* filename, uint8_t* password, SkeinSize_t skein_size)
 {
     cipher cipher_internal;
-    
-    cipher_internal.file = openForBlockRead((const char*)filename); //this is going to differ between encrypting and decrypting
-    cipher_internal.key = hash(password, strlen((char*)password), skein_size);
-    cipher_internal.padded_input = 0; 
 
     return cipher_internal;
 }
@@ -39,10 +35,10 @@ bool decrypt(uint8_t* filename, uint8_t* password, uint64_t pw_length, SkeinSize
 bool encrypt(uint8_t* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t skein_size)
 {
     uint8_t* key = hash(password, skein_size/8, skein_size);
-    uint64_t* plain_text = readFile(filename);
-    uint64_t length = getSize(filename);
+    //uint64_t* plain_text = readFile(filename);
+    //uint64_t length = getSize(filename);
 
-    cbcEncryptInPlace(skein_size, key, plain_text, length);
+    //cbcEncryptInPlace(skein_size, key, plain_text, length);
     if(key != NULL) free(key);
-    if(plain_text != NULL) free(plain_text);
+    //if(plain_text != NULL) free(plain_text);
 }

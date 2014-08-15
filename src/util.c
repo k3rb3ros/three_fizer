@@ -17,14 +17,14 @@ uint8_t* askPassword()
     char pw1[BUFF_SIZE] = {0};
     char pw2[BUFF_SIZE] = {0};
     char* password = NULL;
+    int pw_length = 0;
     struct termios oflags, nflags;
  
     while(match == false)
     {
-        printf("\nEnter password:");
         if(!first) 
         {
-            printf("Passwords do not match\n");
+            printf("\nPasswords do not match");
             zeroFill(pw1, BUFF_SIZE);
             zeroFill(pw2, BUFF_SIZE);
         }
@@ -39,9 +39,10 @@ uint8_t* askPassword()
         if (tcsetattr(fileno(stdin), TCSANOW, &nflags) != 0)
         {
             perror("tcsetattr");
-            return EXIT_FAILURE;
+            exit(6);
         }
 
+        printf("\nEnter password:");
         fgets(pw1, sizeof(pw1), stdin);
         printf("\nConfirm password:");
         fgets(pw2, sizeof(pw2), stdin);
@@ -50,14 +51,22 @@ uint8_t* askPassword()
         if (tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
         {
             perror("tcsetattr");
-            return EXIT_FAILURE;
+            exit(6);
         }
 
-        if(strcmp(pw1, pw2) == 0 && strlen(pw2) > 6) { match = true; }
+	if(strlen(pw1) > BUFF_SIZE) exit(7); //If buffer overflow occurs force exit
+
+        if(strlen(pw1) < 6)
+	{
+            printf("\nPassword must be at least 6 characters in length");
+        } 
+        else if(strcmp(pw1, pw2) == 0) { match = true; }
     }
 
-    password = calloc(strlen(pw2), sizeof(char));
-    strcpy(password, pw2); 
+    printf("\nPassword accepted");
+    pw_length = strlen(pw2);
+    password = calloc(pw_length+1, sizeof(uint8_t));
+    memcpy(password, pw2, pw_length); 
     return (uint8_t*)password;
 }
 
