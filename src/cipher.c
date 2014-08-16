@@ -23,7 +23,7 @@ int run_cipher(arguments* args, char* filename)
 
 bool decrypt(uint8_t* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t skein_size)
 {
-    uint8_t* key = hash(password, skein_size/8, skein_size);
+    uint8_t* key = sf_hash(password, pw_length, skein_size/8, skein_size);
     uint64_t* cipher_text = readFile(filename);
     uint64_t length = getSize(filename);
 
@@ -34,11 +34,11 @@ bool decrypt(uint8_t* filename, uint8_t* password, uint64_t pw_length, SkeinSize
 
 bool encrypt(uint8_t* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t skein_size)
 {
-    uint8_t* key = hash(password, skein_size/8, skein_size);
-    //uint64_t* plain_text = readFile(filename);
-    //uint64_t length = getSize(filename);
+    uint8_t* key = sf_hash(password, pw_length, skein_size/8, skein_size);
+    uint64_t* plain_text = readFile(filename);
+    uint64_t length = getSize(filename);
 
-    //cbcEncryptInPlace(skein_size, key, plain_text, length);
+    cbcEncryptInPlace(skein_size, key, plain_text, length);
     if(key != NULL) free(key);
-    //if(plain_text != NULL) free(plain_text);
+    if(plain_text != NULL) free(plain_text);
 }

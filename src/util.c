@@ -10,7 +10,7 @@ SkeinSize_t getSkeinSize(char* key)
     return NULL; //Should not happen
 }
 
-uint8_t* askPassword()
+void askPassword(arguments* args)
 {
     bool first = true;
     bool match = false;
@@ -66,8 +66,11 @@ uint8_t* askPassword()
     printf("\nPassword accepted");
     pw_length = strlen(pw2);
     password = calloc(pw_length+1, sizeof(uint8_t));
-    memcpy(password, pw2, pw_length); 
-    return (uint8_t*)password;
+    memcpy(password, pw2, pw_length);
+
+    args->password = &password; //add our pw the agrguments structure
+    args-> free = true; //set the flag to free it since we allocated memory for this pw
+    args->pw_length = pw_length; //ad the pw length to the arguments structure
 }
 
 void zeroFill(void* buffer, uint64_t length)

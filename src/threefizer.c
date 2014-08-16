@@ -106,8 +106,7 @@ int main(int argc, char*argv[])
        {
            if (arguments.password == NULL)
            { 
-               arguments.free = true;
-               arguments.password = askPassword(); 
+               askPassword(&arguments); 
            }
            status = run_cipher(&arguments, arg);
            //preform the requested action on each file entered into the command line

@@ -1,6 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include "arguments.h" //arguments struct
 #include "skeinApi.h"
 #include <stdbool.h> //bool type
 #include <stdlib.h> //free()
@@ -38,7 +39,7 @@ static keyBlock_t block_lookup[] = //alookup table containing skein/threefish ci
 
 SkeinSize_t getSkeinSize(char* key);
 
-uint8_t* askPassword();
+void askPassword(arguments* args);
 
 void zeroFill(void* buffer, uint64_t length);
 

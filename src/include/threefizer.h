@@ -1,6 +1,7 @@
 #ifndef THREEFIZER_H
 #define THREEFIZER_H
 
+#include <arguments.h> //argument structure
 #include <argp.h> //argp_parse()
 #include <argz.h> //argz
 #include <cbc.h> //cbc_decrypt, cbc_encrypt()
