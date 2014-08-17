@@ -109,7 +109,7 @@ int main(int argc, char*argv[])
                askPassword(&arguments); 
            }
            status = run_cipher(&arguments, arg);
-           //preform the requested action on each file entered into the command line
+           //perform the requested action on each file entered into the command line
        }
        else
        {

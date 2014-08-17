@@ -65,10 +65,11 @@ uint8_t* readBlock(uint64_t data_size, FILE* read)
 uint8_t* readFile(const char* fname)
 {
     FILE* my_read = fopen(fname, "rb");
+    uint64_t file_size = 0;
 
-    if(my_read == NULL) { return NULL; };
-
-    uint64_t file_size = fseek(my_read, 0L, SEEK_END);
+    if(my_read == NULL || !fseek(my_read, 0L, SEEK_END) == 0) { return NULL; };
+    
+    file_size = ftell(my_read);
     rewind(my_read);
 
     uint8_t* data = calloc(file_size, sizeof(uint8_t));
