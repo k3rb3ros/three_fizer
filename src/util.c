@@ -7,7 +7,7 @@ SkeinSize_t getSkeinSize(char* key)
         keyBlock_t* sym = &block_lookup[i];
         if(strcmp(sym->key, key) ==0) { return sym->skein_size; }
     }
-    return NULL; //Should not happen
+    return Skein512; //Should not happen
 }
 
 void askPassword(arguments* args)
@@ -68,7 +68,7 @@ void askPassword(arguments* args)
     password = calloc(pw_length+1, sizeof(uint8_t));
     memcpy(password, pw2, pw_length);
 
-    args->password = password; //add our pw to the arguments structurei
+    args->password = (uint8_t*)password; //add our pw to the arguments structurei
     args-> free = true; //set the flag to free it since we allocated memory for this pw
     args->pw_length = pw_length; //ad the pw length to the arguments structure
 }

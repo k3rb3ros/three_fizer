@@ -10,7 +10,7 @@ uint8_t* hash(uint8_t* input, uint64_t digest_length, SkeinSize_t skein_size)
         digest = calloc(digest_length+1, sizeof(uint8_t)); //+1 to ensure digest is a null terminated string    
         skeinCtxPrepare(&skein_state, skein_size); //Tell skein what size its state is
         skeinInit(&skein_state, digest_length*8); //Init our hash
-        skeinUpdate(&skein_state, input, strlen(input)); //Generate our hash
+        skeinUpdate(&skein_state, input, strlen((char*)input)); //Generate our hash
         skeinFinal(&skein_state, (uint8_t*)digest); //Put the results in our buffer and return it
     }
 

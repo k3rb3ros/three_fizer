@@ -30,7 +30,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             a->encrypt = true;
             a->argz=NULL;
             a->argz_len = 0;
-            a->skein_size = Skein512;
+            a->state_size = Skein512;
             a->password = NULL;
             a->pw_length = 0;
 	}
@@ -41,7 +41,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             if (count < 1) { argp_failure (state, 1, 1, "too few arguments"); }
         }
         break;
-        case 'b': a->skein_size = getSkeinSize(arg);
+        case 'b': a->state_size = getSkeinSize(arg);
 	break;
         case 'd': a->encrypt = false;
         break;

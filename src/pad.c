@@ -1,13 +1,35 @@
 #include "include/pad.h"
 
-uint64_t getPadSize(uint64_t plain_text_size, uint32_t block_size)
+inline uint64_t getNumBlocks(uint64_t input_length, SkeinSize_t state_size)
 {
-    if(plain_text_size % block_size == 0)
-    { return plain_text_size; }
+    return getPadSize(input_length, state_size)/64;
+}
 
-    uint64_t padSize = plain_text_size;
+inline uint64_t getPadSize(uint64_t input_length, SkeinSize_t state_size)
+{
+    uint64_t padSize = input_length;
 
-    while(padSize % block_size != 0) 
+    while(padSize % state_size != 0) 
     { padSize++; }
-    return padSize;  
+    return padSize/8;  
+}
+
+uint64_t* pad(uint8_t* input, uint64_t input_length, SkeinSize_t state_size)
+{
+     if(!input_length % state_size == 0) //Don't allocate any memory if the input text is already a padded size
+     {
+         uint64_t byte_size = getPadSize(input_length, state_size);
+         uint64_t num_blocks = getNumBlocks(input_length, state_size);
+         uint64_t* pad = calloc(num_blocks, sizeof(uint64_t)*state_size); //allocate zero filled memory for the padded input
+
+         if(memcpy(pad, input, input_length) == NULL)//memcpy(pad, input, input_length) == NULL) //Copy input over into our padded buffer
+         {
+             perror("Error: Unable to allocate enough memory to pad input\n");
+             free(input); //free the old buffer
+             return NULL; //return
+         }
+         free(input);
+         return pad;
+     }
+     return input;
 }
