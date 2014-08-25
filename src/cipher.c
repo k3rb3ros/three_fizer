@@ -41,8 +41,9 @@ bool encrypt(uint8_t* filename, uint8_t* password, uint64_t pw_length, SkeinSize
     uint64_t num_blocks = getNumBlocks(length, state_size);
     uint64_t* plain_text = pad(readFile(filename), getSize(filename), state_size);
     
-    cbcEncryptInPlace(state_size, key, plain_text, num_blocks);
-    //Write emcrypted text to file
+    cbcEncryptInPlace(state_size, key, plain_text, num_blocks); //encrypt the input
+    writeFile(filename, (uint8_t*)plain_text, length); //write it back to the file
+
     if(key != NULL) free(key);
     if(plain_text != NULL) free(plain_text);
 }

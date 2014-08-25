@@ -56,23 +56,67 @@ void cbcEncryptInPlace(SkeinSize_t state_size, uint8_t* key, uint64_t* plain_tex
                 exit(5);
             break;
 	}
-	
-        //threefishEncryptBlockWords(&tf_key, plain_text, plain_text);
         free(initialization_vector);
     }
 }
 
 void cbc256Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint64_t num_blocks)
 {
+    //xor the initialization vector with the first block of input
+    plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
     
+    for(uint64_t block=0; block<num_blocks; block+=SAFE_SLICE) //run each block through the cipher
+    { 
+       if(block > 0) //feedback the previous into the next block by xoring them together
+       {
+           plain_text[block] ^= plain_text[block-SAFE_SLICE]; plain_text[block+1] ^= plain_text[block-SAFE_SLICE+1];
+           plain_text[block+2] ^= plain_text[block-SAFE_SLICE+2]; plain_text[block+3] ^= plain_text[block-SAFE_SLICE+3];
+       }
+       threefishEncryptBlockWords(&key, &plain_text[block], &plain_text[block]);
+    }
 }
 
 void cbc512Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint64_t num_blocks)
 {
+    //xor the initialization vector with the first block of input
+    plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
+    plain_text[4] ^= iv[4]; plain_text[5] ^= iv[5]; plain_text[6] ^= iv[6]; plain_text[7] ^= iv[7];
 
+    for(uint64_t block=0; block<num_blocks; block+=SECURE_SLICE) //run each block through the cipher
+    { 
+       if(block > 0) //feedback the previous into the next block by xoring them together
+       {
+           plain_text[block] ^= plain_text[block-SECURE_SLICE]; plain_text[block+1] ^= plain_text[block-SECURE_SLICE+1];
+           plain_text[block+2] ^= plain_text[block-SECURE_SLICE+2]; plain_text[block+3] ^= plain_text[block-SECURE_SLICE+3];
+           plain_text[block+4] ^= plain_text[block-SECURE_SLICE+4]; plain_text[block+5] ^= plain_text[block-SECURE_SLICE+5];
+           plain_text[block+6] ^= plain_text[block-SECURE_SLICE+6]; plain_text[block+7] ^= plain_text[block-SECURE_SLICE+7];
+       }
+       threefishEncryptBlockWords(&key, &plain_text[block], &plain_text[block]);
+    }
 }
 
 void cbc1024Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint64_t num_blocks)
 {
-
+    //xor the initialization vector with the first block of input
+    plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
+    plain_text[4] ^= iv[4]; plain_text[5] ^= iv[5]; plain_text[6] ^= iv[6]; plain_text[7] ^= iv[7];
+    plain_text[8] ^= iv[8]; plain_text[9] ^= iv[9]; plain_text[10] ^= iv[10]; plain_text[11] ^= iv[11];
+    plain_text[12] ^= iv[12]; plain_text[13] ^= iv[13]; plain_text[14] ^= iv[14]; plain_text[15] ^= iv[15];
+    
+    for(uint64_t block=0; block<num_blocks; block+=FUTURE_PROOF_SLICE) //run each block through the cipher
+    { 
+       if(block > 0) //feedback the previous into the next block by xoring them together
+       {
+           plain_text[block] ^= plain_text[block-FUTURE_PROOF_SLICE]; plain_text[block+1] ^= plain_text[block-FUTURE_PROOF_SLICE+1];
+           plain_text[block+2] ^= plain_text[block-FUTURE_PROOF_SLICE+2]; plain_text[block+3] ^= plain_text[block-FUTURE_PROOF_SLICE+3];
+           plain_text[block+4] ^= plain_text[block-FUTURE_PROOF_SLICE+4]; plain_text[block+5] ^= plain_text[block-FUTURE_PROOF_SLICE+5];
+           plain_text[block+6] ^= plain_text[block-FUTURE_PROOF_SLICE+6]; plain_text[block+7] ^= plain_text[block-FUTURE_PROOF_SLICE+7];
+           plain_text[block+7] ^= plain_text[block-FUTURE_PROOF_SLICE+7]; plain_text[block+8] ^= plain_text[block-FUTURE_PROOF_SLICE+8];
+           plain_text[block+9] ^= plain_text[block-FUTURE_PROOF_SLICE+9]; plain_text[block+10] ^= plain_text[block-FUTURE_PROOF_SLICE+10];
+           plain_text[block+11] ^= plain_text[block-FUTURE_PROOF_SLICE+11]; plain_text[block+12] ^= plain_text[block-FUTURE_PROOF_SLICE+12];
+           plain_text[block+12] ^= plain_text[block-FUTURE_PROOF_SLICE+12]; plain_text[block+13] ^= plain_text[block-FUTURE_PROOF_SLICE+13];
+           plain_text[block+14] ^= plain_text[block-FUTURE_PROOF_SLICE+14]; plain_text[block+15] ^= plain_text[block-FUTURE_PROOF_SLICE+15];
+       }
+       threefishEncryptBlockWords(&key, &plain_text[block], &plain_text[block]);
+    }
 }
