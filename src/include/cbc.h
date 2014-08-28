@@ -24,7 +24,7 @@ void cbcDecryptInPlace(SkeinSize_t skein_size, uint8_t* key, uint64_t* cipher_te
 /*
 * This function assumes plain_text has been allocated and is a padded multiple of block size
 */
-void cbcEncryptInPlace(SkeinSize_t skein_size, uint8_t* key, uint64_t* plain_text, uint64_t length);
+void cbcEncryptInPlace(SkeinSize_t skein_size, uint64_t* iv, uint8_t* key, uint64_t* plain_text, uint64_t length);
 
 /*
 * Used internally to cbc encrypt 256bit blocks

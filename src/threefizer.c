@@ -85,15 +85,15 @@ int main(int argc, char*argv[])
     struct argp_option options[] = 
     {
         { 0, 0, 0, 0, "Functional Options (encrypt is default)", 1 },
-        { "decrypt", 'd', 0, 0, "Decrypt the specified file(s)" },
-        { "encrypt", 'e', 0, 0, "Encrypt the specified file(s)" },
+        { "decrypt", 'd', 0, 0, "Decrypt the specified file(s)" , 0 },
+        { "encrypt", 'e', 0, 0, "Encrypt the specified file(s)" , 0},
         { 0, 0, 0, 0, "Property Options", 2 },
-        { "blocksize", 'b', "BlockSize", 0, "Specify the block size of the cipher and hash" },
-        { "password", 'p', "Password", 0, "Specify a password from the command line" },
-        { "passwordfile", 'P', "PasswordFile", 0, "Specify a password file" },
-        { 0 }
+        { "blocksize", 'b', "BlockSize", 0, "Specify the block size of the cipher and hash", 0},
+        { "password", 'p', "Password", 0, "Specify a password from the command line", 0},
+        { "passwordfile", 'P', "PasswordFile", 0, "Specify a password file", 0 },
+        { 0, 0, 0, 0, 0, 0 }
     };
-    struct argp argp = { options, parse_opt, args_doc, doc };
+    struct argp argp = { options, parse_opt, args_doc, doc, NULL, NULL, NULL };
     status = argp_parse(&argp, argc, argv, 0, 0, &arguments);
     if(status == 0)
     {

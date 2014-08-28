@@ -15,17 +15,16 @@ void cbcDecryptInPlace(SkeinSize_t state_size, uint8_t* key, uint64_t* cipher_te
     }
 }
 
-void cbcEncryptInPlace(SkeinSize_t state_size, uint8_t* key, uint64_t* plain_text, uint64_t num_blocks)
+void cbcEncryptInPlace(SkeinSize_t state_size, uint64_t* iv, uint8_t* key, uint64_t* plain_text, uint64_t num_blocks)
 {
     if(key != NULL && plain_text != NULL) 
     {
         ThreefishKey_t tf_key;
         uint32_t uints_per_block = state_size/64;
         uint64_t tweak[2] = { 0L, 0L };
-        uint64_t* initialization_vector = (uint64_t)getRand(state_size/8); //Fill our IV with Random or Pseudo random numbers
         
         #ifdef DEBUG
-        uint8_t* IV = initialization_vector;
+        uint8_t* IV = (uint8_t*) iv;
         pdebug("Key: [");
         for(uint16_t i=0; i<state_size/8; ++i)
         {
@@ -38,25 +37,23 @@ void cbcEncryptInPlace(SkeinSize_t state_size, uint8_t* key, uint64_t* plain_tex
             printf("%x ", IV[k]);
         }
         pdebug("]\n");
-        pdebug("Cipher text [%s]\n", plain_text);
         #endif
 
-        threefishSetKey(&tf_key, state_size, key, tweak); //set up the 3fish key structure
+        threefishSetKey(&tf_key, (ThreefishSize_t)state_size, (uint64_t*)key, tweak); //set up the 3fish key structure
 	
 	switch(state_size)
 	{
-            case 256: cbc256Encrypt(&tf_key, initialization_vector, plain_text, num_blocks);
+            case 256: cbc256Encrypt(&tf_key, iv, plain_text, num_blocks);
             break;
-            case 512: cbc512Encrypt(&tf_key, initialization_vector, plain_text, num_blocks);
+            case 512: cbc512Encrypt(&tf_key, iv, plain_text, num_blocks);
             break;
-            case 1024: cbc1024Encrypt(&tf_key, initialization_vector, plain_text, num_blocks);
+            case 1024: cbc1024Encrypt(&tf_key, iv, plain_text, num_blocks);
             break;
             default:
                 perror("Invalid state size cannot continue");
                 exit(5);
             break;
 	}
-        free(initialization_vector);
     }
 }
 
@@ -72,7 +69,7 @@ void cbc256Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint
            plain_text[block] ^= plain_text[block-SAFE_SLICE]; plain_text[block+1] ^= plain_text[block-SAFE_SLICE+1];
            plain_text[block+2] ^= plain_text[block-SAFE_SLICE+2]; plain_text[block+3] ^= plain_text[block-SAFE_SLICE+3];
        }
-       threefishEncryptBlockWords(&key, &plain_text[block], &plain_text[block]);
+       threefishEncryptBlockWords(key, plain_text, plain_text);
     }
 }
 
@@ -91,7 +88,7 @@ void cbc512Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint
            plain_text[block+4] ^= plain_text[block-SECURE_SLICE+4]; plain_text[block+5] ^= plain_text[block-SECURE_SLICE+5];
            plain_text[block+6] ^= plain_text[block-SECURE_SLICE+6]; plain_text[block+7] ^= plain_text[block-SECURE_SLICE+7];
        }
-       threefishEncryptBlockWords(&key, &plain_text[block], &plain_text[block]);
+       threefishEncryptBlockWords(key, plain_text, plain_text);
     }
 }
 
@@ -117,6 +114,6 @@ void cbc1024Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uin
            plain_text[block+12] ^= plain_text[block-FUTURE_PROOF_SLICE+12]; plain_text[block+13] ^= plain_text[block-FUTURE_PROOF_SLICE+13];
            plain_text[block+14] ^= plain_text[block-FUTURE_PROOF_SLICE+14]; plain_text[block+15] ^= plain_text[block-FUTURE_PROOF_SLICE+15];
        }
-       threefishEncryptBlockWords(&key, &plain_text[block], &plain_text[block]);
+       threefishEncryptBlockWords(key, plain_text, plain_text);
     }
 }

@@ -18,7 +18,7 @@ uint64_t* pad(uint8_t* input, uint64_t input_length, SkeinSize_t state_size)
 {
      if(!input_length % state_size == 0) //Don't allocate any memory if the input text is already a padded size
      {
-         uint64_t byte_size = getPadSize(input_length, state_size);
+         //uint64_t byte_size = getPadSize(input_length, state_size);
          uint64_t num_blocks = getNumBlocks(input_length, state_size);
          uint64_t* pad = calloc(num_blocks, sizeof(uint64_t)*state_size); //allocate zero filled memory for the padded input
 
@@ -28,8 +28,8 @@ uint64_t* pad(uint8_t* input, uint64_t input_length, SkeinSize_t state_size)
              free(input); //free the old buffer
              return NULL; //return
          }
-         free(input);
-         return pad;
+         free(input); //free the old buffer
+         return pad; //return the padded buffer
      }
-     return input;
+     return (uint64_t*)input;
 }

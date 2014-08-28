@@ -63,7 +63,7 @@ void askPassword(arguments* args)
         else if(strcmp(pw1, pw2) == 0) { match = true; }
     }
 
-    printf("\nPassword accepted");
+    printf("\nPassword accepted\n");
     pw_length = strlen(pw2);
     password = calloc(pw_length+1, sizeof(uint8_t));
     memcpy(password, pw2, pw_length);

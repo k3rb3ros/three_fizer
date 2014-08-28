@@ -1,6 +1,7 @@
 #ifndef FILEIO_H
 #define FILEIO_H
 
+#include "debug.h" //pdebug()
 #include <stdbool.h> //bool type
 #include <stdio.h> //fread(), fwrite() and fclose(), calloc()
 #include <stdint.h> //uint types

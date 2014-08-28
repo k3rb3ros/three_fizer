@@ -12,16 +12,13 @@ FILE* openForBlockRead(const char* fname)
 
 FILE* openForBlockWrite(const char* fname)
 {
-    return fopen(fname, "ab");
+    return fopen(fname, "wb");
 }
 
 bool writeBlock(uint8_t* data, uint64_t data_size, FILE* write)
 {
     if(ferror(write)) { return false; }
-    
-    fwrite(data, sizeof(data), data_size, write);
-    fclose(write);
-
+    fwrite(data, sizeof(uint8_t), data_size, write);
     if(ferror(write)) { return false; }
 
     return true;
@@ -72,7 +69,7 @@ uint8_t* readFile(const char* fname)
     file_size = ftell(my_read);
     rewind(my_read);
 
-    uint8_t* data = calloc(file_size, sizeof(uint8_t));
+    uint8_t* data = calloc(file_size+1, sizeof(uint8_t));
     fread(data, sizeof(data), file_size, my_read);
     if(ferror(my_read)) 
     {
