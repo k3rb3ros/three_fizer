@@ -19,12 +19,27 @@
 /*
 * This function assumes cipher_text has been allocated and is a padded multiple of block size
 */
-void cbcDecryptInPlace(SkeinSize_t skein_size, uint8_t* key, uint64_t* cipher_text, uint64_t length);
+void cbcDecryptInPlace(SkeinSize_t skein_size, uint64_t* iv, uint8_t* key, uint64_t* cipher_text, uint64_t length);
 
 /*
 * This function assumes plain_text has been allocated and is a padded multiple of block size
 */
 void cbcEncryptInPlace(SkeinSize_t skein_size, uint64_t* iv, uint8_t* key, uint64_t* plain_text, uint64_t length);
+
+/*
+* Used internally to cbc decrypt 256bit blocks
+*/
+void cbc256Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uint64_t num_blocks);
+
+/*
+* Used internally to cbc decrypt 512bit blocks
+*/
+void cbc512Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uint64_t num_blocks);
+
+/*
+* Used internally to cbc decrypt 1024 blocks
+*/
+void cbc1024Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uint64_t num_blocks);
 
 /*
 * Used internally to cbc encrypt 256bit blocks
