@@ -17,16 +17,6 @@
 //Skein is used internally to hash the password into a full length key
 
 /*
-* This function assumes cipher_text has been allocated and is a padded multiple of block size
-*/
-void cbcDecryptInPlace(SkeinSize_t skein_size, uint64_t* iv, uint8_t* key, uint64_t* cipher_text, uint64_t length);
-
-/*
-* This function assumes plain_text has been allocated and is a padded multiple of block size
-*/
-void cbcEncryptInPlace(SkeinSize_t skein_size, uint64_t* iv, uint8_t* key, uint64_t* plain_text, uint64_t length);
-
-/*
 * Used internally to cbc decrypt 256bit blocks
 */
 void cbc256Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uint64_t num_blocks);
