@@ -7,7 +7,6 @@ inline uint64_t getNumBlocks(uint64_t input_length, SkeinSize_t state_size)
     uint64_t bytes = 0;
     while(bytes < input_length)
     {
-      pdebug("Loop:%lu, bytes:%lu\n", blocks+1, bytes);
       bytes += (uint64_t) state_size/8;
       blocks++;
     }

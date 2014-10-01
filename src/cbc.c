@@ -44,9 +44,10 @@ void cbc512Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uin
     uint64_t prev_block_odd[SECURE_SLICE] = {0, 0, 0 ,0 ,0 ,0 ,0 ,0}; //allocate 1 block of storage to store the previous cipher text 
     uint64_t prev_block_even[SECURE_SLICE] = {0, 0, 0 ,0 ,0 ,0 ,0 ,0}; //allocate 1 block of storage to store the previous cipher text 
     pdebug("(cbc512Decrypt) key:%x, iv:%x, cipher_text:%x, num_blocks:%lu\n", key, iv, cipher_text, num_blocks);
-    for(uint64_t block=0; block<num_blocks*SECURE_SLICE; block+=SECURE_SLICE) //run each block through the cipher (in decrypt mode)
+    for(uint64_t block=0; block<(num_blocks*SECURE_SLICE); block+=SECURE_SLICE) //run each block through the cipher (in decrypt mode)
     {
-        bool even = ((block/SECURE_SLICE)%2 == 0) ? true : false;
+        threefishDecryptBlockWords(key, &cipher_text[block], &cipher_text[block]); //Run the block through the cipher
+        /*bool even = ((block/SECURE_SLICE)%2 == 0) ? true : false;
 
 	if(even)
 	{
@@ -84,7 +85,7 @@ void cbc512Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uin
                 cipher_text[block+4] ^= prev_block_even[4]; cipher_text[block+5] ^= prev_block_even[5]; 
                 cipher_text[block+6] ^= prev_block_even[6]; cipher_text[block+7] ^= prev_block_even[7];
             }
-        }
+        }*/
     }
 }
 
@@ -153,17 +154,17 @@ void cbc256Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint
 {
     pdebug("cbc256Encrypt(key:%x, iv:%x, plain_text:%x, num_blocks:%lu)\n", key, iv, plain_text, num_blocks);
     //xor the initialization vector with the first block of input
-    plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
+    //plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
     
     for(uint64_t block=0; block<num_blocks*SAFE_SLICE; block+=SAFE_SLICE) //run each block through the cipher
-    { 
+    { /*
        if(block > 0) //feedback the previous into the next block by xoring them together
        {
            uint64_t offset = block-SAFE_SLICE;
            pdebug("block[%lu] offset[%lu]", block, offset);
            plain_text[block] ^= plain_text[offset]; plain_text[block+1] ^= plain_text[offset+1];
            plain_text[block+2] ^= plain_text[offset+2]; plain_text[block+3] ^= plain_text[offset+3];
-       }
+       }*/
        threefishEncryptBlockWords(key, &plain_text[block], &plain_text[block]);
     }
 }
@@ -172,21 +173,21 @@ void cbc512Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint
 {
     pdebug("cbc512Encrypt(key:%x, iv:%x, plain_text:%x, num_blocks:%lu)\n", key, iv, plain_text, num_blocks);
     //xor the initialization vector with the first block of input
-    plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
-    plain_text[4] ^= iv[4]; plain_text[5] ^= iv[5]; plain_text[6] ^= iv[6]; plain_text[7] ^= iv[7];
+    //plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
+    //plain_text[4] ^= iv[4]; plain_text[5] ^= iv[5]; plain_text[6] ^= iv[6]; plain_text[7] ^= iv[7];
 
-    for(uint64_t block=0; block<num_blocks*SECURE_SLICE; block+=SECURE_SLICE) //run each block through the cipher
+    for(uint64_t block=0; block<(num_blocks*SECURE_SLICE); block+=SECURE_SLICE) //run each block through the cipher
     { 
-        pdebug("(cbc512Decrypt), Encrypting block: %lu\n", block/SECURE_SLICE);
+       /*pdebug("(cbc512Decrypt), Encrypting block: %lu\n", block/SECURE_SLICE);
        if(block > 0) //feedback the previous block into the next block by xoring them together
-      {
+       {
            uint64_t offset = block-SECURE_SLICE;
            pdebug("block[%lu] offset[%lu]", block, offset);
            plain_text[block] ^= plain_text[offset]; plain_text[block+1] ^= plain_text[offset+1];
            plain_text[block+2] ^= plain_text[offset+2]; plain_text[block+3] ^= plain_text[offset+3];
            plain_text[block+4] ^= plain_text[offset+4]; plain_text[block+5] ^= plain_text[offset+5];
            plain_text[block+6] ^= plain_text[offset+6]; plain_text[block+7] ^= plain_text[offset+7];
-       }
+       }*/
        threefishEncryptBlockWords(key, &plain_text[block], &plain_text[block]); //run the current block through the cipher
     }
 }

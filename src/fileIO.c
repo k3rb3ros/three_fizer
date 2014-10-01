@@ -12,24 +12,37 @@ FILE* openForBlockRead(const char* fname)
 
 FILE* openForBlockWrite(const char* fname)
 {
-    return fopen(fname, "wb");
+    return fopen(fname, "wb+");
 }
 
 uint8_t* readBlock(uint64_t data_size, FILE* read)
 {
-    if(ferror(read)) { return NULL; }
+    if(ferror(read))
+    {
+        fclose(read);
+        perror("Error reading block\n"); 
+        return NULL;
+    } 
 
     uint8_t* data = calloc(data_size, sizeof(uint8_t));
-    pdebug("(readBlock) data_size: %lu, read ptr: %x\n", data_size, &read);
-    fread(data, sizeof(uint8_t), data_size, read);
+    pdebug("(readBlock) data_size: %lu, read ptr:%x\n", data_size, &read);
+    uint64_t size = fread(data, sizeof(uint8_t), data_size, read);
 
     if(ferror(read))
     {
-        fclose(read); 
+        fclose(read);
+        perror("Error reading block\n"); 
         return NULL; 
     }
+    
+    if(size == data_size)
+    {
+        return data;
+    }
 
-    return data;    
+    perror("Unable to read requested number of bytes\n"); 
+    free(data);
+    return NULL;    
 }
 
 uint8_t* readFile(const char* fname)
@@ -49,6 +62,7 @@ uint8_t* readFile(const char* fname)
         perror("File Read Error unable to continue\n");
     }
     fclose(my_read);
+    pdebug("Data read[%s]\n", data);
 
     return data;
 }
