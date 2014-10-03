@@ -56,7 +56,7 @@ uint8_t* readFile(const char* fname)
     rewind(my_read);
 
     uint8_t* data = calloc(file_size+1, sizeof(uint8_t));
-    fread(data, sizeof(uint8_t), file_size-1, my_read);
+    fread(data, sizeof(uint8_t), file_size, my_read);
     if(ferror(my_read)) 
     {
         perror("File Read Error unable to continue\n");
@@ -102,4 +102,14 @@ uint64_t getSize(const char* fname)
     struct stat st;
     stat(fname, &st);
     return st.st_size;
+}
+
+void terminateFile(FILE* write) //write the terminating \n and close the File
+{
+    const static uint8_t eol[1] = { '\n' };
+    if(!ferror(write)) 
+    {
+        fwrite(eol, sizeof(uint8_t), 1, write);
+        fclose(write);
+    }
 }

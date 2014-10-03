@@ -24,4 +24,6 @@ uint8_t* readFile(const char* fname);
 uint8_t* readBlock(uint64_t data_size, FILE* read);
 
 uint64_t getSize(const char* fname);
+
+void terminateFile(FILE* write);
 #endif

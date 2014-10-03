@@ -1,6 +1,6 @@
-* write IV to the begining of encrypted files
+* write IV to the begining of encrypted files *DONE*
 * finish cbc mode encrypt and decrypt functions
-* Break file reads/writes into block operations to speed up Disk/IO 
+* Break file reads/writes into block operations to speed up Disk/IO *DONE*
 * break up encryption into super blocks to encrypt files that are larger then ram size
-* Add asynchronous writing to encryption
-* parallelize decryption for speed increase
+* Add asynchronous writing to encryption 
+* parallelize decryption
