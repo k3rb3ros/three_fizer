@@ -1,18 +1,39 @@
 CC=clang
+DBGFLAGS=-ggdb -Wall -Wextra -pedantic
+STDFLAG=-std=c11
+DEFINITIONS=-DDEBUG
 INCLUDES=-Isrc/include
-CFLAGS=$(DEBUGOPTFLAGS) $(INCLUDES) -std=c11 -Wall -Wextra -pedantic -g -DDEBUG
+CFLAGS= $(STDFLAG) $(INCLUDES) $(DBGFLAGS) $(DEFINITIONS)
 LDFLAGS=
-SOURCES=src/*.c*
-OBJECTS=$(SOURCES:.c=.o)
-OPTFLAGS=$(-O0)
-BINARY=threefizer
+PRGRAM_OBJECTS=$(patsubst src/%.c, src/obj/%.o, $(wildcard src/*.c))
+TEST_OBJECTS=$(patsubst src/*.c, src/test/obj/%.o, $(wildcard src/test/*.c)) 
+OPTFLAGS=-O0
+PROGRAM=threefizer
+TEST=tests
+export CC
+export DBGFLAGS
+export STDFLAG
+export DEFINITIONS
+export LDFLAGS
+export OPTFLAGS
 
-all: $(BINARY) $(OBJECTS)
-.c.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+all: PROGRAM TEST
 
-$(BINARY): $(OBJECTS)
-	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
+PROGRAM: threefizer
+	$(CC) $(CFLAGS) $(PRGRAM_OBJECTS) -o $(PROGRAM)
+
+TEST: test
+	$(CC) $(CFLAGS) $(TEST_OBJECTS) -o $(TEST)
+	
+.PHONY: clean
 
 clean:
-	rm $(BINARY) *.o
+	cd src; make clean
+	cd src/test; make clean
+	rm $(PROGRAM) $(TEST)
+
+threefizer:
+	cd src; make
+
+test:
+	cd src/test; make

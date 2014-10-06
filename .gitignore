@@ -15,7 +15,12 @@
 *.a
 *.lib
 
+#object directories
+src/obj
+src/test/obj
+
 # Executables
+tests
 threefizer
 *.exe
 *.out
