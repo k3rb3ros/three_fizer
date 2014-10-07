@@ -1,6 +1,6 @@
 #include "include/testSuite.h"
 
-int main(int argc, char** argv)
+int main()
 {
     runThreefishTests();
     printf("Tests complete\n");

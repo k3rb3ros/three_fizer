@@ -62,7 +62,7 @@ bool decrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinS
         }
         
 	//free all malloced resources
-	//if(data != NULL) free(data);
+	if(data != NULL) free(data);
         if(header != NULL) free(header);
         if(iv != NULL) free(iv); 
         if(key != NULL) free(key);
