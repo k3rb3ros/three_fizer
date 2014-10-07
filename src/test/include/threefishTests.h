@@ -7,12 +7,15 @@
 #include <stdio.h>
 
 #define INDENT "    "
+#define SAFE_SIZE 4
+#define SECURE_SIZE 8
+#define FP_SIZE 16
 
-static uint64_t three_256_00_key[] = { 0L, 0L, 0L, 0L };
+static uint64_t three_256_00_key[] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
 
 static uint64_t three_256_00_tweak[] = { 0L, 0L };
 
-static uint64_t three_256_00_plain_text[] = { 0L, 0L, 0L };
+static uint64_t three_256_00_plain_text[] = { 0L, 0L, 0L, 0L };
 
 static uint64_t three_256_00_expected_result[] = { 0x94EEEA8B1F2ADA84L, 0xADF103313EAE6670L, 0x952419A1F4B16D53L, 0xD83F13E63C9F6B11L };
 
@@ -28,7 +31,7 @@ static uint64_t three_512_00_key[] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0
 
 static uint64_t three_512_00_tweak[] = { 0L, 0L };
 
-static uint64_t three_512_00_plain_text[] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
+static uint64_t three_512_00_plain_text[] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
 
 static uint64_t three_512_00_expected_result[] = { 0xBC2560EFC6BBA2B1L, 0xE3361F162238EB40L, 0xFB8631EE0ABBD175L, 0x7B9479D4C5479ED1L, 0xCFF0356E58F8C27BL, 0xB1B7B08430F0E7F7L, 0xE9A380A56139ABF1L, 0xBE7B6D4AA11EB47EL };
 
@@ -62,17 +65,29 @@ void testSetupKey512();
 
 void testSetupKey1024();
 
-void testThreefish256Encrypt();
+void testThreefish256NullEncrypt();
 
-void testThreefish512Encrypt();
+void testThreefish256TestEncrypt();
 
-void testThreefish1024Encrypt();
+void testThreefish512NullEncrypt();
 
-void testThreefish256Decrypt();
+void testThreefish512TestEncrypt();
 
-void testThreefish512Decrypt();
+void testThreefish1024NullEncrypt();
 
-void testThreefish1024Decrypt();
+void testThreefish1024TestEncrypt();
+
+void testThreefish256NullDecrypt();
+
+void testThreefish256TestDecrypt();
+
+void testThreefish512NullDecrypt();
+
+void testThreefish512TestDecrypt();
+
+void testThreefish1024NullDecrypt();
+
+void testThreefish1024TestDecrypt();
 
 void runThreefishTests();
 

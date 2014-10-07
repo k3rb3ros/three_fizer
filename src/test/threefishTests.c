@@ -1,5 +1,6 @@
 #include "include/threefishTests.h"
 
+//Test that setting up a 256 bit key works
 void testSetupKey256()
 {
     static ThreefishKey_t tf_key;
@@ -15,6 +16,7 @@ void testSetupKey256()
     assert(tf_key.stateSize = Threefish256);
 }
 
+//Test that setting up a 512 bit key works
 void testSetupKey512()
 {
     static ThreefishKey_t tf_key;
@@ -34,6 +36,7 @@ void testSetupKey512()
     assert(tf_key.stateSize = Threefish512);
 }
 
+//test that setting up a 1024 bit key works
 void testSetupKey1024()
 {
     static ThreefishKey_t tf_key;
@@ -61,20 +64,62 @@ void testSetupKey1024()
     assert(tf_key.stateSize = Threefish1024);
 }
 
-void testThreefish256Encrypt()
+//test that the 256bits null encrypted matches the test vector
+void testThreefish256NullEncrypt()
 {
     static ThreefishKey_t tf_key;
-    threefishSetKey(&tf_key, Threefish256, three_256_01_key, three_256_01_tweak);
-    
-    
+    uint64_t test_block_256[SAFE_SIZE] = { 0L, 0L, 0L, 0L };
+
+    threefishSetKey(&tf_key, Threefish256, three_256_00_key, three_256_00_tweak);
+    threefishEncryptBlockWords(&tf_key, three_256_00_plain_text, test_block_256); 
+    assert(test_block_256[0] == three_256_00_expected_result[0]);
+    assert(test_block_256[1] == three_256_00_expected_result[1]);
+    assert(test_block_256[2] == three_256_00_expected_result[2]);
+    assert(test_block_256[3] == three_256_00_expected_result[3]);
 }
 
-void testThreefish512Encrypt()
+//test that the 512bits null encrypted matches the test vector
+void testThreefish512NullEncrypt()
 {
+    static ThreefishKey_t tf_key;
+    uint64_t test_block_512[SECURE_SIZE] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
+
+    threefishSetKey(&tf_key, Threefish512, three_512_00_key, three_512_00_tweak);
+    threefishEncryptBlockWords(&tf_key, three_512_00_plain_text, test_block_512); 
+    assert(test_block_512[0] == three_512_00_expected_result[0]);
+    assert(test_block_512[1] == three_512_00_expected_result[1]);
+    assert(test_block_512[2] == three_512_00_expected_result[2]);
+    assert(test_block_512[3] == three_512_00_expected_result[3]);
+    assert(test_block_512[4] == three_512_00_expected_result[4]);
+    assert(test_block_512[5] == three_512_00_expected_result[5]);
+    assert(test_block_512[6] == three_512_00_expected_result[6]);
+    assert(test_block_512[7] == three_512_00_expected_result[7]);
 }
 
-void testThreefish1024Encrypt()
+//test that 1024 bits null encrypted matches the test vector
+void testThreefish1024NullEncrypt()
 {
+    static ThreefishKey_t tf_key;
+    uint64_t test_block_1024[FP_SIZE] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
+
+    threefishSetKey(&tf_key, Threefish1024, three_1024_00_key, three_1024_00_tweak);
+    threefishEncryptBlockWords(&tf_key, three_1024_00_plain_text, test_block_1024); 
+    assert(test_block_1024[0] == three_1024_00_expected_result[0]);
+    assert(test_block_1024[1] == three_1024_00_expected_result[1]);
+    assert(test_block_1024[2] == three_1024_00_expected_result[2]);
+    assert(test_block_1024[3] == three_1024_00_expected_result[3]);
+    assert(test_block_1024[4] == three_1024_00_expected_result[4]);
+    assert(test_block_1024[5] == three_1024_00_expected_result[5]);
+    assert(test_block_1024[6] == three_1024_00_expected_result[6]);
+    assert(test_block_1024[7] == three_1024_00_expected_result[7]);
+    assert(test_block_1024[8] == three_1024_00_expected_result[8]);
+    assert(test_block_1024[9] == three_1024_00_expected_result[9]);
+    assert(test_block_1024[10] == three_1024_00_expected_result[10]);
+    assert(test_block_1024[11] == three_1024_00_expected_result[11]);
+    assert(test_block_1024[12] == three_1024_00_expected_result[12]);
+    assert(test_block_1024[13] == three_1024_00_expected_result[13]);
+    assert(test_block_1024[14] == three_1024_00_expected_result[14]);
+    assert(test_block_1024[15] == three_1024_00_expected_result[15]);
 }
 
 void testThreefish256Decrypt()
@@ -94,12 +139,9 @@ void runThreefishTests()
     testSetupKey256();
     testSetupKey512();
     testSetupKey1024();
-    testThreefish256Encrypt();
-    testThreefish512Encrypt();
-    testThreefish1024Encrypt();
-    testThreefish256Decrypt();
-    testThreefish512Decrypt();
-    testThreefish1024Decrypt();
+    testThreefish256NullEncrypt();
+    testThreefish512NullEncrypt();
+    testThreefish1024NullEncrypt();
 }
 
 void Show08(uint64_t cnt, const uint8_t* b)
