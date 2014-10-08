@@ -7,9 +7,9 @@
 #include <stdio.h>
 
 #define INDENT "    "
-#define SAFE_SIZE 4
-#define SECURE_SIZE 8
-#define FP_SIZE 16
+#define SAFE_SIZE Threefish256/64
+#define SECURE_SIZE Threefish512/64
+#define FP_SIZE Threefish1024/64
 
 static uint64_t three_256_00_key[] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
 
