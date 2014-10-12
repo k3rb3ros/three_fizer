@@ -75,9 +75,9 @@ void testThreefish256NullEncrypt()
 
     pdebug("threefish256NullEncrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish256/8, (uint8_t *)test_block_256);
+    ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
     pdebug("\n Expected: \n");
-    Show08(Threefish256/8, (uint8_t *)three_256_00_expected_result);
+    ShowBuff(Threefish256/8, (uint8_t *)three_256_00_expected_result);
 
     assert(test_block_256[0] == three_256_00_expected_result[0]);
     assert(test_block_256[1] == three_256_00_expected_result[1]);
@@ -99,9 +99,9 @@ void testThreefish256TVEncrypt()
 
     pdebug("threefish256TestVectorEncrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish256/8, (uint8_t *)test_block_256);
+    ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
     pdebug("\n Expected: \n");
-    Show08(Threefish256/8, (uint8_t *)three_256_01_expected_result);
+    ShowBuff(Threefish256/8, (uint8_t *)three_256_01_expected_result);
 
     assert(test_block_256[0] == three_256_01_expected_result[0]);
     assert(test_block_256[1] == three_256_01_expected_result[1]);
@@ -140,9 +140,9 @@ void testThreefish512TVEncrypt()
 
     pdebug("threefish512TestVectorEncrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish512/8, (uint8_t *)test_block_512);
+    ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
     pdebug("\n Expected: \n");
-    Show08(Threefish512/8, (uint8_t *)three_512_01_expected_result);
+    ShowBuff(Threefish512/8, (uint8_t *)three_512_01_expected_result);
 
     assert(test_block_512[0] == three_512_01_expected_result[0]);
     assert(test_block_512[1] == three_512_01_expected_result[1]);
@@ -165,9 +165,9 @@ void testThreefish1024NullEncrypt()
 
     pdebug("threefish1024NullEncrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish1024/8, (uint8_t *)test_block_1024);
+    ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
     pdebug("\n Expected: \n");
-    Show08(Threefish1024/8, (uint8_t *)three_1024_01_expected_result);
+    ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_expected_result);
 
     assert(test_block_1024[0] == three_1024_00_expected_result[0]);
     assert(test_block_1024[1] == three_1024_00_expected_result[1]);
@@ -201,9 +201,9 @@ void testThreefish1024TVEncrypt()
 
     pdebug("threefish1024TestVectorEncrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish1024/8, (uint8_t *)test_block_1024);
+    ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
     pdebug("\n Expected: \n");
-    Show08(Threefish1024/8, (uint8_t *)three_1024_01_expected_result);
+    ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_expected_result);
 
     assert(test_block_1024[0] == three_1024_01_expected_result[0]);
     assert(test_block_1024[1] == three_1024_01_expected_result[1]);
@@ -234,9 +234,9 @@ void testThreefish256NullDecrypt()
 
     pdebug("threefish256NullDecrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish256/8, (uint8_t *)test_block_256);
+    ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
     pdebug("\n Expected: \n");
-    Show08(Threefish256/8, (uint8_t *)three_256_00_plain_text);
+    ShowBuff(Threefish256/8, (uint8_t *)three_256_00_plain_text);
 
     assert(test_block_256[0] == 0);
     assert(test_block_256[1] == 0);
@@ -259,9 +259,9 @@ void testThreefish256TVDecrypt()
 
     pdebug("threefish256TVDecrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish256/8, (uint8_t *)test_block_256);
+    ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
     pdebug("\n Expected: \n");
-    Show08(Threefish256/8, (uint8_t *)three_256_01_plain_text);
+    ShowBuff(Threefish256/8, (uint8_t *)three_256_01_plain_text);
 
     assert(test_block_256[0] == three_256_01_plain_text[0]);
     assert(test_block_256[1] == three_256_01_plain_text[1]);
@@ -279,9 +279,9 @@ void testThreefish512NullDecrypt()
 
     pdebug("threefish512NullDecrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish512/8, (uint8_t *)test_block_512);
+    ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
     pdebug("\n Expected: \n");
-    Show08(Threefish512/8, (uint8_t *)three_512_00_plain_text);
+    ShowBuff(Threefish512/8, (uint8_t *)three_512_00_plain_text);
 
     assert(test_block_512[0] == 0);
     assert(test_block_512[1] == 0);
@@ -306,9 +306,9 @@ void testThreefish512TVDecrypt()
     
     pdebug("threefish512TVDecrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish512/8, (uint8_t *)test_block_512);
+    ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
     pdebug("\n Expected: \n");
-    Show08(Threefish512/8, (uint8_t *)three_512_01_plain_text);
+    ShowBuff(Threefish512/8, (uint8_t *)three_512_01_plain_text);
 
     assert(test_block_512[0] == three_512_01_plain_text[0]);
     assert(test_block_512[1] == three_512_01_plain_text[1]);
@@ -331,9 +331,9 @@ void testThreefish1024NullDecrypt()
 
     pdebug("threefish1024NullDecrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish1024/8, (uint8_t *)test_block_1024);
+    ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
     pdebug("\n Expected: \n");
-    Show08(Threefish1024/8, (uint8_t *)three_1024_00_plain_text);
+    ShowBuff(Threefish1024/8, (uint8_t *)three_1024_00_plain_text);
 
     assert(test_block_1024[0] == 0);
     assert(test_block_1024[1] == 0);
@@ -366,9 +366,9 @@ void testThreefish1024TVDecrypt()
     
     pdebug("threefish1024TVDecrypt()\n");
     pdebug("Actual: \n");
-    Show08(Threefish1024/8, (uint8_t *)test_block_1024);
+    ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
     pdebug("\n Expected: \n");
-    Show08(Threefish1024/8, (uint8_t *)three_1024_01_plain_text);
+    ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_plain_text);
 
     assert(test_block_1024[0] == three_1024_01_plain_text[0]);
     assert(test_block_1024[1] == three_1024_01_plain_text[1]);
@@ -407,15 +407,3 @@ void runThreefishTests()
     testThreefish1024NullDecrypt();
     testThreefish1024TVDecrypt();
 }
-
-void Show08(uint64_t cnt, const uint8_t* b)
-{
-    for (uint64_t i=0;i < cnt;i++)
-    {
-        if (i %16 ==  0) pdebug(INDENT);
-        else if (i % 4 == 0) pdebug(" ");
-        pdebug(" %02X",b[i]);
-        if (i %16 == 15 || i==cnt-1) pdebug("\n");
-    }
-}
-

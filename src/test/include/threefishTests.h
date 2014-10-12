@@ -1,13 +1,13 @@
 #ifndef THREEFISHTESTS_H
 #define THREEFISHTESTS_H
 
+#include "print.h"
 #include "threefizer/threefishApi.h"
 #include "threefizer/debug.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#define INDENT "    "
 #define SAFE_SIZE Threefish256/64
 #define SECURE_SIZE Threefish512/64
 #define FP_SIZE Threefish1024/64
@@ -73,30 +73,28 @@ void testSetupKey1024();
 
 void testThreefish256NullEncrypt();
 
-void testThreefish256TestEncrypt();
+void testThreefish256TVEncrypt();
 
 void testThreefish512NullEncrypt();
 
-void testThreefish512TestEncrypt();
+void testThreefish512TVEncrypt();
 
 void testThreefish1024NullEncrypt();
 
-void testThreefish1024TestEncrypt();
+void testThreefish1024TVEncrypt();
 
 void testThreefish256NullDecrypt();
 
-void testThreefish256TestDecrypt();
+void testThreefish256TVDecrypt();
 
 void testThreefish512NullDecrypt();
 
-void testThreefish512TestDecrypt();
+void testThreefish512TVDecrypt();
 
 void testThreefish1024NullDecrypt();
 
-void testThreefish1024TestDecrypt();
+void testThreefish1024TVDecrypt();
 
 void runThreefishTests();
-
-void Show08(uint64_t cnt, const uint8_t* b);
 
 #endif
