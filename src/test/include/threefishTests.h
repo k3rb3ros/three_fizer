@@ -2,6 +2,7 @@
 #define THREEFISHTESTS_H
 
 #include "threefizer/threefishApi.h"
+#include "threefizer/debug.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -10,6 +11,11 @@
 #define SAFE_SIZE Threefish256/64
 #define SECURE_SIZE Threefish512/64
 #define FP_SIZE Threefish1024/64
+
+/* 
+* These values were copied from the SKEIN/Threefish NIST submission code located at
+* https://github.com/wernerd/Skein3Fish/tree/master/c/test
+*/
 
 static uint64_t three_256_00_key[] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
 

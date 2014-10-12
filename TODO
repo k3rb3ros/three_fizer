@@ -1,6 +1,11 @@
 * write IV to the begining of encrypted files *DONE*
-* finish cbc mode encrypt and decrypt functions
+* finish cbc mode encrypt and decrypt functions *DONE*
 * Break file reads/writes into block operations to speed up Disk/IO *DONE*
-* break up encryption into super blocks to encrypt files that are larger then ram size
+* add scheme to read buffer and encrypt the file in chunks instead of the entire file 
 * Add asynchronous writing to encryption 
 * parallelize decryption
+* Add tests for Skein hashing
+* Add tests for cbc operations
+* Add tests for fileIO
+* Add tests for util and pad operations
+* Get code reviewed by a security expert
