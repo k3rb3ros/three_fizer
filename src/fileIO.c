@@ -25,7 +25,7 @@ uint8_t* readBlock(uint64_t data_size, FILE* read)
     } 
 
     uint8_t* data = calloc(data_size, sizeof(uint8_t));
-    pdebug("(readBlock) data_size: %lu, read ptr:%x\n", data_size, &read);
+    //pdebug("(readBlock) data_size: %lu, read ptr:%x\n", data_size, &read);
     uint64_t size = fread(data, sizeof(uint8_t), data_size, read);
 
     if(ferror(read))
@@ -62,7 +62,7 @@ uint8_t* readFile(const char* fname)
         perror("File Read Error unable to continue\n");
     }
     fclose(my_read);
-    pdebug("Data read[%s]\n", data);
+    //pdebug("Data read[%s]\n", data);
 
     return data;
 }
@@ -70,7 +70,7 @@ uint8_t* readFile(const char* fname)
 bool writeBlock(uint8_t* data, uint64_t data_size, FILE* write)
 {
     if(ferror(write)) { return false; }
-    pdebug("(writeBlock) data:%x, data_size:%lu, write:%x\n", &data, data_size, &write);
+    //pdebug("(writeBlock) data:%x, data_size:%lu, write:%x\n", &data, data_size, &write);
     fwrite(data, sizeof(uint8_t), data_size, write);
     if(ferror(write)) { return false; }
 

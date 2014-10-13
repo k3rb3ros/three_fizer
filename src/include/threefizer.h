@@ -9,7 +9,7 @@
 #include <fileIO.h> //exists()
 #include <stdint.h> //uint types
 #include <stdio.h> //printf()
-#include <stdlib.h> //memalloc(). free()
+#include <stdlib.h> //memalloc(), free()
 #include <string.h> //strcmp()
 #include "util.h" //getSkeinSize()
 

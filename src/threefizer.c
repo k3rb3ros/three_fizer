@@ -10,6 +10,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
     arguments *a = state->input;
     switch(key)
     {
+        pdebug("Parse_opt %c\n" , key);
         case ARGP_KEY_ARG:
 	{
             if(exists(arg))
@@ -28,7 +29,8 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
         {
             a->free = false;
             a->encrypt = true;
-            a->argz=NULL;
+            a->hash = true;
+            a->argz= NULL;
             a->argz_len = 0;
             a->state_size = Skein512;
             a->password = NULL;
@@ -46,6 +48,8 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
         case 'd': a->encrypt = false;
         break;
         case 'e': a->encrypt = true;
+        break;
+        case 'n': a->hash = false;
         break;
         case 'p':
         {
@@ -86,11 +90,12 @@ int main(int argc, char*argv[])
     {
         { 0, 0, 0, 0, "Functional Options (encrypt is default)", 1 },
         { "decrypt", 'd', 0, 0, "Decrypt the specified file(s)" , 0 },
-        { "encrypt", 'e', 0, 0, "Encrypt the specified file(s)" , 0},
+        { "encrypt", 'e', 0, 0, "Encrypt the specified file(s)" , 0 },
+        { "no-hash", 'n', 0, 0, "Don't hash the password (may weeken cryptographic strength)", 0 },
         { 0, 0, 0, 0, "Property Options", 2 },
         { "blocksize", 'b', "BlockSize", 0, "Specify the block size of the cipher and hash", 0},
-        { "password", 'p', "Password", 0, "Specify a password from the command line", 0},
-        { "passwordfile", 'P', "PasswordFile", 0, "Specify a password file", 0 },
+        { "password", 'p', "Password", 0, "Specify a password without being asked to confirm it", 0 },
+        { "passwordfile", 'P', "PasswordFile", 0, "Specify the path to a password file", 0 },
         { 0, 0, 0, 0, 0, 0 }
     };
     struct argp argp = { options, parse_opt, args_doc, doc, NULL, NULL, NULL };

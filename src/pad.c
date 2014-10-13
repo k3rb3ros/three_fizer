@@ -2,7 +2,7 @@
 
 inline uint64_t getNumBlocks(uint64_t input_length, SkeinSize_t state_size)
 {
-    pdebug("(getNumBlocks) input_length: %lu, state_size: %u\n", input_length, state_size);
+    //pdebug("(getNumBlocks) input_length: %lu, state_size: %u\n", input_length, state_size);
     uint64_t blocks = 0;
     uint64_t bytes = 0;
     while(bytes < input_length)
@@ -25,12 +25,12 @@ inline uint64_t getPadSize(uint64_t input_length, SkeinSize_t state_size)
 
 uint64_t* pad(uint8_t* input, uint64_t input_length, SkeinSize_t state_size)
 {
-     pdebug("(pad)\n");
+     //pdebug("(pad)\n");
      if(!input_length % state_size == 0) //Don't allocate any memory if the input text is already a padded size
      {
          //uint64_t byte_size = getPadSize(input_length, state_size);
          uint64_t num_blocks = getNumBlocks(input_length, state_size);
-         pdebug("(pad) padding:%lu blocks\n", num_blocks);
+         //pdebug("(pad) padding:%lu blocks\n", num_blocks);
          uint64_t* pad = calloc(num_blocks, state_size/sizeof(uint64_t)); //allocate zero filled memory for the padded input
 
          if(memcpy(pad, input, input_length) == NULL)//memcpy(pad, input, input_length) == NULL) //Copy input over into our padded buffer

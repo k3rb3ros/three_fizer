@@ -2,7 +2,7 @@
 
 uint8_t* getRand(uint64_t size)
 {
-    pdebug("(getRand)\n");
+    //pdebug("(getRand)\n");
     FILE* randFile = NULL;
     uint8_t* randomData = NULL;
     if(exists(HWRNG)) //try hardware random number generator first

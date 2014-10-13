@@ -2,9 +2,19 @@
 
 int run_cipher(arguments* args, char* filename)
 {
-   int status = 0;
+   int32_t status = 0;
+   uint64_t* key = NULL;
+   if(args->hash == true)
+   {
+       //hash the user entered password so the key matches state size
+       key = (uint64_t*)sf_hash(args->password, args->pw_length, args->state_size);
+   }
+   else
+   {
+       key = set_key(args->password, args->pw_length, args->state_size);    
+   }
 
-   if(args->encrypt)
+   if(args->encrypt == true)
    {
        if(encrypt(filename, args->password, args->pw_length, args->state_size))
        {
@@ -18,10 +28,12 @@ int run_cipher(arguments* args, char* filename)
            pdebug("Succesfully decrypted file\n");
        }
    }
+
+   if(key != NULL) { free(key); }//free the key
    return status;
 }
 
-bool decrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t state_size)
+bool decrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_t state_size)
 {
     bool status = true;
     pdebug("decrypt()\n");
@@ -31,7 +43,6 @@ bool decrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinS
     if(file_size % block_size == 0)
     {
         FILE* fh = openForBlockRead(filename); //open the file for reading
-        uint64_t* key = (uint64_t*)sf_hash(password, pw_length, block_size, state_size); //hash the user entered password so it is of state_size
         uint64_t* iv = (uint64_t*)readBlock(block_size, fh); //read the IV (first block)
         uint8_t* disp = iv;
 
@@ -47,9 +58,9 @@ bool decrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinS
         if(check_header(&tf_key, iv, header, &data_size, state_size) && data_size > 0) //if the header is valid continue with decrypt
         {
             uint64_t num_blocks = getNumBlocks(data_size, state_size);
-            pdebug("Data size:%lu num_blocks:%lu\n", data_size, num_blocks);
+            //pdebug("Data size:%lu num_blocks:%lu\n", data_size, num_blocks);
             DecryptInPlace(&tf_key, num_blocks, header, data, state_size); //decrypt the cipher text 
-            pdebug("(Decrypt) Decrypted contents of file: [%s]\n", data);
+            //pdebug("(Decrypt) Decrypted contents of file: [%s]\n", data);
 	    fh = openForBlockWrite(filename); //open the file for writing
             writeBlock((uint8_t*)data, data_size-1, fh); //write the decrypted data to the file
             terminateFile(fh);
@@ -65,7 +76,6 @@ bool decrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinS
 	if(data != NULL) free(data);
         if(header != NULL) free(header);
         if(iv != NULL) free(iv); 
-        if(key != NULL) free(key);
     }
     else
     {
@@ -89,7 +99,7 @@ bool check_header(ThreefishKey_t* key, uint64_t* iv, uint64_t* header, uint64_t*
     return false;
 }
 
-bool encrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t state_size)
+bool encrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_t state_size)
 {
     pdebug("encrypt()\n");
     const uint64_t block_size = ((uint64_t)state_size/8L);
@@ -99,7 +109,6 @@ bool encrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinS
     {
         uint64_t num_blocks = getNumBlocks(file_size, state_size); //Calculate the number of blocks from the file size
         uint64_t* data = pad(readFile(filename), getSize(filename), state_size); //zero pad the plain text
-        uint64_t* key = (uint64_t*)sf_hash(password, pw_length, block_size, state_size); //hash the user entered password so it is of state_size
         uint64_t tweak[2] = { 0L, 0L }; //allocate a tweak for the threefish key structure
         static ThreefishKey_t tf_key;
         threefishSetKey(&tf_key, (ThreefishSize_t)state_size, key, tweak); //set up the 3fish key structure
@@ -115,7 +124,6 @@ bool encrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinS
         fclose(fh);       
  
         //free all dynamically allocated resources
-        if(key != NULL) free(key);
         if(iv != NULL) free(iv);
         if(header != NULL) free(header);
         if(data != NULL) free(data);

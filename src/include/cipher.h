@@ -12,8 +12,6 @@
 #define MAGIC_NUMBER 0x0909202009092009ULL
 #define RESERVED 0x7256736572766564ULL
 
-static const uint8_t test_block[64] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'L', 'M', 'N', 'O', 'Q', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm' ,'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '(', ')' };
-
 typedef struct
 {
     FILE* file;
@@ -21,11 +19,11 @@ typedef struct
     uint64_t* padded_input;
 } cipher;
 
-bool decrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t state_size); //a function that encapsulate all decryption operations
+bool decrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_t state_size); //a function that encapsulate all decryption operations
 
 bool check_header(ThreefishKey_t* key, uint64_t* iv, uint64_t* header, uint64_t* file_size, SkeinSize_t state_size); //returns true if the header is valid (correct valid) and sets file_size
 
-bool encrypt(const char* filename, uint8_t* password, uint64_t pw_length, SkeinSize_t state_size); //a function that encapsulates all encryption operations
+bool encrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_t state_size); //a function that encapsulates all encryption operations
 
 int run_cipher(arguments* args, char* filename); //runs the appropriate function based on the arguments from argp
 
