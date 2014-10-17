@@ -4,6 +4,7 @@
 #include "arguments.h" //arguments structure
 #include "cbc.h" //cbc_encrypt and cbc_decrypt
 #include "fileIO.h" //openForRead openForWrite openForBlockRead openForBlockWrite
+#include "no_hash.h" //set_key()
 #include "pad.h" //pad()
 #include "skeinApi.h" //SkeinSize_t
 #include "stdint.h" //uint8_t, int32_t, uint64_t

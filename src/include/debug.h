@@ -3,10 +3,10 @@
 #define DEBUG_H
 
     #ifdef DEBUG
-        #define pdebug(format, ...) printf(format, ## __VA_ARGS__)
+        #define pdebug(format, ...) printf(format, ##__VA_ARGS__)
     #endif
     #ifndef DEBUG
-        #define pdebug(...) void(0)
+        #define pdebug(...) do {} while(0)
     #endif 
 
 #endif

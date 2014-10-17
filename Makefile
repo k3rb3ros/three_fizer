@@ -7,7 +7,7 @@ CFLAGS= $(STDFLAG) $(INCLUDES) $(DBGFLAGS) $(DEFINITIONS)
 LDFLAGS=
 PRGRAM_OBJECTS=$(patsubst src/%.c, src/obj/%.o, $(wildcard src/*.c))
 TEST_OBJECTS=$(patsubst src/test/%.c, src/test/obj/%.o, $(wildcard src/test/*.c)) 
-OPTFLAGS=-O0
+OPTFLAGS=-O2
 PROGRAM=threefizer
 TEST=tests
 export CC

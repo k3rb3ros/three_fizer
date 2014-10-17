@@ -23,7 +23,7 @@
 */
 
 //program version
-const char* argp_program_version = "Threefizer 0.2.0";
+const char* argp_program_version = "Threefizer 0.3.0";
 
 const char* argp_program_bug_address = "<M.or.riser.ryan@gmail.com>"; //support email
 
