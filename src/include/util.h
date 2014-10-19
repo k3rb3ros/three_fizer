@@ -42,6 +42,8 @@ SkeinSize_t getSkeinSize(char* key);
 
 void askPassword(arguments* args);
 
+void getLine(uint8_t* buffer, uint64_t buffer_size);
+
 void zeroFill(void* buffer, uint64_t length);
 
 #endif

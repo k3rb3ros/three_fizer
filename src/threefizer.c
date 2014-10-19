@@ -68,7 +68,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             {
                 a->free = true;
 		a->password = readFile(arg);
-                a->pw_length = getSize(arg); //write a function to get the length of a file
+                a->pw_length = getSize(arg);
             }
             else
             {

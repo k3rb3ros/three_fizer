@@ -4,7 +4,7 @@
 #include "arguments.h" //arguments structure
 #include "cbc.h" //cbc_encrypt and cbc_decrypt
 #include "fileIO.h" //openForRead openForWrite openForBlockRead openForBlockWrite
-#include "no_hash.h" //set_key()
+#include "noHash.h" //set_key()
 #include "pad.h" //pad()
 #include "skeinApi.h" //SkeinSize_t
 #include "stdint.h" //uint8_t, int32_t, uint64_t
@@ -20,11 +20,11 @@ typedef struct
     uint64_t* padded_input;
 } cipher;
 
-bool decrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_t state_size); //a function that encapsulate all decryption operations
+bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size); //a function that encapsulate all decryption operations
 
 bool check_header(ThreefishKey_t* key, uint64_t* iv, uint64_t* header, uint64_t* file_size, SkeinSize_t state_size); //returns true if the header is valid (correct valid) and sets file_size
 
-bool encrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_t state_size); //a function that encapsulates all encryption operations
+bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size); //a function that encapsulates all encryption operations
 
 int run_cipher(arguments* args, char* filename); //runs the appropriate function based on the arguments from argp
 

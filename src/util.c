@@ -20,7 +20,7 @@ void askPassword(arguments* args)
     int pw_length = 0;
     struct termios oflags, nflags;
  
-    while(match == false)
+    while(match == false) //TODO this should probably be updated with a newer way of doing this
     {
         if(!first) 
         {
@@ -43,9 +43,9 @@ void askPassword(arguments* args)
         }
 
         printf("\nEnter password:");
-        fgets(pw1, sizeof(pw1), stdin);
+        getLine(pw1, BUFF_SIZE);
         printf("\nConfirm password:");
-        fgets(pw2, sizeof(pw2), stdin);
+        getLine(pw2, BUFF_SIZE);
 
         /* restore terminal */
         if (tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
@@ -71,6 +71,16 @@ void askPassword(arguments* args)
     args->password = (uint8_t*)password; //add our pw to the arguments structurei
     args-> free = true; //set the flag to free it since we allocated memory for this pw
     args->pw_length = pw_length; //ad the pw length to the arguments structure
+}
+
+void getLine(uint8_t* buffer, uint64_t buffer_size) //get a line without the \n character from enter press
+{
+   uint8_t* ch = 0;
+   uint16_t count = 0;
+   while((ch = getchar()) != '\n' && strlen(buffer) < buffer_size)
+   {
+       buffer[count++] = ch;
+   }
 }
 
 void zeroFill(void* buffer, uint64_t length)

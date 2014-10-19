@@ -16,14 +16,14 @@ int run_cipher(arguments* args, char* filename)
 
    if(args->encrypt == true)
    {
-       if(encrypt(filename, args->password, args->pw_length, args->state_size))
+       if(encrypt(filename, key, args->state_size))
        {
            printf("Succesfully encrypted file\n");
        }
    }
    else
    {
-       if(decrypt(filename, args->password, args->pw_length, args->state_size))
+       if(decrypt(filename, key, args->state_size))
        {
            pdebug("Succesfully decrypted file\n");
        }
@@ -33,7 +33,7 @@ int run_cipher(arguments* args, char* filename)
    return status;
 }
 
-bool decrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_t state_size)
+bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
 {
     bool status = true;
     pdebug("decrypt()\n");
@@ -58,9 +58,7 @@ bool decrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_
         if(check_header(&tf_key, iv, header, &data_size, state_size) && data_size > 0) //if the header is valid continue with decrypt
         {
             uint64_t num_blocks = getNumBlocks(data_size, state_size);
-            //pdebug("Data size:%lu num_blocks:%lu\n", data_size, num_blocks);
             DecryptInPlace(&tf_key, num_blocks, header, data, state_size); //decrypt the cipher text 
-            //pdebug("(Decrypt) Decrypted contents of file: [%s]\n", data);
 	    fh = openForBlockWrite(filename); //open the file for writing
             writeBlock((uint8_t*)data, data_size-1, fh); //write the decrypted data to the file
             terminateFile(fh);
@@ -99,7 +97,7 @@ bool check_header(ThreefishKey_t* key, uint64_t* iv, uint64_t* header, uint64_t*
     return false;
 }
 
-bool encrypt(const char* filename, uint64_t* key, uint64_t pw_length, SkeinSize_t state_size)
+bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
 {
     pdebug("encrypt()\n");
     const uint64_t block_size = ((uint64_t)state_size/8L);

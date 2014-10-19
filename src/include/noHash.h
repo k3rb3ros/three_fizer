@@ -1,5 +1,5 @@
-#ifndef NO_HASH_H
-#define NO_HASH_H
+#ifndef NOHASH_H
+#define NOHASH_H
 
 #include <stdint.h> //uint types
 #include <stdio.h> //NULL, printf
