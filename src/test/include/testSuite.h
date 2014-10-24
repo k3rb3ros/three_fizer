@@ -4,9 +4,4 @@
 #include <stdio.h>
 #include "threefishTests.h"
 
-void fml()
-{
-
-}
-
 #endif

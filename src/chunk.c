@@ -19,6 +19,7 @@ bool deque(queue* q)
     else
     { 
         q->size --;
+        q->elements[q->head] = NULL; //remove the ptr to the element
         q->head = (q->head + 1) % q->capacity;
     }
     return true;
@@ -45,6 +46,11 @@ queue* create_queue(uint16_t max_elements)
     q->size = 0;
     q->head = 0;
     q->tail = -1;
+
+    for(uint64_t i=0; i<max_elements; ++i)
+    {
+        q->elements[i] = NULL;
+    }
     
     return q;
 }

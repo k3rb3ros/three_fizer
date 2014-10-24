@@ -9,6 +9,10 @@
 * As well as a queue used to store chunks that are being read, encrypted, decrypted or written
 */
 
+#define ENCRYPT 1
+#define DECRYPT 2
+#define WRITE 3
+
 #define MAX_QUE_SIZE 25
 
 typedef struct
