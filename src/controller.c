@@ -13,24 +13,38 @@ static uint64_t* handleKey(arguments* args)
     else
     {
        //use the user entered password as the key directly
-       key = set_key(args->password, args->pw_length, args->state_size);
+       key = noHashKey(args->password, args->pw_length, args->state_size);
     }
 
     return key;
 }
 
-int32_t run_threefizer(arguments* args)
+static bool queueFile(arguments* args, queue* readQueue)
 {
+
+}
+
+int32_t runThreefizer(arguments* args)
+{
+    queue* readQueue = createQueue(QUE_SIZE);
     static int32_t status = SUCCESS;
-    uint64_t* key = handleKey(args);
+    static ThreefishKey_t tf_key;
+    uint64_t* key = handleKey(args); //generate the key
 
     pdebug("Threefizer controller\n");
     pdebug("Arguments { ");
-    pdebug("free: %d, encrypt: %d, hash: %d, argz: [%s], argz_len: %zu, State Size: %lu, password: [%s], pw_length %lu }\n", args->free, args->encrypt, args->hash, args->argz, args->argz_len, args->state_size, args->password, args->pw_length);
+    pdebug("free: %d, encrypt: %d, hash: %d, argz: [%s], argz_len: %zu, State Size: %u, password: [%s], pw_length %lu }\n", args->free, args->encrypt, args->hash, args->argz, args->argz_len, args->state_size, args->password, args->pw_length);
+
+    threefishSetKey(&tf_key, (ThreefishSize_t)args->state_size, key, tf_tweak);
 
     if(key != NULL)
     {
         free(key);
+    }
+    if(readQueue != NULL)
+    {
+        free(readQueue->elements);
+        free(readQueue);
     }
 
     return status;

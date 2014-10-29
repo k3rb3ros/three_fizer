@@ -1,6 +1,6 @@
 #include "include/noHash.h"
 
-uint64_t* set_key(uint8_t* password, uint64_t length, uint64_t state_size)
+uint64_t* noHashKey(uint8_t* password, uint64_t length, uint64_t state_size)
 {
     uint64_t* key = NULL;    
 

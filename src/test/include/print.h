@@ -6,7 +6,7 @@
 
 #define INDENT "    "
 
-//print the contents of the buffer as an columns of 4 hexidecmal digits
+//print the contents of the buffer as columns of 4 pairs of hexidecmal digits
 void Show08(uint64_t cnt, const uint8_t* b);
 
 #endif

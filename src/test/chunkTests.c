@@ -4,7 +4,7 @@
 static void testCreateChunkQueue()
 {
     pdebug("testCreateChunkQueue()\n");
-    queue* q = create_queue(TEST_QUE_SIZE);
+    queue* q = createQueue(TEST_QUE_SIZE);
     assert(q->capacity == TEST_QUE_SIZE);
     assert(q->size == 0);
     assert(q->head == 0);
@@ -23,7 +23,7 @@ static void testChunkEnque()
     memcpy(chunk1.data, DATA1, 7);
     chunk1.data_size = strlen(chunk1.data);   
 
-    queue* q = create_queue(TEST_QUE_SIZE);
+    queue* q = createQueue(TEST_QUE_SIZE);
     enque(&chunk1, q);    
 
     assert(strcmp(q->elements[0]->data, DATA1) == 0);
@@ -41,7 +41,7 @@ static void testChunkDeque()
     memcpy(chunk1.data, DATA1, 7);
     chunk1.data_size = strlen(chunk1.data);   
 
-    queue* q = create_queue(TEST_QUE_SIZE);
+    queue* q = createQueue(TEST_QUE_SIZE);
     assert(enque(&chunk1, q) == true);
     assert(deque(q) == true);
     assert(q->size == 0);
@@ -61,7 +61,7 @@ static void testChunkFront()
     memcpy(chunk1.data, DATA1, 7);
     chunk1.data_size = strlen(chunk1.data);   
 
-    queue* q = create_queue(TEST_QUE_SIZE);
+    queue* q = createQueue(TEST_QUE_SIZE);
     enque(&chunk1, q);
     chunk* test1 = front(q);
     assert(test1->action == WRITE); 
@@ -111,7 +111,7 @@ static void testChunkLimit()
     one_too_many.data = NULL;
     one_too_many.data_size = -1;
 
-    queue* q = create_queue(TEST_QUE_SIZE);
+    queue* q = createQueue(TEST_QUE_SIZE);
     
     enque(&chunk1, q);
     enque(&chunk2, q);
@@ -162,7 +162,7 @@ static void testChunkQueueBuffer()
     memcpy(chunk5.data, DATA5, 7);
     chunk5.data_size = 6;
 
-    queue* q = create_queue(TEST_QUE_SIZE);
+    queue* q = createQueue(TEST_QUE_SIZE);
 
     enque(&chunk5, q);
     enque(&chunk4, q);

@@ -205,7 +205,7 @@ static void testSkeinWordHash256()
     skeinCtxPrepare(&skein_state, Skein256);
     skeinInit(&skein_state, Skein256);
     skeinUpdateBits(&skein_state, &TestMsg, 128);
-    skeinFinal(&skein_state, test_digest);
+    skeinFinal(&skein_state, (uint8_t*)test_digest);
 
     pdebug("testSkeinWordHash256()\n");
     pdebug("Actual\n");
@@ -227,7 +227,7 @@ static void testSkeinWordHash512()
     skeinCtxPrepare(&skein_state, Skein512);
     skeinInit(&skein_state, Skein512);
     skeinUpdateBits(&skein_state, &TestMsg, 128);
-    skeinFinal(&skein_state, test_digest);
+    skeinFinal(&skein_state, (uint8_t*)test_digest);
 
     pdebug("testSkeinWordHash512()\n");
     pdebug("Actual\n");
@@ -254,7 +254,7 @@ static void testSkeinWordHash1024()
     skeinCtxPrepare(&skein_state, Skein1024);
     skeinInit(&skein_state, Skein1024);
     skeinUpdateBits(&skein_state, &TestMsg, 128);
-    skeinFinal(&skein_state, test_digest);
+    skeinFinal(&skein_state, (uint8_t*)test_digest);
 
     pdebug("testSkeinWordHash1024()\n");
     pdebug("Actual\n");

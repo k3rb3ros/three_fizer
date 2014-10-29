@@ -38,7 +38,7 @@ chunk* front(queue* q)
 }
 
 //allocate memory for the queue and set all its default values
-queue* create_queue(uint16_t max_elements) 
+queue* createQueue(uint16_t max_elements) 
 {
     queue* q = NULL;
     q = calloc(1, sizeof(queue));

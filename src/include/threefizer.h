@@ -1,25 +1,26 @@
 #ifndef THREEFIZER_H
 #define THREEFIZER_H
 
-#include <arguments.h> //argument structure
 #include <argp.h> //argp_parse()
 #include <argz.h> //argz
-#include <cbc.h> //cbc_decrypt, cbc_encrypt()
-#include <fileIO.h> //exists()
 #include <stdint.h> //uint types
 #include <stdio.h> //printf()
 #include <stdlib.h> //memalloc(), free()
 #include <string.h> //strcmp()
+#include "arguments.h" //argument structure
+#include "cbc.h" //cbc_decrypt, cbc_encrypt(
 //#include "cipher.h" //run_cipher
+#include "controller.h" //runThreefizer()
+#include "fileIO.h" //exists()
 #include "util.h" //getSkeinSize()
 
 //Numerical constants
 #define MAX_FILE_LENGTH 256
 
 /*
-**********************************
-*  Constants and data structures
-**********************************
+***********************************
+*  Constants and data structures  *
+***********************************
 */
 
 //program version

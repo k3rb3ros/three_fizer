@@ -1,6 +1,6 @@
 #include "cipher.h"
 
-int run_cipher(arguments* args, char* filename)
+int runCipher(arguments* args, char* filename)
 {
    int32_t status = 0;
    uint64_t* key = NULL;
@@ -11,7 +11,7 @@ int run_cipher(arguments* args, char* filename)
    }
    else
    {
-       key = set_key(args->password, args->pw_length, args->state_size);    
+       key = noHashKey(args->password, args->pw_length, args->state_size);    
    }
 
    if(args->encrypt == true)
@@ -44,7 +44,6 @@ bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
     {
         FILE* fh = openForBlockRead(filename); //open the file for reading
         uint64_t* iv = (uint64_t*)readBlock(block_size, fh); //read the IV (first block)
-        //uint8_t* disp = iv;
 
         uint64_t* header = (uint64_t*)readBlock(block_size, fh);
         uint64_t* data = (uint64_t*)readBlock((file_size-(block_size*2)), fh); //read + buffer the cipher text
@@ -55,7 +54,7 @@ bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
         static ThreefishKey_t tf_key;
         threefishSetKey(&tf_key, (ThreefishSize_t)state_size, key, tweak); //set up the 3fish key structure
 
-        if(check_header(&tf_key, iv, header, &data_size, state_size) && data_size > 0) //if the header is valid continue with decrypt
+        if(checkHeader(&tf_key, iv, header, &data_size, state_size) && data_size > 0) //if the header is valid continue with decrypt
         {
             uint64_t num_blocks = getNumBlocks(data_size, state_size);
             DecryptInPlace(&tf_key, num_blocks, header, data, state_size); //decrypt the cipher text 
@@ -84,7 +83,7 @@ bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
     return status;
 }
 
-bool check_header(ThreefishKey_t* key, uint64_t* iv, uint64_t* header, uint64_t* file_size, SkeinSize_t state_size)
+bool checkHeader(ThreefishKey_t* key, uint64_t* iv, uint64_t* header, uint64_t* file_size, SkeinSize_t state_size)
 {
     DecryptInPlace(key, 1, iv, header, state_size);
 
@@ -111,7 +110,7 @@ bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
         static ThreefishKey_t tf_key;
         threefishSetKey(&tf_key, (ThreefishSize_t)state_size, key, tweak); //set up the 3fish key structure
         uint64_t* iv = (uint64_t*)getRand(block_size); //Get a block of random data for the IV
-        uint64_t* header = gen_header(&tf_key, file_size, iv, state_size); //create the encrypted header block
+        uint64_t* header = genHeader(&tf_key, file_size, iv, state_size); //create the encrypted header block
 
         EncryptInPlace(&tf_key, num_blocks, header, data, state_size); //encrypt the data
 
@@ -134,7 +133,7 @@ bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
     }
 }
 
-uint64_t* gen_header(ThreefishKey_t* key, uint64_t data_size, uint64_t* iv, SkeinSize_t state_size) 
+uint64_t* genHeader(ThreefishKey_t* key, uint64_t data_size, uint64_t* iv, SkeinSize_t state_size) 
 {
     uint64_t* header = NULL;
 
@@ -189,4 +188,3 @@ void EncryptInPlace(ThreefishKey_t* key, uint64_t num_blocks, uint64_t* iv, uint
         break;
     }
 }
-

@@ -38,6 +38,6 @@ bool deque(queue* q);
 
 chunk* front(queue* q);
 
-queue* create_queue(uint16_t max_elements);
+queue* createQueue(uint16_t max_elements);
 
 #endif

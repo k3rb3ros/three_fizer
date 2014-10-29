@@ -75,7 +75,7 @@ void askPassword(arguments* args)
 
 void getLine(uint8_t* buffer, uint64_t buffer_size) //get a line without the \n character from enter press
 {
-   uint8_t* ch = 0;
+   uint8_t ch = 0;
    uint16_t count = 0;
    while((ch = getchar()) != '\n' && strlen(buffer) < buffer_size)
    {

@@ -115,7 +115,7 @@ int main(int argc, char*argv[])
            }
            //perform the requested action on each file entered into the command line
            //status = run_cipher(&arguments, arg);
-           status = run_threefizer(&arguments);
+           status = runThreefizer(&arguments);
        }
        else
        {
