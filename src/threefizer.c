@@ -113,8 +113,9 @@ int main(int argc, char*argv[])
            { 
                askPassword(&arguments); 
            }
-           status = run_cipher(&arguments, arg);
            //perform the requested action on each file entered into the command line
+           //status = run_cipher(&arguments, arg);
+           status = run_threefizer(&arguments);
        }
        else
        {

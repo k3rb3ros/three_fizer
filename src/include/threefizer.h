@@ -5,12 +5,12 @@
 #include <argp.h> //argp_parse()
 #include <argz.h> //argz
 #include <cbc.h> //cbc_decrypt, cbc_encrypt()
-#include "cipher.h" //run_cipher arguments
 #include <fileIO.h> //exists()
 #include <stdint.h> //uint types
 #include <stdio.h> //printf()
 #include <stdlib.h> //memalloc(), free()
 #include <string.h> //strcmp()
+//#include "cipher.h" //run_cipher
 #include "util.h" //getSkeinSize()
 
 //Numerical constants

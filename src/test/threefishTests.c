@@ -1,7 +1,7 @@
 #include "include/threefishTests.h"
 
 //Test that setting up a 256 bit key works
-void testSetupKey256()
+static void testSetupKey256()
 {
     static ThreefishKey_t tf_key;
     threefishSetKey(&tf_key, Threefish256, three_256_01_key, three_256_01_tweak);
@@ -17,7 +17,7 @@ void testSetupKey256()
 }
 
 //Test that setting up a 512 bit key works
-void testSetupKey512()
+static void testSetupKey512()
 {
     static ThreefishKey_t tf_key;
     threefishSetKey(&tf_key, Threefish512, three_512_01_key, three_512_01_tweak);
@@ -37,7 +37,7 @@ void testSetupKey512()
 }
 
 //test that setting up a 1024 bit key works
-void testSetupKey1024()
+static void testSetupKey1024()
 {
     static ThreefishKey_t tf_key;
     threefishSetKey(&tf_key, Threefish512, three_512_01_key, three_512_01_tweak);
@@ -65,7 +65,7 @@ void testSetupKey1024()
 }
 
 //test that 256bits null encrypted matches the test vector
-void testThreefish256NullEncrypt()
+static void testThreefish256NullEncrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_256[SAFE_SIZE] = { 0L, 0L, 0L, 0L };
@@ -86,7 +86,7 @@ void testThreefish256NullEncrypt()
 }
 
 //test that the 256 non null encrypted with a non null tweak match the test vector 
-void testThreefish256TVEncrypt()
+static void testThreefish256TVEncrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_256[SAFE_SIZE] = { 0L, 0L, 0L, 0L };
@@ -109,7 +109,7 @@ void testThreefish256TVEncrypt()
     assert(test_block_256[3] == three_256_01_expected_result[3]);
 }
 
-void testThreefish512NullEncrypt()
+static void testThreefish512NullEncrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_512[SECURE_SIZE] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
@@ -127,7 +127,7 @@ void testThreefish512NullEncrypt()
 }
 
 //test that the 512 non null encrypted with a non null tweak match the test vector 
-void testThreefish512TVEncrypt()
+static void testThreefish512TVEncrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_512[SECURE_SIZE] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
@@ -155,7 +155,7 @@ void testThreefish512TVEncrypt()
 }
 
 //test that 1024 bits null encrypted matches the test vector
-void testThreefish1024NullEncrypt()
+static void testThreefish1024NullEncrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_1024[FP_SIZE] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
@@ -188,7 +188,7 @@ void testThreefish1024NullEncrypt()
 }
 
 //test that the 1024 non null encrypted with a non null tweak match the test vector 
-void testThreefish1024TVEncrypt()
+static void testThreefish1024TVEncrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_1024[FP_SIZE] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
@@ -224,7 +224,7 @@ void testThreefish1024TVEncrypt()
 }
 
 
-void testThreefish256NullDecrypt()
+static void testThreefish256NullDecrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_256[SECURE_SIZE] = { 0L, 0L, 0L, 0L };
@@ -244,7 +244,7 @@ void testThreefish256NullDecrypt()
     assert(test_block_256[3] == 0);
 }
 
-void testThreefish256TVDecrypt()
+static void testThreefish256TVDecrypt()
 {
     static ThreefishKey_t tf_key;
     //decryption works in reverse so we want to get the original plain text value from the cipher text
@@ -269,7 +269,7 @@ void testThreefish256TVDecrypt()
     assert(test_block_256[3] == three_256_01_plain_text[3]);
 }
 
-void testThreefish512NullDecrypt()
+static void testThreefish512NullDecrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_512[SECURE_SIZE] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
@@ -293,7 +293,7 @@ void testThreefish512NullDecrypt()
     assert(test_block_512[7] == 0);
 }
 
-void testThreefish512TVDecrypt()
+static void testThreefish512TVDecrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_512[SECURE_SIZE] = { three_512_01_expected_result[0], three_512_01_expected_result[1], three_512_01_expected_result[2], three_512_01_expected_result[3], three_512_01_expected_result[4], three_512_01_expected_result[5], three_512_01_expected_result[6], three_512_01_expected_result[7] };
@@ -321,7 +321,7 @@ void testThreefish512TVDecrypt()
 }
 
 
-void testThreefish1024NullDecrypt()
+static void testThreefish1024NullDecrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_1024[FP_SIZE] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
@@ -353,7 +353,7 @@ void testThreefish1024NullDecrypt()
     assert(test_block_1024[15] == 0);
 }
 
-void testThreefish1024TVDecrypt()
+static void testThreefish1024TVDecrypt()
 {
     static ThreefishKey_t tf_key;
     uint64_t test_block_1024[FP_SIZE] = { three_1024_01_expected_result[0], three_1024_01_expected_result[1], three_1024_01_expected_result[2], three_1024_01_expected_result[3], three_1024_01_expected_result[4], three_1024_01_expected_result[5], three_1024_01_expected_result[6], three_1024_01_expected_result[7], three_1024_01_expected_result[8], three_1024_01_expected_result[9], three_1024_01_expected_result[10], three_1024_01_expected_result[11], three_1024_01_expected_result[12], three_1024_01_expected_result[13], three_1024_01_expected_result[14], three_1024_01_expected_result[15] };
@@ -387,7 +387,6 @@ void testThreefish1024TVDecrypt()
     assert(test_block_1024[14] == three_1024_01_plain_text[14]);
     assert(test_block_1024[15] == three_1024_01_plain_text[15]);
 }
-
 
 void runThreefishTests()
 {

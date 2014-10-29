@@ -65,36 +65,6 @@ const static uint64_t three_1024_01_plain_text[] = { 0xF8F9FAFBFCFDFEFFL, 0xF0F1
 
 const static uint64_t three_1024_01_expected_result[] = { 0x483AC62C27B09B59L, 0x4CB85AA9E48221AAL, 0x80BC1644069F7D0BL, 0xFCB26748FF92B235L, 0xE83D70243B5D294BL, 0x316A3CA3587A0E02L, 0x5461FD7C8EF6C1B9L, 0x7DD5C1A4C98CA574L, 0xFDA694875AA31A35L, 0x03D1319C26C2624CL, 0xA2066D0DF2BF7827L, 0x6831CCDAA5C8A370L, 0x2B8FCD9189698DACL, 0xE47818BBFD604399L, 0xDF47E519CBCEA541L, 0x5EFD5FF4A5D4C259L };
 
-void testSetupKey256();
-
-void testSetupKey512();
-
-void testSetupKey1024();
-
-void testThreefish256NullEncrypt();
-
-void testThreefish256TVEncrypt();
-
-void testThreefish512NullEncrypt();
-
-void testThreefish512TVEncrypt();
-
-void testThreefish1024NullEncrypt();
-
-void testThreefish1024TVEncrypt();
-
-void testThreefish256NullDecrypt();
-
-void testThreefish256TVDecrypt();
-
-void testThreefish512NullDecrypt();
-
-void testThreefish512TVDecrypt();
-
-void testThreefish1024NullDecrypt();
-
-void testThreefish1024TVDecrypt();
-
 void runThreefishTests();
 
 #endif

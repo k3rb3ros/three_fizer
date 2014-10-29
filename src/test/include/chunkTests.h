@@ -17,12 +17,4 @@
 
 void runChunkTests();
 
-void testCreateChunkQueue();
-
-void testChunkEnque();
-
-void testChunkDeque();
-
-void testChunkLimit();
-
 #endif

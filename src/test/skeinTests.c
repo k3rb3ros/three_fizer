@@ -1,6 +1,6 @@
 #include "skeinTests.h"
 
-void testSkeinInit256()
+static void testSkeinInit256()
 {
     static struct SkeinCtx skein_state;
     skeinCtxPrepare(&skein_state, Skein256);
@@ -14,7 +14,7 @@ void testSkeinInit256()
     assert(skein_state.XSave[3] == ExpectedState256[3]);
 }
 
-void testSkeinInit512()
+static void testSkeinInit512()
 {
     static struct SkeinCtx skein_state;
     skeinCtxPrepare(&skein_state, Skein512);
@@ -32,7 +32,7 @@ void testSkeinInit512()
     assert(skein_state.XSave[7] == ExpectedState512[7]);
 }
 
-void testSkeinInit1024()
+static void testSkeinInit1024()
 {
     static struct SkeinCtx skein_state;
     skeinCtxPrepare(&skein_state, Skein1024);
@@ -58,7 +58,7 @@ void testSkeinInit1024()
     assert(skein_state.XSave[15] == ExpectedState1024[15]);
 }
 
-void testSkeinNullHash256()
+static void testSkeinNullHash256()
 {
     static uint64_t byte_hash[Skein256/64] = { 0L, 0L, 0L, 0L };
     static uint64_t bit_hash[Skein256/64] = { 0L, 0L, 0L, 0L };
@@ -94,7 +94,7 @@ void testSkeinNullHash256()
     
 }
 
-void testSkeinNullHash512()
+static void testSkeinNullHash512()
 {
     static uint64_t byte_hash[Skein512/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
     static uint64_t bit_hash[Skein512/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
@@ -137,7 +137,7 @@ void testSkeinNullHash512()
     assert(byte_hash[7] == Skein512NullHash[7]);
 }
 
-void testSkeinNullHash1024()
+static void testSkeinNullHash1024()
 {
     static uint64_t byte_hash[Skein1024/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
     static uint64_t bit_hash[Skein1024/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
@@ -197,7 +197,7 @@ void testSkeinNullHash1024()
     assert(byte_hash[15] == Skein1024NullHash[15]);
 }
 
-void testSkeinWordHash256()
+static void testSkeinWordHash256()
 {
     static uint64_t test_digest[Skein256/64] = { 0L, 0L, 0L, 0L };
     static struct SkeinCtx skein_state;
@@ -219,7 +219,7 @@ void testSkeinWordHash256()
     assert(test_digest[3] == ExpectedDigest256[3]);
 }
 
-void testSkeinWordHash512()
+static void testSkeinWordHash512()
 {
     static uint64_t test_digest[Skein512/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
     static struct SkeinCtx skein_state;
@@ -246,7 +246,7 @@ void testSkeinWordHash512()
 }
 
 
-void testSkeinWordHash1024()
+static void testSkeinWordHash1024()
 {
     static uint64_t test_digest[Skein1024/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
     static struct SkeinCtx skein_state;

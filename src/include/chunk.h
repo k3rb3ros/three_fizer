@@ -4,6 +4,7 @@
 #include <stdbool.h> //bool type
 #include <stdint.h> //uint and specified int size types
 #include <stdio.h> //NULL Macro
+#include <stdlib.h> //calloc()
 
 /* defines the chunk structure used to pass groups of encrypted and unencrypted blocks around functions that manipulate them.
 * As well as a queue used to store chunks that are being read, encrypted, decrypted or written
@@ -28,7 +29,7 @@ typedef struct
     int16_t size;
     int16_t head;
     int16_t tail;
-    chunk* elements[MAX_QUE_SIZE];
+    chunk** elements;
 } queue;
 
 bool enque(chunk* chunk, queue* q);

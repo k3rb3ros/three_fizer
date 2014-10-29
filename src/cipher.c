@@ -44,7 +44,7 @@ bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
     {
         FILE* fh = openForBlockRead(filename); //open the file for reading
         uint64_t* iv = (uint64_t*)readBlock(block_size, fh); //read the IV (first block)
-        uint8_t* disp = iv;
+        //uint8_t* disp = iv;
 
         uint64_t* header = (uint64_t*)readBlock(block_size, fh);
         uint64_t* data = (uint64_t*)readBlock((file_size-(block_size*2)), fh); //read + buffer the cipher text

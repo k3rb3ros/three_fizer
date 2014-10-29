@@ -1,7 +1,7 @@
 * Break file reads/writes into block operations to speed up Disk/IO 
 * add scheme to read buffer and encrypt the file in chunks instead of the entire file 
-* Add que for chunks to encrypt
-* Add que for chunks to write
+* Add que for chunks to encrypt *DONE*
+* Add que for chunks to write *DONE*
 * Write to a seperate file then rename to original file re-name on success
 * Add data structure to pass data chunks around
 * Add asynchronous fileIO

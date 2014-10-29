@@ -1,8 +1,9 @@
 INCLUDES=-Iinclude
 CFLAGS= $(STDFLAG) $(INCLUDES) $(DBGFLAGS) $(DEFINITIONS)
 DEPS=$(wildcard include/*.h)
-SRC=$(wildcard *.c)
+LDFLAGS=-lpthread
 OBJ=$(patsubst %.c,obj/%.o,$(SRC))
+SRC=$(wildcard *.c)
 
 threefizerObjects: $(OBJ)
 
@@ -12,8 +13,8 @@ obj:
 	@mkdir -p $@
 
 obj/%.o:%.c $(SRC) $(DEPS)
-	@echo $(CC) $(CFLAGS) -c $< -o $@
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo $(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS)
+	@$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS)
 
 .PHONY: clean
 

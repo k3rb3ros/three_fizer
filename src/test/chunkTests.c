@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "include/chunkTests.h"
 
-void testCreateChunkQueue()
+static void testCreateChunkQueue()
 {
     pdebug("testCreateChunkQueue()\n");
     queue* q = create_queue(TEST_QUE_SIZE);
@@ -13,11 +13,11 @@ void testCreateChunkQueue()
     free(q);
 }
 
-void testChunkEnque()
+static void testChunkEnque()
 {
     pdebug("testChunkEnque()\n");
 
-    chunk chunk1;
+    static chunk chunk1;
     chunk1.action = WRITE;
     chunk1.data = malloc(7);
     memcpy(chunk1.data, DATA1, 7);
@@ -31,11 +31,11 @@ void testChunkEnque()
     free(q);
 }
 
-void testChunkDeque()
+static void testChunkDeque()
 {
     pdebug("testChunkDeque()\n");
 
-    chunk chunk1;
+    static chunk chunk1;
     chunk1.action = WRITE;
     chunk1.data = malloc(7);
     memcpy(chunk1.data, DATA1, 7);
@@ -51,11 +51,11 @@ void testChunkDeque()
     free(q); 
 }
 
-void testChunkFront()
+static void testChunkFront()
 {
     pdebug("testFront()\n");
 
-    chunk chunk1;
+    static chunk chunk1;
     chunk1.action = WRITE;
     chunk1.data = malloc(7);
     memcpy(chunk1.data, DATA1, 7);
@@ -72,41 +72,41 @@ void testChunkFront()
     free(q);
 }
 
-void testChunkLimit()
+static void testChunkLimit()
 {
     pdebug("testChunkLimit()\n");
 
-    chunk chunk1;
+    static chunk chunk1;
     chunk1.action = WRITE;
     chunk1.data = malloc(7);
     memcpy(chunk1.data, DATA1, 7);
     chunk1.data_size = 6;   
 
-    chunk chunk2;
+    static chunk chunk2;
     chunk2.action = WRITE;
     chunk2.data = malloc(7);
-    memcpy(chunk1.data, DATA2, 7);
+    memcpy(chunk2.data, DATA2, 7);
     chunk2.data_size = 6;
 
-    chunk chunk3;
+    static chunk chunk3;
     chunk3.action = WRITE;
     chunk3.data = malloc(7);
-    memcpy(chunk1.data, DATA3, 7);
+    memcpy(chunk3.data, DATA3, 7);
     chunk3.data_size = 6;
 
-    chunk chunk4;
+    static chunk chunk4;
     chunk4.action = WRITE;
     chunk4.data = malloc(7);
     memcpy(chunk4.data, DATA4, 7);
     chunk4.data_size = 6;
 
-    chunk chunk5;
+    static chunk chunk5;
     chunk5.action = WRITE;
     chunk5.data = malloc(7);
     memcpy(chunk5.data, DATA5, 7);
     chunk5.data_size = 6;
 
-    chunk one_too_many;
+    static chunk one_too_many;
     one_too_many.action = ENCRYPT;
     one_too_many.data = NULL;
     one_too_many.data_size = -1;
@@ -128,6 +128,89 @@ void testChunkLimit()
     free(q);
 }
 
+static void testChunkQueueBuffer()
+{
+    pdebug("testChunkQueueBuffer()\n");
+   
+    static chunk chunk1;
+    chunk1.action = WRITE;
+    chunk1.data = malloc(7);
+    memcpy(chunk1.data, DATA1, 7);
+    chunk1.data_size = 6;
+
+    static chunk chunk2;
+    chunk2.action = WRITE;
+    chunk2.data = malloc(7);
+    memcpy(chunk2.data, DATA2, 7);
+    chunk2.data_size = 6;
+
+    static chunk chunk3;
+    chunk3.action = WRITE;
+    chunk3.data = malloc(7);
+    memcpy(chunk3.data, DATA3, 7);
+    chunk3.data_size = 6;
+
+    static chunk chunk4;
+    chunk4.action = WRITE;
+    chunk4.data = malloc(7);
+    memcpy(chunk4.data, DATA4, 7);
+    chunk4.data_size = 6;
+
+    static chunk chunk5;
+    chunk5.action = WRITE;
+    chunk5.data = malloc(7);
+    memcpy(chunk5.data, DATA5, 7);
+    chunk5.data_size = 6;
+
+    queue* q = create_queue(TEST_QUE_SIZE);
+
+    enque(&chunk5, q);
+    enque(&chunk4, q);
+    enque(&chunk3, q);
+    enque(&chunk2, q);
+    enque(&chunk1, q);
+
+    deque(q);
+    enque(&chunk3, q);
+    assert(enque(&chunk3, q) == false);
+
+    deque(q);
+    deque(q);
+
+    enque(&chunk1, q);
+    enque(&chunk2, q);
+    assert(enque(&chunk1, q) == false);
+
+    deque(q);
+    deque(q);
+    deque(q);
+ 
+    enque(&chunk3, q);
+    enque(&chunk4, q);
+    enque(&chunk5, q);
+
+    pdebug("Contents of queue { ");
+    pdebug("%s, ", front(q)->data);
+    deque(q);
+    pdebug("%s, ", front(q)->data);
+    deque(q);
+    pdebug("%s, ", front(q)->data);
+    deque(q);
+    pdebug("%s, ", front(q)->data);
+    deque(q);
+    pdebug("%s ", front(q)->data);
+    deque(q);
+
+    pdebug(" }\n");
+ 
+    free(chunk1.data);
+    free(chunk2.data);
+    free(chunk3.data);
+    free(chunk4.data);
+    free(chunk5.data);
+    free(q);    
+}
+
 void runChunkTests()
 {
     testCreateChunkQueue();
@@ -135,4 +218,5 @@ void runChunkTests()
     testChunkDeque();
     testChunkFront();
     testChunkLimit();
+    testChunkQueueBuffer();
 }

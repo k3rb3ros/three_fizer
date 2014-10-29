@@ -2,7 +2,7 @@
 
 bool enque(chunk* chunk, queue* q)
 {
-    if(q->size == q->capacity) { return false; }
+    if(q->size == q->capacity || chunk == NULL) { return false; }
     else
     { 
         q->size ++;
@@ -46,6 +46,7 @@ queue* create_queue(uint16_t max_elements)
     q->size = 0;
     q->head = 0;
     q->tail = -1;
+    q->elements = calloc(max_elements, sizeof(chunk*));  
 
     for(uint64_t i=0; i<max_elements; ++i)
     {
