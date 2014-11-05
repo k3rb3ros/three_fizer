@@ -12,9 +12,8 @@
 
 #define ENCRYPT 1
 #define DECRYPT 2
+#define INIT 255
 #define WRITE 3
-
-#define MAX_QUE_SIZE 25
 
 typedef struct
 {
@@ -25,19 +24,27 @@ typedef struct
 
 typedef struct
 {
-    int16_t capacity;
-    int16_t size;
-    int16_t head;
-    int16_t tail;
+    int capacity;
+    int size;
+    int head;
+    int tail;
     chunk** elements;
 } queue;
 
+bool deque(queue* q);
+
 bool enque(chunk* chunk, queue* q);
 
-bool deque(queue* q);
+bool queueIsFull(queue* q);
+
+chunk* createChunk();
 
 chunk* front(queue* q);
 
-queue* createQueue(uint16_t max_elements);
+queue* createQueue(int max_elements);
+
+void destroyChunk(chunk* chunk);
+
+void destroyQueue(queue* q);
 
 #endif

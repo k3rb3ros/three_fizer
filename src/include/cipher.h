@@ -3,12 +3,11 @@
 
 #include "arguments.h" //arguments structure
 #include "cbc.h" //cbc_encrypt and cbc_decrypt
-#include "cipher.h" //setKey()
 #include "fileIO.h" //openForRead openForWrite openForBlockRead openForBlockWrite
 #include "noHash.h" //set_key()
 #include "pad.h" //pad()
 #include "skeinApi.h" //SkeinSize_t
-#include "stdint.h" //uint8_t, int32_t, uint64_t
+#include <stdint.h> //uint8_t, int32_t, uint64_t
 #include <stdio.h> //FILE*
 
 #define MAGIC_NUMBER 0x0909202009092009ULL

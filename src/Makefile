@@ -1,7 +1,7 @@
 INCLUDES=-Iinclude
 CFLAGS= $(STDFLAG) $(INCLUDES) $(DBGFLAGS) $(DEFINITIONS)
 DEPS=$(wildcard include/*.h)
-LDFLAGS=-lpthread
+LDFLAGS=
 OBJ=$(patsubst %.c,obj/%.o,$(SRC))
 SRC=$(wildcard *.c)
 

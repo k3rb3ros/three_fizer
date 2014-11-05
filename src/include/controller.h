@@ -5,11 +5,15 @@
 #include <stdint.h> //uint types
 #include "chunk.h" //chunk types and queue types
 #include "debug.h" //pdeubug()
+#include "fileIO.h" //block read and write operations
 #include "hash.h" //hashing sf_hash()
 #include "noHash.h" //set_key()
 #include "threefishApi.h" //ThreefishKey_t
 
-#define QUE_SIZE 25
+//number of chunks in QUEUE
+#define QUE_SIZE 10
+//size of each queue chunk
+#define MAX_CHUNK_SIZE 524288  
 
 /******************
 * Data structures *

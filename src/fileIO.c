@@ -17,6 +17,7 @@ FILE* openForBlockWrite(const char* fname)
 
 uint8_t* readBlock(uint64_t data_size, FILE* read)
 {
+    pdebug("readBlock()\n");
     if(ferror(read))
     {
         fclose(read);
