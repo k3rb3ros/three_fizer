@@ -1,8 +1,5 @@
 #include "include/controller.h"
 
-#define SUCCESS 1
-#define FILE_IO_FAIL 2
-
 static uint64_t* handleKey(arguments* args)
 {
     uint64_t* key = NULL;
@@ -20,15 +17,12 @@ static uint64_t* handleKey(arguments* args)
     return key;
 }
 
-static bool queueFile(arguments* args, queue* readQueue)
+static bool queueFile(arguments* args, queue* readQueue) //right now this is blocking until the entire file is queued TODO put me on my own thread so MAC and ENCRYPTION can take place as the file is buffered not just after it
 {
     bool status = true; //TODO use me
     const uint64_t block_size = ((uint64_t)args->state_size/8L); //get the threefish block size
     uint64_t file_size = getSize(args->argz); //get the file size in bytes
     FILE* read = openForBlockRead(args->argz); //open a handle to the file
-
-    pdebug("queueFile()\n");
-    pdebug("blocksize:%lu filesize:%lu \n", block_size, file_size);
 
     while(file_size > 0)
     {
@@ -51,11 +45,9 @@ static bool queueFile(arguments* args, queue* readQueue)
                  //read a chunk of the file
                  newchunk->data = readBlock(MAX_CHUNK_SIZE, read);
                  newchunk->data_size = MAX_CHUNK_SIZE;
-
                  file_size -= MAX_CHUNK_SIZE; //subtract the chunk size from the counter
              }
-             free(newchunk);
-             enque(&newchunk, readQueue); //queue the chunk
+             enque(newchunk, readQueue); //queue the chunk
          }
          //otherwise spin
     }
@@ -72,6 +64,7 @@ int32_t runThreefizer(arguments* args)
     static int32_t status = SUCCESS;
     static ThreefishKey_t tf_key;
     uint64_t* key = handleKey(args); //generate the key
+    uint64_t file_size = 0;
 
     pdebug("Threefizer controller\n");
     pdebug("Arguments { ");
@@ -81,15 +74,39 @@ int32_t runThreefizer(arguments* args)
     //queue the file
     if(queueFile(args, readQueue) == false)
     {
-       status = FILE_IO_FAIL;
+        status = FILE_IO_FAIL;
     }
- 
+
+    if(args->encrypt == true)
+    {  
+       file_size = getSize(args->argz);
+       uint64_t* header = genHeader(&tf_key, file_size, (uint64_t*)getRand(args->state_size), args->state_size);
+   
+       /************************************************
+       * The enrypted file should be written like this *
+       * |IV|HEADER|CIPHER_TEXT|MAC|
+       *************************************************/
+       //encrypt
+    }
+    else
+    {
+        uint64_t* iv = NULL;
+        uint64_t* header = NULL;
+        if(checkHeader(&tf_key, iv, header, &file_size))
+        {
+            //decrypt
+        }
+        else
+        {
+            status = HEADER_CHECK_FAIL;
+        }
+    }
     //spin up the crypto thread and sick it on the readQueue
 
     //spin up the async File/IO thread and sick it on the writeQueue
 
     //free all allocated resources
-    if(key != NULL) //TODO add resource freeing to a function
+    if(key != NULL)
     {
         free(key);
     }

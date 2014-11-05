@@ -9,7 +9,6 @@
 #include <string.h> //strcmp()
 #include "arguments.h" //argument structure
 #include "cbc.h" //cbc_decrypt, cbc_encrypt(
-//#include "cipher.h" //run_cipher
 #include "controller.h" //runThreefizer()
 #include "fileIO.h" //exists()
 #include "util.h" //getSkeinSize()

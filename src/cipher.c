@@ -1,6 +1,6 @@
 #include "cipher.h"
 
-int runCipher(arguments* args, char* filename)
+int runCipher(arguments* args, char* filename) //TODO get rid of me
 {
    int32_t status = 0;
    uint64_t* key = NULL;
@@ -83,20 +83,7 @@ bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
     return status;
 }
 
-bool checkHeader(ThreefishKey_t* key, uint64_t* iv, uint64_t* header, uint64_t* file_size, SkeinSize_t state_size)
-{
-    DecryptInPlace(key, 1, iv, header, state_size);
-
-    if(header[0] == MAGIC_NUMBER && header[2] == state_size)//if the header check passes
-    {
-        *file_size = header[1]; //store the unpadded file size
-        EncryptInPlace(key, 1, iv, header, state_size);//rencrypt the header as this is the iv for the next block
-        return true;
-    } 
-    return false;
-}
-
-bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
+bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size) //TODO get rid of me
 {
     pdebug("encrypt()\n");
     const uint64_t block_size = ((uint64_t)state_size/8L);
@@ -133,25 +120,7 @@ bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
     }
 }
 
-uint64_t* genHeader(ThreefishKey_t* key, uint64_t data_size, uint64_t* iv, SkeinSize_t state_size) 
-{
-    uint64_t* header = NULL;
-
-    if(iv != NULL && key != NULL && data_size > 1)
-    {
-        header = calloc(sizeof(uint64_t), state_size/64);
-        header[0] = MAGIC_NUMBER;
-        header[1] = data_size;
-        header[2] = (uint64_t) state_size;
-        header[3] = RESERVED;
-       
-        EncryptInPlace(key, 1, iv, header, state_size); //encrypt the header
-    }
-
-    return header;
-}
-
-void DecryptInPlace(ThreefishKey_t* key, uint64_t num_blocks, uint64_t* iv, uint64_t* cipher_text, SkeinSize_t state_size)
+void DecryptInPlace(ThreefishKey_t* key, uint64_t num_blocks, uint64_t* iv, uint64_t* cipher_text, SkeinSize_t state_size) //TODO move me
 {
     switch(state_size) //call the corresponding decrypt and decrypt the header
     {
@@ -170,7 +139,7 @@ void DecryptInPlace(ThreefishKey_t* key, uint64_t num_blocks, uint64_t* iv, uint
     }
 }
 
-void EncryptInPlace(ThreefishKey_t* key, uint64_t num_blocks, uint64_t* iv, uint64_t* plain_text, SkeinSize_t state_size)
+void EncryptInPlace(ThreefishKey_t* key, uint64_t num_blocks, uint64_t* iv, uint64_t* plain_text, SkeinSize_t state_size)//TODO move me
 {
     switch(state_size) //call the corresponding decrypt and decrypt the header
     {

@@ -183,19 +183,19 @@ static void testChunkQueueBuffer()
     enque(chunk4, q);
     enque(chunk5, q);
 
-    assert((char*)front(q)->data == DATA1);
+    assert(strcmp(front(q)->data, DATA1) == 0);
     deque(q);
     destroyChunk(chunk1);
-    assert((char*)front(q)->data == DATA2);
+    assert(strcmp(front(q)->data, DATA2) == 0);
     deque(q);
     destroyChunk(chunk2);
-    assert((char*)front(q)->data == DATA3);
+    assert(strcmp(front(q)->data, DATA3) == 0);
     deque(q);
     destroyChunk(chunk3);
-    assert((char*)front(q)->data == DATA4);
+    assert(strcmp(front(q)->data, DATA4) == 0);
     deque(q);
     destroyChunk(chunk4);
-    assert((char*)front(q)->data == DATA5);
+    assert(strcmp(front(q)->data, DATA5) == 0);
     deque(q);
     destroyChunk(chunk5);
    

@@ -1,5 +1,3 @@
-
-
 #include "../include/threefishApi.h"
 #include <stdlib.h>
 #include <string.h>

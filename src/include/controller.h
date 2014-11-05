@@ -10,6 +10,11 @@
 #include "noHash.h" //set_key()
 #include "threefishApi.h" //ThreefishKey_t
 
+#define SUCCESS 1
+#define FILE_IO_FAIL 2
+#define HEADER_CHECK_FAIL 3
+#define HMAC_CHECK_FAIL 4
+
 //number of chunks in QUEUE
 #define QUE_SIZE 10
 //size of each queue chunk
