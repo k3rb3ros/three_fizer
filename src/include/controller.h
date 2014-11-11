@@ -3,17 +3,18 @@
 
 #include <arguments.h> //arguments structure
 #include <stdint.h> //uint types
-#include "chunk.h" //chunk types and queue types
-#include "debug.h" //pdeubug()
+#include "chunk.h" //chunk type
+#include "chunkQueue.h" //queue type and supporting functions
+#include "debug.h" //pdebug()
 #include "fileIO.h" //block read and write operations
-#include "hash.h" //hashing sf_hash()
+#include "hash.h" //sf_hash()
 #include "noHash.h" //set_key()
 #include "threefishApi.h" //ThreefishKey_t
 
 #define SUCCESS 1
 #define FILE_IO_FAIL 2
 #define HEADER_CHECK_FAIL 3
-#define HMAC_CHECK_FAIL 4
+#define MAC_CHECK_FAIL 4
 
 //number of chunks in QUEUE
 #define QUE_SIZE 10

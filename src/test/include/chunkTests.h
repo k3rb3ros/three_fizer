@@ -1,11 +1,11 @@
 #ifndef CHUNKTESTS_H
 #define CHUNKTESTS_H
 
-#include "threefizer/chunk.h"
-#include "threefizer/debug.h"
-#include <assert.h>
-#include <stdlib.h> //malloc
-#include <string.h> //memcpy
+#include "threefizer/chunkQueue.h" //chunk and queue structures and supporting functions 
+#include "threefizer/debug.h" //pdebug()
+#include <assert.h> //assert()
+#include <stdlib.h> //malloc()
+#include <string.h> //memcpy()
 
 #define DATA1 "Data 1"
 #define DATA2 "Data 2"

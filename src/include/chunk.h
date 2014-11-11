@@ -6,45 +6,28 @@
 #include <stdio.h> //NULL Macro
 #include <stdlib.h> //calloc()
 
+/***********************************
+* Compile Time Numerical Constants *
+************************************/
+
+#define INIT 255
+
 /* defines the chunk structure used to pass groups of encrypted and unencrypted blocks around functions that manipulate them.
-* As well as a queue used to store chunks that are being read, encrypted, decrypted or written
 */
 
-#define ENCRYPT 1
-#define DECRYPT 2
-#define INIT 255
-#define WRITE 3
+/******************
+* Data Structures *
+*******************/
 
 typedef struct
 {
-     uint8_t action;
-     uint64_t* data;
-     uint64_t data_size;
+     uint8_t action; //The action to be performed on the queded chunk
+     uint64_t* data; //A pointer to the data queued
+     uint64_t data_size; //the size of the data in bytes
 } chunk;
-
-typedef struct
-{
-    int capacity;
-    int size;
-    int head;
-    int tail;
-    chunk** elements;
-} queue;
-
-bool deque(queue* q);
-
-bool enque(chunk* chunk, queue* q);
-
-bool queueIsFull(queue* q);
 
 chunk* createChunk();
 
-chunk* front(queue* q);
-
-queue* createQueue(int max_elements);
-
 void destroyChunk(chunk* chunk);
-
-void destroyQueue(queue* q);
 
 #endif

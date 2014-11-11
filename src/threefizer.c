@@ -16,6 +16,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             if(exists(arg))
             {
                 argz_add(&a->argz, &a->argz_len, arg);
+                a->file_size = getSize(a->argz);
 	    }
             else
             {
@@ -35,6 +36,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             a->state_size = Skein512;
             a->password = NULL;
             a->pw_length = 0;
+            a->file_size = 0;
 	}
         break;
         case ARGP_KEY_END:

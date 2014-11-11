@@ -3,6 +3,7 @@
 
 #include <stdbool.h> //bool type
 #include <stdint.h> //stdint types
+#include "chunkQueue.h" //queue type and supporting functions
 #include "threefishApi.h" //ThreefishKey_t
 
 bool checkHMAC(ThreefishKey_t* tf_key);

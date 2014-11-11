@@ -16,24 +16,24 @@ int runCipher(arguments* args, char* filename) //TODO get rid of me
 
    if(args->encrypt == true)
    {
-       if(encrypt(filename, key, args->state_size))
+       /*if(encrypt(filename, key, args->state_size))
        {
            printf("Succesfully encrypted file\n");
-       }
+       }*/
    }
    else
    {
-       if(decrypt(filename, key, args->state_size))
+       /*if(decrypt(filename, key, args->state_size))
        {
            pdebug("Succesfully decrypted file\n");
-       }
+       }*/
    }
 
    if(key != NULL) { free(key); }//free the key
    return status;
 }
 
-bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
+/*bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
 {
     bool status = true;
     pdebug("decrypt()\n");
@@ -81,9 +81,9 @@ bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size)
     }
 
     return status;
-}
+}*/
 
-bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size) //TODO get rid of me
+/*bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size) //TODO get rid of me
 {
     pdebug("encrypt()\n");
     const uint64_t block_size = ((uint64_t)state_size/8L);
@@ -118,7 +118,7 @@ bool encrypt(const char* filename, uint64_t* key, SkeinSize_t state_size) //TODO
         perror("File is empty aborting...\n");
         return false;
     }
-}
+}*/
 
 void DecryptInPlace(ThreefishKey_t* key, uint64_t num_blocks, uint64_t* iv, uint64_t* cipher_text, SkeinSize_t state_size) //TODO move me
 {
