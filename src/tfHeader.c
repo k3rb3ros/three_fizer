@@ -1,7 +1,7 @@
 #include "include/tfHeader.h"
 
-bool checkHeader(uint64_t* header, uint64_t* file_size, 
-                 uint32_t state_size)
+bool checkHeader(const uint64_t* header, uint64_t* file_size, 
+                 const uint32_t state_size)
 {
     const uint32_t block_byte_size = (state_size/8);
     
@@ -27,7 +27,7 @@ bool checkHeader(uint64_t* header, uint64_t* file_size,
 * |#######################IV#########################|                *
 * |MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|RESERVED|PADDING|                *
 ***********************************************************************/
-uint64_t* genHeader(uint64_t* iv, uint64_t data_size, uint32_t state_size)
+uint64_t* genHeader(const uint64_t* iv, const uint64_t data_size, const uint32_t state_size)
 {
     const uint32_t block_byte_size = state_size/8;
     uint64_t* header = NULL;

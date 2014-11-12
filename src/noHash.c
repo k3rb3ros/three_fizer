@@ -1,13 +1,13 @@
 #include "include/noHash.h"
 
-uint64_t* noHashKey(uint8_t* password, uint64_t length, uint64_t state_size)
+uint64_t* noHashKey(const uint8_t* password, uint64_t length, const uint64_t state_size)
 {
     uint64_t* key = NULL;    
 
     if(length < state_size)
     {
         key = calloc(length, sizeof(uint8_t));
-        printf("You have turned off password hashing and entered a password or password file that is smaller then the state size. A loss of cryptographic strength of your data may occur\n");
+        printf("You have turned off password hashing and entered a password or password file that is smaller then the state size. A loss of cryptographic strength of your data will occur\n");
     }
 
     if(length >= state_size)

@@ -15,15 +15,15 @@ FILE* openForBlockRead(const char* fname);
 
 FILE* openForBlockWrite(const char* fname);
 
-bool writeBlock(uint8_t* data, uint64_t data_size, FILE* write);
+bool writeBlock(const uint8_t* data, const uint64_t data_size, const FILE* write);
 
 bool writeFile(const char* fname, uint8_t* data, uint64_t data_size);
 
-uint8_t* readFile(const char* fname);
+uint8_t* readBlock(const uint64_t data_size, const FILE* read);
 
-uint8_t* readBlock(uint64_t data_size, FILE* read);
+uint8_t* readFile(const char* fname);
 
 uint64_t getSize(const char* fname);
 
-void terminateFile(FILE* write);
+void terminateFile(const FILE* write);
 #endif

@@ -1,11 +1,30 @@
 #include "util.h"
 
-bool validSize(size_t size)
+static inline void getLine(uint8_t* buffer, const uint64_t buffer_size) //get a line without the \n character from enter press
+{
+   uint8_t ch = 0;
+   uint16_t count = 0;
+   while((ch = getchar()) != '\n' && strlen(buffer) < buffer_size)
+   {
+       buffer[count++] = ch;
+   }
+}
+
+static inline void zeroFill(void* buffer, const uint64_t length)
+{
+    uint8_t* ptr = buffer;
+    for(uint64_t i=0; i<length; ++i)
+    {
+        ptr[i] = 0;
+    }
+}
+
+inline bool validSize(const size_t size)
 {
     return size == 256 || size == 512 || size == 1024;
 }
 
-SkeinSize_t getSkeinSize(char* key)
+SkeinSize_t getSkeinSize(const char* key)
 {
     for(unsigned long i=0; i<N_BLOCK_LOOKUP; ++i)
     {
@@ -76,23 +95,4 @@ void askPassword(arguments* args)
     args->password = (uint8_t*)password; //add our pw to the arguments structurei
     args-> free = true; //set the flag to free it since we allocated memory for this pw
     args->pw_length = pw_length; //ad the pw length to the arguments structure
-}
-
-void getLine(uint8_t* buffer, uint64_t buffer_size) //get a line without the \n character from enter press
-{
-   uint8_t ch = 0;
-   uint16_t count = 0;
-   while((ch = getchar()) != '\n' && strlen(buffer) < buffer_size)
-   {
-       buffer[count++] = ch;
-   }
-}
-
-void zeroFill(void* buffer, uint64_t length)
-{
-    uint8_t* ptr = buffer;
-    for(uint64_t i=0; i<length; ++i)
-    {
-        ptr[i] = 0;
-    }
 }

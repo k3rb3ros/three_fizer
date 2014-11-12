@@ -1,6 +1,6 @@
 #include "include/pad.h"
 
-inline uint64_t getNumBlocks(uint64_t input_length, SkeinSize_t state_size)
+inline uint64_t getNumBlocks(const uint64_t input_length, const SkeinSize_t state_size)
 {
     uint64_t blocks = 0;
     uint64_t bytes = 0;
@@ -13,7 +13,7 @@ inline uint64_t getNumBlocks(uint64_t input_length, SkeinSize_t state_size)
     return blocks;
 }
 
-inline uint64_t getPadSize(uint64_t input_length, SkeinSize_t state_size)
+inline uint64_t getPadSize(const uint64_t input_length, const SkeinSize_t state_size)
 {
     uint64_t padSize = input_length;
 
@@ -22,7 +22,7 @@ inline uint64_t getPadSize(uint64_t input_length, SkeinSize_t state_size)
     return padSize/8;  
 }
 
-uint64_t* pad(uint8_t* input, uint64_t input_length, SkeinSize_t state_size)
+uint64_t* pad(const uint8_t* input, const uint64_t input_length, const SkeinSize_t state_size)
 {
      if(!input_length % state_size == 0) //Don't allocate any memory if the input text is already a padded size
      {

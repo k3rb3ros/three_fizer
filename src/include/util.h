@@ -29,7 +29,7 @@ typedef struct
     SkeinSize_t skein_size;
 } keyBlock_t;
 
-static keyBlock_t block_lookup[] = //alookup table containing skein/threefish cipher sizes
+static keyBlock_t block_lookup[] = //a lookup table containing skein/threefish cipher sizes. Note these are just for parsing block size input nothing cryptographic
 {
     { "256", Skein256 }, { "512", Skein512 }, { "1024", Skein1024 },
     { "SAFE", Skein256 }, { "SECURE", Skein512 }, { "FUTUREPROOF", Skein1024 },
@@ -38,14 +38,14 @@ static keyBlock_t block_lookup[] = //alookup table containing skein/threefish ci
     { "FUTURE_PROOF", Skein1024 }, { "future_proof", Skein1024 }, { "Future_Proof", Skein1024 }
 };
 
-bool validSize(size_t size);
+bool validSize(const size_t size);
 
-SkeinSize_t getSkeinSize(char* key);
+SkeinSize_t getSkeinSize(const char* key);
 
 void askPassword(arguments* args);
 
-void getLine(uint8_t* buffer, uint64_t buffer_size);
+//void getLine(uint8_t* buffer, uint64_t buffer_size);
 
-void zeroFill(void* buffer, uint64_t length);
+//void zeroFill(void* buffer, uint64_t length);
 
 #endif

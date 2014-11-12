@@ -26,10 +26,9 @@ bool enque(chunk* chunk, queue* q)
     return true;
 }
 
-bool queueIsFull(queue* q)
+inline bool queueIsFull(queue* q)
 {
-   if(q->size == q->capacity) { return true; }
-   return false;
+   return q->size == q->capacity;
 }
 
 //return the first queued element (if any)

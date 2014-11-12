@@ -8,6 +8,6 @@
 #define HWRNG "/dev/hw_random"
 #define PSRNG "/dev/urandom"
 
-uint8_t* getRand(uint64_t size);
+uint8_t* getRand(uint64_t const size);
 
 #endif

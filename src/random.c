@@ -1,6 +1,6 @@
 #include "include/random.h"
 
-uint8_t* getRand(uint64_t size)
+uint8_t* getRand(const uint64_t size)
 {
     //pdebug("(getRand)\n");
     FILE* randFile = NULL;

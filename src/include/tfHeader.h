@@ -13,10 +13,10 @@
 * Functions *
 *************/
 
-bool checkHeader(uint64_t* header, uint64_t* file_size, 
-                 uint32_t state_size); //returns true if the header is valid (correct valid) and sets file_size
+bool checkHeader(const uint64_t* header, uint64_t* file_size, 
+                 const uint32_t state_size); //returns true if the header is valid (correct valid) and sets file_size to the size of the unencrypted file read from the header
 
-uint64_t* genHeader(uint64_t* iv, uint64_t data_size, 
-                    uint32_t state_size); //generates a header indicating the file was encrypted with this program and indicateing how big the plain_text is
+uint64_t* genHeader(const uint64_t* iv, const uint64_t data_size, 
+                    const uint32_t state_size); //generates a header indicating the file was encrypted with this program and indicateing how big the plain_text is
 
 #endif

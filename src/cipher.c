@@ -1,5 +1,7 @@
 #include "cipher.h"
 
+//This whole file is being split up and repurposed into several more meaningful files
+
 int runCipher(arguments* args, char* filename) //TODO get rid of me
 {
    int32_t status = 0;

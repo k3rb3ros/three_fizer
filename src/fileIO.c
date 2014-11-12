@@ -1,21 +1,21 @@
 #include "include/fileIO.h"
 
-bool exists(const char* fname)
+inline bool exists(const char* fname)
 {
     return access(fname, R_OK) != -1;
 }
 
-FILE* openForBlockRead(const char* fname)
+inline FILE* openForBlockRead(const char* fname)
 {
     return fopen(fname, "rb");
 }
 
-FILE* openForBlockWrite(const char* fname)
+inline FILE* openForBlockWrite(const char* fname)
 {
     return fopen(fname, "wb+");
 }
 
-uint8_t* readBlock(uint64_t data_size, FILE* read)
+uint8_t* readBlock(const uint64_t data_size, const FILE* read)
 {
     pdebug("readBlock()\n");
     if(ferror(read))
@@ -25,9 +25,8 @@ uint8_t* readBlock(uint64_t data_size, FILE* read)
         return NULL;
     } 
 
-    uint8_t* data = calloc(data_size, sizeof(uint8_t));
-    //pdebug("(readBlock) data_size: %lu, read ptr:%x\n", data_size, &read);
-    uint64_t size = fread(data, sizeof(uint8_t), data_size, read);
+    const uint8_t* data = calloc(data_size, sizeof(uint8_t));
+    const uint64_t size = fread(data, sizeof(uint8_t), data_size, read);
 
     if(ferror(read))
     {
@@ -48,7 +47,7 @@ uint8_t* readBlock(uint64_t data_size, FILE* read)
 
 uint8_t* readFile(const char* fname)
 {
-    FILE* my_read = fopen(fname, "rb");
+    const FILE* my_read = fopen(fname, "rb");
     uint64_t file_size = 0;
 
     if(my_read == NULL || !fseek(my_read, 0L, SEEK_END) == 0) { return NULL; };
@@ -56,22 +55,20 @@ uint8_t* readFile(const char* fname)
     file_size = ftell(my_read);
     rewind(my_read);
 
-    uint8_t* data = calloc(file_size+1, sizeof(uint8_t));
+    const uint8_t* data = calloc(file_size+1, sizeof(uint8_t));
     fread(data, sizeof(uint8_t), file_size, my_read);
     if(ferror(my_read)) 
     {
         perror("File Read Error unable to continue\n");
     }
     fclose(my_read);
-    //pdebug("Data read[%s]\n", data);
 
     return data;
 }
 
-bool writeBlock(uint8_t* data, uint64_t data_size, FILE* write)
+bool writeBlock(const uint8_t* data, const uint64_t data_size, const FILE* write)
 {
     if(ferror(write)) { return false; }
-    //pdebug("(writeBlock) data:%x, data_size:%lu, write:%x\n", &data, data_size, &write);
     fwrite(data, sizeof(uint8_t), data_size, write);
     if(ferror(write)) { return false; }
 
@@ -81,7 +78,7 @@ bool writeBlock(uint8_t* data, uint64_t data_size, FILE* write)
 bool writeFile(const char* fname, uint8_t* data, uint64_t data_size)
 {
     bool status = true;
-    FILE* my_write = fopen(fname, "wb");
+    const FILE* my_write = fopen(fname, "wb");
 
     if(my_write == NULL)
     {
@@ -98,14 +95,14 @@ bool writeFile(const char* fname, uint8_t* data, uint64_t data_size)
     return status;
 }
 
-uint64_t getSize(const char* fname)
+inline uint64_t getSize(const char* fname)
 {
     struct stat st;
     stat(fname, &st);
     return st.st_size;
 }
 
-void terminateFile(FILE* write) //write the terminating \n and close the File
+inline void terminateFile(const FILE* write) //write the terminating \n and close the File
 {
     const static uint8_t eol[1] = { '\n' };
     if(!ferror(write)) 

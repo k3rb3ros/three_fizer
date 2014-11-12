@@ -5,7 +5,7 @@
 
 #include "include/threefizer.h"
 
-static error_t parse_opt(int key, char* arg, struct argp_state* state)
+static error_t parse_opt(const int key, const char* arg, struct argp_state* state)
 {
     arguments *a = state->input;
     switch(key)
@@ -41,7 +41,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
         break;
         case ARGP_KEY_END:
         {
-            size_t count = argz_count(a->argz, a->argz_len);
+            const size_t count = argz_count(a->argz, a->argz_len);
             if (count < 1) { argp_failure (state, 1, 1, "too few arguments"); }
         }
         break;
@@ -116,7 +116,6 @@ int main(int argc, char*argv[])
                askPassword(&arguments); 
            }
            //perform the requested action on each file entered into the command line
-           //status = run_cipher(&arguments, arg);
            status = runThreefizer(&arguments);
        }
        else

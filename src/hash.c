@@ -1,11 +1,11 @@
 #include "include/hash.h"
 
-uint8_t* hash(uint8_t* input, uint64_t digest_length, SkeinSize_t state_size)
+uint8_t* hash(const uint8_t* input, const uint64_t digest_length, const SkeinSize_t state_size)
 {
     struct SkeinCtx skein_state; //Skein state
     uint8_t* digest = NULL;
 
-    if(input != NULL)
+    if(input != NULL && validSize(state_size))
     {
         digest = calloc(digest_length+1, sizeof(uint8_t)); //+1 to ensure digest is a null terminated string    
         skeinCtxPrepare(&skein_state, state_size); //Tell skein what size its state is
@@ -17,12 +17,12 @@ uint8_t* hash(uint8_t* input, uint64_t digest_length, SkeinSize_t state_size)
     return digest;
 }
 
-uint8_t* sf_hash(uint8_t* input, uint64_t input_length, SkeinSize_t state_size)
+uint8_t* sf_hash(const uint8_t* input, const uint64_t input_length, const SkeinSize_t state_size)
 {
     struct SkeinCtx skein_state; //Skein state
     uint8_t* digest = NULL;
 
-    if(input != NULL)
+    if(input != NULL && validSize(state_size))
     {
         digest = calloc((state_size/8), sizeof(uint8_t)); //allocate the digest buffer    
         skeinCtxPrepare(&skein_state, state_size); //Tell skein what size its state is

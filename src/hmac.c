@@ -1,11 +1,11 @@
 #include "include/hmac.h"
 
-bool checkMAC(ThreefishKey_t* tf_key, queue* mac_queue)//TODO move me to my own file
+bool checkMAC(ThreefishKey_t* tf_key, queue* mac_queue)
 {
     return false;
 }
 
-uint64_t* genMAC(ThreefishKey_t* tf_key)//TODO move me to my own file
+uint64_t* genMAC(ThreefishKey_t* tf_key)
 {
     return NULL;
 }

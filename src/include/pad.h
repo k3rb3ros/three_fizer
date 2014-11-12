@@ -8,10 +8,10 @@
 #include <stdlib.h> //realloc()
 #include <string.h> //memcpy()
 
-uint64_t getNumBlocks(uint64_t plain_text_size, SkeinSize_t skein_size);
+uint64_t getNumBlocks(const uint64_t plain_text_size, const SkeinSize_t skein_size);
 
-uint64_t getPadSize(uint64_t plain_text_size, SkeinSize_t skein_size);
+uint64_t getPadSize(const uint64_t plain_text_size, const SkeinSize_t skein_size);
 
-uint64_t* pad(uint8_t* input, uint64_t input_length, SkeinSize_t skein_size);
+uint64_t* pad(const uint8_t* input, const uint64_t input_length, const SkeinSize_t skein_size);
 
 #endif

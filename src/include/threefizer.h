@@ -27,13 +27,13 @@ const char* argp_program_version = "Threefizer 0.3.0";
 
 const char* argp_program_bug_address = "<M.or.riser.ryan@gmail.com>"; //support email
 
-extern struct argp argp;
-
 //program documentation
-const static char doc[] = "A simple file encryption program that uses Threefish and Skein internally\n";
+const static char doc[] = "A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentiall insecure cloud backup services\n";
 
 //a description of the arguments we accept
 const static char args_doc[] = "[FILE]...";
+
+extern struct argp argp;
 
 extern struct argp_option options[]; //Argp options
 
@@ -43,6 +43,6 @@ extern struct argp_option options[]; //Argp options
 ************************
 */
 
-static error_t parse_opt (int key, char *arg, struct argp_state* state);
+static error_t parse_opt (const int key, const char *arg, struct argp_state* state);
 
 #endif 
