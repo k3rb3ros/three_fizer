@@ -15,6 +15,7 @@
 #define FILE_IO_FAIL 2
 #define HEADER_CHECK_FAIL 3
 #define MAC_CHECK_FAIL 4
+#define QUEUE_OPERATION_FAIL 5
 
 //number of chunks in QUEUE
 #define QUE_SIZE 10
@@ -32,6 +33,6 @@ static uint64_t tf_tweak[2] = { 0x5368616C6C206E6ULL, 0X26520646976756CULL };
 * Functions *
 *************/
 
-int32_t runThreefizer(arguments* args);
+int32_t runThreefizer(const arguments* args);
 
 #endif

@@ -36,7 +36,7 @@ bool queueIsFull(queue* q);
 
 chunk* front(queue* q);
 
-queue* createQueue(int max_elements);
+queue* createQueue(const int max_elements);
 
 void destroyQueue(queue* q);
 

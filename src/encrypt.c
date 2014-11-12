@@ -3,12 +3,12 @@
 /*
 * This function assumes padding and allocation has already been taken care of
 */
-void encryptInPlace(ThreefishKey_t* key,
-                           uint64_t* chain, 
-                           uint64_t* plain_text, 
-                           uint64_t num_blocks) 
+void encryptInPlace(const ThreefishKey_t* key,
+                    const uint64_t* chain, 
+                    const uint64_t* plain_text, 
+                    const uint64_t num_blocks) 
 {
-    switch(key->stateSize) //call the corresponding decrypt and decrypt the header
+    switch(key->stateSize) //call the corresponding cbc Encrypt function
     {
         case 256: cbc256Encrypt(key, chain, plain_text, num_blocks);
         break;

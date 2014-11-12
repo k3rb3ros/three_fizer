@@ -1,6 +1,6 @@
 #include "include/controller.h"
 
-static uint64_t* handleKey(arguments* args)
+static uint64_t* handleKey(const arguments* args)
 {
     uint64_t* key = NULL;
     if(args->hash == true)
@@ -17,7 +17,20 @@ static uint64_t* handleKey(arguments* args)
     return key;
 }
 
-static bool queueHeader(arguments* args, queue* q) //queue IV and Header pair into readQueue. Must be called before queueFile
+//Put a done flag into the Queue telling all threads using it that there operation on queued data is complete
+static inline bool queueDone(const arguments* args, queue* q)
+{
+    bool success = false;
+    chunk* done = createChunk();
+    done->action = DONE;
+
+    if(enque(done, q)) { success = true; }
+
+    return success; 
+} 
+
+//queue IV and Header pair into readQueue. Must be called before queueFile
+static bool queueHeader(const arguments* args, queue* q)
 {
     bool success = false;
     const uint64_t block_byte_size = ((uint64_t)args->state_size/8);
@@ -49,7 +62,7 @@ static bool queueHeader(arguments* args, queue* q) //queue IV and Header pair in
     return success;
 } 
 
-static bool queueFile(arguments* args, queue* q) //right now this is blocking until the entire file is queued TODO put me on my own thread so MAC and ENCRYPTION can take place as the file is buffered not just after it
+static bool queueFile(const arguments* args, queue* q) //right now this is blocking until the entire file is queued TODO put me on my own thread so MAC and ENCRYPTION can take place as the file is buffered not just after it
 {
     bool status = true; 
     const uint32_t block_size = ((uint32_t)args->state_size/8); //get the threefish block size
@@ -90,12 +103,18 @@ static bool queueFile(arguments* args, queue* q) //right now this is blocking un
     return status;
 }
 
-static bool decryptFile(arguments* args, ThreefishKey_t* tf_key)
+static bool decryptFile(const arguments* args, ThreefishKey_t* tf_key)
 {
 
 }
 
-static bool encryptFile(arguments* args, ThreefishKey_t* tf_key)
+/************************************************************************************* 
+* This encrypts all queued data passed to 'in' and puts it in the 'out' queue.
+* this function assumes a properly formatted header starting with an IV
+* is the first thing queued and an empty chunk with the action set to DONE is the
+* last thing queued. 
+*/
+static bool encryptFile(const arguments* args, ThreefishKey_t* tf_key, queue* in, queue* out) //TODO finish me
 {
     /************************************************
     * The enrypted file should be written like this *
@@ -104,11 +123,35 @@ static bool encryptFile(arguments* args, ThreefishKey_t* tf_key)
     * and the header                                *
     *************************************************/
     pdebug("encryptFile()\n");
+
+    bool first_chunk = true;
+
+    while(front(in) != NULL && front(in)->action != DONE)
+    {
+        //get the first chunk queued
+        chunk* encrypt_chunk = front(in); 
+        uint64_t* chain = NULL;
+        deque(in); //pop it off the queue        
+
+        if(first_chunk)
+        {
+            uint64_t* iv = NULL;
+            encryptInPlace(tf_key, iv, encrypt_chunk->data, 1); //IV should be split out of encrypted data            
+            first_chunk = false;
+        }
+        else
+        {
+            uint64_t num_blocks = 0; //TODO calculate me
+            encryptInPlace(tf_key, chain, encrypt_chunk->data, num_blocks); //encrypt the chunk
+        }
+        //que the encrypted chunk into the out buffer
+        enque(encrypt_chunk, out); 
+    }
 }
 
-int32_t runThreefizer(arguments* args)
+int32_t runThreefizer(const arguments* args)
 {
-    queue* readQueue = createQueue(QUE_SIZE);
+    queue* encryptQueue = createQueue(QUE_SIZE);
     queue* macQueue = createQueue(QUE_SIZE);
     queue* writeQueue = createQueue(QUE_SIZE);
     static int32_t status = SUCCESS;
@@ -125,15 +168,16 @@ int32_t runThreefizer(arguments* args)
     if(args->encrypt == true)
     {
         //generate header and queue the file
-        if(queueHeader(args, readQueue) || queueFile(args, readQueue) == false)
+        if(queueHeader(args, encryptQueue) && queueFile(args, encryptQueue))
         {
-            encryptFile(args, &tf_key); 
+            if(queueDone(args, encryptQueue)) { encryptFile(args, &tf_key, encryptQueue, macQueue); }
+            else { status = QUEUE_OPERATION_FAIL; }
         }
         else { status = FILE_IO_FAIL; }
     }
     else //decrypt
     { //the amount of nesting here is sketchy but I don't know how better to do it
-        if(queueFile(args, readQueue))
+        if(queueFile(args, encryptQueue))
         {
             uint64_t* iv = NULL;
             uint64_t* header = NULL;
@@ -156,7 +200,7 @@ int32_t runThreefizer(arguments* args)
     {
         free(key);
     }
-    destroyQueue(readQueue);
+    destroyQueue(encryptQueue);
     destroyQueue(macQueue);
     destroyQueue(writeQueue);
 
