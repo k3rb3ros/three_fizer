@@ -45,3 +45,9 @@ uint64_t* genHeader(const uint64_t* iv, const uint64_t data_size, const uint32_t
 
     return header;
 }
+
+/*Knowing the internal structure of the header it is possible to return a pointer directly to the data of the header ignoring the iv*/
+inline uint64_t* stripIV(const uint64_t* header, const uint64_t state_size)
+{
+    return header + (state_size/64);
+}

@@ -103,7 +103,7 @@ static bool queueFile(const arguments* args, queue* q) //right now this is block
     return status;
 }
 
-static bool decryptFile(const arguments* args, ThreefishKey_t* tf_key)
+static bool decryptChunks(const arguments* args, ThreefishKey_t* tf_key)
 {
 
 }
@@ -114,39 +114,45 @@ static bool decryptFile(const arguments* args, ThreefishKey_t* tf_key)
 * is the first thing queued and an empty chunk with the action set to DONE is the
 * last thing queued. 
 */
-static bool encryptFile(const arguments* args, ThreefishKey_t* tf_key, queue* in, queue* out) //TODO finish me
+static bool encryptChunks(ThreefishKey_t* tf_key, queue* in, queue* out) //TODO finish me
 {
-    /************************************************
-    * The enrypted file should be written like this *
-    * |HEADER|CIPHER_TEXT|MAC|                      *
-    * note the MAC operation must include the IV    *
-    * and the header                                *
-    *************************************************/
-    pdebug("encryptFile()\n");
+    /********************************************************
+    * The encrypted file should be written like this        *
+    * |HEADER|CIPHER_TEXT|MAC|                              *
+    * note the MAC operation must include the entire header *
+    * which in turn includes the IV                         *
+    ********************************************************/
+    pdebug("encryptChunks()\n");
 
     bool first_chunk = true;
+    bool success = true;
+    uint64_t* chain = NULL;
 
-    while(front(in) != NULL && front(in)->action != DONE)
+    while(front(in) != NULL && front(in)->action != DONE && success)
     {
         //get the first chunk queued
         chunk* encrypt_chunk = front(in); 
-        uint64_t* chain = NULL;
         deque(in); //pop it off the queue        
 
         if(first_chunk)
         {
-            uint64_t* iv = NULL;
-            encryptInPlace(tf_key, iv, encrypt_chunk->data, 1); //IV should be split out of encrypted data            
+            uint64_t* iv = encrypt_chunk->data; //the first block of the header is the iv so we can use it as such by passing it in as the iv
+            uint64_t* header_data = stripIV(encrypt_chunk->data, tf_key->stateSize); 
+            encryptInPlace(tf_key, iv, header_data, 1); //encrypt the header
+            chain = getChain(encrypt_chunk->data, (uint64_t)tf_key->stateSize, 2); //save the chain of cipher text for use in the next chunk           
             first_chunk = false;
         }
         else
         {
-            uint64_t num_blocks = 0; //TODO calculate me
+            uint64_t num_blocks = getNumBlocks(encrypt_chunk->data_size, (uint64_t)tf_key->stateSize);
             encryptInPlace(tf_key, chain, encrypt_chunk->data, num_blocks); //encrypt the chunk
+            chain = getChain(encrypt_chunk->data, (uint64_t)tf_key->stateSize, num_blocks);
         }
         //que the encrypted chunk into the out buffer
-        enque(encrypt_chunk, out); 
+        if(enque(encrypt_chunk, out) != true) { success = false; } 
     }
+
+    return success;
 }
 
 int32_t runThreefizer(const arguments* args)
@@ -166,11 +172,19 @@ int32_t runThreefizer(const arguments* args)
     threefishSetKey(&tf_key, (ThreefishSize_t)args->state_size, key, tf_tweak);
 
     if(args->encrypt == true)
-    {
+    { //most of this nesting will be done away with when threading is added to each queue
         //generate header and queue the file
         if(queueHeader(args, encryptQueue) && queueFile(args, encryptQueue))
         {
-            if(queueDone(args, encryptQueue)) { encryptFile(args, &tf_key, encryptQueue, macQueue); }
+            //queue the done flag and start encryption
+            if(queueDone(args, encryptQueue)) 
+            { 
+                encryptChunks(&tf_key, encryptQueue, macQueue);
+                if(queueDone(args, macQueue))
+                {
+                   //Do the hmac stuff and then move to the write queue
+                } 
+            }
             else { status = QUEUE_OPERATION_FAIL; }
         }
         else { status = FILE_IO_FAIL; }
@@ -181,11 +195,11 @@ int32_t runThreefizer(const arguments* args)
         {
             uint64_t* iv = NULL;
             uint64_t* header = NULL;
-            if(checkHeader(&tf_key, iv, header, &file_size))
+            if(checkHeader(&tf_key, header, &file_size))
             {
                 if(checkMAC(tf_key, macQueue))
                 {
-                    decryptFile(args, &tf_key);
+                    decryptChunks(args, &tf_key);
                 }
                 else { status = MAC_CHECK_FAIL; }
             }

@@ -1,6 +1,17 @@
 #include "include/cbc.h"
 
-void cbc256Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uint64_t num_blocks)
+inline uint64_t* getChain(const uint64_t* cipher_text,
+                   const uint64_t state_size,
+                   const uint64_t num_blocks)
+{
+    return cipher_text + num_blocks;
+    //cipher_text + ((num_blocks-1)*(state_size/64));
+}
+
+void cbc256Decrypt(const ThreefishKey_t* key, 
+                   const uint64_t* iv, 
+                   uint64_t* cipher_text, 
+                   const uint64_t num_blocks)
 {
     uint64_t prev_block_odd[SAFE_SLICE] = {0, 0, 0 ,0}; //allocate 1 block of storage to store the previous cipher text 
     uint64_t prev_block_even[SAFE_SLICE] = {0, 0, 0 ,0}; //allocate 1 block of storage to store the previous cipher text 
@@ -39,7 +50,10 @@ void cbc256Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uin
     }
 }
 
-void cbc512Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uint64_t num_blocks)
+void cbc512Decrypt(const ThreefishKey_t* key, 
+                   const uint64_t* iv, 
+                   uint64_t* cipher_text,
+                   const uint64_t num_blocks)
 {
     uint64_t prev_block_odd[SECURE_SLICE] = {0, 0, 0 ,0 ,0 ,0 ,0 ,0}; //allocate 1 block of storage to store the previous cipher text 
     uint64_t prev_block_even[SECURE_SLICE] = {0, 0, 0 ,0 ,0 ,0 ,0 ,0}; //allocate 1 block of storage to store the previous cipher text 
@@ -86,7 +100,10 @@ void cbc512Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uin
     }
 }
 
-void cbc1024Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, uint64_t num_blocks)
+void cbc1024Decrypt(const ThreefishKey_t* key, 
+                    const uint64_t* iv, 
+                    uint64_t* cipher_text, 
+                    const uint64_t num_blocks)
 {
     uint64_t prev_block_odd[FUTURE_PROOF_SLICE] = {0, 0, 0 ,0 ,0 ,0 ,0 ,0, 0, 0, 0, 0, 0, 0, 0, 0}; //allocate 1 block of storage to store the previous cipher text 
     uint64_t prev_block_even[FUTURE_PROOF_SLICE] = {0, 0, 0 ,0 ,0 ,0 ,0 ,0, 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0}; //allocate 1 block of storage to store the previous cipher text 
@@ -146,7 +163,10 @@ void cbc1024Decrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* cipher_text, ui
     }
 }
 
-void cbc256Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint64_t num_blocks)
+void cbc256Encrypt(const ThreefishKey_t* key, 
+                   const uint64_t* iv, 
+                   uint64_t* plain_text,
+                   const uint64_t num_blocks)
 {
     //xor the initialization vector with the first block of input
     plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
@@ -163,7 +183,10 @@ void cbc256Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint
     }
 }
 
-void cbc512Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint64_t num_blocks)
+void cbc512Encrypt(const ThreefishKey_t* key, 
+                   const uint64_t* iv, 
+                   uint64_t* plain_text, 
+                   const uint64_t num_blocks)
 {
     //xor the initialization vector with the first block of input
     plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
@@ -183,7 +206,10 @@ void cbc512Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint
     }
 }
 
-void cbc1024Encrypt(ThreefishKey_t* key, uint64_t* iv, uint64_t* plain_text, uint64_t num_blocks)
+void cbc1024Encrypt(const ThreefishKey_t* key,
+                    const uint64_t* iv,
+                    uint64_t* plain_text,
+                    const uint64_t num_blocks)
 {
     //xor the initialization vector with the first block of input
     plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];

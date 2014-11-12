@@ -10,6 +10,7 @@
 #include "hash.h" //sf_hash()
 #include "noHash.h" //set_key()
 #include "threefishApi.h" //ThreefishKey_t
+#include "tfHeader.h" //stripIV()
 
 #define SUCCESS 1
 #define FILE_IO_FAIL 2
