@@ -1,36 +1,45 @@
 #include "include/tfHeader.h"
 
-bool checkHeader(ThreefishKey_t* key, uint64_t* iv, uint64_t* header, uint64_t* file_size)
+bool checkHeader(uint64_t* header, uint64_t* file_size, 
+                 uint32_t state_size)
 {
-    const uint32_t block_byte_size = (key->stateSize/8);
-    //DecryptInBuffer(key, 1, iv, header, state_size); //TODAY
+    const uint32_t block_byte_size = (state_size/8);
     
-    if(header[block_byte_size+0] == MAGIC_NUMBER && 
-       header[block_byte_size+2] == key->stateSize)//if the header check passes
+    if(header != NULL && file_size != NULL && validSize(state_size))
     {
-        *file_size = header[block_byte_size+1]; //store the unpadded file size
-        return true;
+        if(header[block_byte_size+0] == MAGIC_NUMBER && 
+           header[block_byte_size+2] == state_size)//if the header check passes
+        {
+            *file_size = header[block_byte_size+1]; //store the unpadded file size
+            return true;
+        }
     }
     return false;
 }
 
 /**********************************************************************
 * The Header is twice the block size of the cipher                    *
-* |####IV####|MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|RESERVED|PADDING|     *
+* The first block being the random initialization vector              *
+* The second block containg a magic number, the unencrypted file size *
+* the cipher state size a reserved word that is essentially a 2nd     *
+* magic number and NULL padding if the state size > 256 bits          *
+*                  HEADER STRUCTURE                                   *
+* |#######################IV#########################|                *
+* |MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|RESERVED|PADDING|                *
 ***********************************************************************/
-uint64_t* genHeader(ThreefishKey_t* key, uint64_t data_size, uint64_t* iv)
+uint64_t* genHeader(uint64_t* iv, uint64_t data_size, uint32_t state_size)
 {
-    const uint32_t block_byte_size = (key->stateSize/8);
+    const uint32_t block_byte_size = state_size/8;
     uint64_t* header = NULL;
 
-    if(iv != NULL && key != NULL && data_size > 1)
+    if(iv != NULL && validSize(state_size) && data_size > 1)
     {
         header = calloc(sizeof(uint64_t), block_byte_size*2); //allocate memory for the header
 
-        memcpy(header, getRand(key->stateSize), block_byte_size); //copy in the initialization vector
-        header[block_byte_size+0] = MAGIC_NUMBER;
-        header[block_byte_size+1] = data_size;
-        header[block_byte_size+2] = (uint64_t) key->stateSize;
+        memcpy(header, iv, block_byte_size);
+        header[block_byte_size+0] = MAGIC_NUMBER; 
+        header[block_byte_size+1] = data_size; 
+        header[block_byte_size+2] = state_size;
         header[block_byte_size+3] = RESERVED;
     }
 

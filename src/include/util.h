@@ -38,6 +38,8 @@ static keyBlock_t block_lookup[] = //alookup table containing skein/threefish ci
     { "FUTURE_PROOF", Skein1024 }, { "future_proof", Skein1024 }, { "Future_Proof", Skein1024 }
 };
 
+bool validSize(size_t size);
+
 SkeinSize_t getSkeinSize(char* key);
 
 void askPassword(arguments* args);

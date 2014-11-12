@@ -17,8 +17,6 @@
 * Functions *
 *************/
 
-bool decrypt(const char* filename, uint64_t* key, SkeinSize_t state_size); //a function that encapsulate all decryption operations
-
 int runCipher(arguments* args, char* filename); //runs the appropriate function based on the arguments from argp
 
 /*

@@ -17,23 +17,36 @@ static uint64_t* handleKey(arguments* args)
     return key;
 }
 
-static bool queueHeader(arguments* args, ThreefishKey_t* tf_key, queue* Queue) //queue IV and Header pair into readQueue. Must be called before queueFile
+static bool queueHeader(arguments* args, queue* q) //queue IV and Header pair into readQueue. Must be called before queueFile
 {
-    const uint32_t block_byte_size = ((uint32_t)args->state_size/8);
-    const uint64_t header_size = 2*(args->state_size/8); 
-    uint64_t* iv = getRand(args->state_size);
-    uint64_t* header_info = genHeader(tf_key, args->file_size, iv, args->state_size);
+    bool success = false;
+    const uint64_t block_byte_size = ((uint64_t)args->state_size/8);
+    uint64_t* iv = getRand((uint64_t) args->state_size);
+    uint64_t* header_info = genHeader(iv, args->file_size, args->state_size);
 
     chunk* header = createChunk();
     header->action = ENCRYPT;
-    header->data = calloc(1, block_byte_size*2); 
-    header->data_size = header_size;
+    header->data = calloc(1, 2*block_byte_size); 
+    header->data_size = 2*block_byte_size;
     
-    memcpy(header->data, iv, header_size/2);
-    memcpy(*(header->data+header_size), header_info, header_size/2);
+    if(header->data != NULL) //check that allocate succeeded
+    {
+        //test that header was created in ram
+        if(memcpy(header->data, iv, block_byte_size)) 
+        { 
+            success = true;
+            enque(header, q); 
+        }
+        else 
+        { 
+            destroyChunk(header);
+            perror("Error allocating memory for header cannot continue\n"); 
+        }
+    }
 
-    free(iv);
-    free(header_info); 
+    if(iv != NULL) { free(iv); }
+    if(header_info != NULL) { free(header_info); }
+    return success;
 } 
 
 static bool queueFile(arguments* args, queue* q) //right now this is blocking until the entire file is queued TODO put me on my own thread so MAC and ENCRYPTION can take place as the file is buffered not just after it
@@ -66,7 +79,8 @@ static bool queueFile(arguments* args, queue* q) //right now this is blocking un
                  newchunk->data_size = MAX_CHUNK_SIZE;
                  file_size -= MAX_CHUNK_SIZE; //subtract the chunk size from the counter
              }
-             enque(newchunk, q); //queue the chunk
+             if(newchunk->data == NULL) { status = false; } //check if the file read failed
+             else { enque(newchunk, q); } //If the file read was succesfull queue the chunk
          }
          //otherwise spin
     }
@@ -85,8 +99,11 @@ static bool encryptFile(arguments* args, ThreefishKey_t* tf_key)
 {
     /************************************************
     * The enrypted file should be written like this *
-    * |IV|HEADER|CIPHER_TEXT|MAC|
+    * |HEADER|CIPHER_TEXT|MAC|                      *
+    * note the MAC operation must include the IV    *
+    * and the header                                *
     *************************************************/
+    pdebug("encryptFile()\n");
 }
 
 int32_t runThreefizer(arguments* args)
@@ -104,32 +121,36 @@ int32_t runThreefizer(arguments* args)
     pdebug("free: %d, encrypt: %d, hash: %d, argz: [%s], argz_len: %zu, State Size: %u, password: [%s], pw_length %lu, file_length %lu }\n", args->free, args->encrypt, args->hash, args->argz, args->argz_len, args->state_size, args->password, args->pw_length, args->file_size);
 
     threefishSetKey(&tf_key, (ThreefishSize_t)args->state_size, key, tf_tweak);
-    //queue the file
-    if(queueFile(args, readQueue) == false)
-    {
-        status = FILE_IO_FAIL;
-    }
 
     if(args->encrypt == true)
-    { 
-        encryptFile(args, &tf_key); 
-    }
-    else
     {
-        uint64_t* iv = NULL;
-        uint64_t* header = NULL;
-        if(checkHeader(&tf_key, iv, header, &file_size))
+        //generate header and queue the file
+        if(queueHeader(args, readQueue) || queueFile(args, readQueue) == false)
         {
-            if(checkMAC(tf_key, macQueue))
-            {
-                decryptFile(args, &tf_key);
-            }
-            else { status = MAC_CHECK_FAIL; }
+            encryptFile(args, &tf_key); 
         }
-        else { status = HEADER_CHECK_FAIL; }
+        else { status = FILE_IO_FAIL; }
+    }
+    else //decrypt
+    { //the amount of nesting here is sketchy but I don't know how better to do it
+        if(queueFile(args, readQueue))
+        {
+            uint64_t* iv = NULL;
+            uint64_t* header = NULL;
+            if(checkHeader(&tf_key, iv, header, &file_size))
+            {
+                if(checkMAC(tf_key, macQueue))
+                {
+                    decryptFile(args, &tf_key);
+                }
+                else { status = MAC_CHECK_FAIL; }
+            }
+            else { status = HEADER_CHECK_FAIL; }
+        }
+        else { status = FILE_IO_FAIL; }
     }
     //spin up the crypto thread and sick it on the readQueue
-    //spin up the async File/IO thread and sick it on the writeQueue
+    //spin up the write thread and sick it on the writeQueue
     //free all allocated resources
     if(key != NULL)
     {

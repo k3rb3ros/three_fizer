@@ -1,5 +1,10 @@
 #include "util.h"
 
+bool validSize(size_t size)
+{
+    return size == 256 || size == 512 || size == 1024;
+}
+
 SkeinSize_t getSkeinSize(char* key)
 {
     for(unsigned long i=0; i<N_BLOCK_LOOKUP; ++i)
