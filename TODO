@@ -1,7 +1,10 @@
 * Write to a seperate file then rename to original file re-name on success
-* Add buffered block decryption and encryption for doing header generation and checking
-* Add asynchronous fileIO
-* parallelize decryption
+* Add buffered block decryption and encryption for doing header generation and checking #DONE#
+* Add asynchronous fileIO #DONE#
+* Add queue based decrypting
+* Implement a proper HMAC 
+* Add the ability for the user to manually specify an IV
+* Add threading to all blocking controller operaitons
 * Add tests for cbc operations
 * Add tests for fileIO
 * Add tests for util 

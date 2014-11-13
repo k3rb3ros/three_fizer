@@ -1,5 +1,6 @@
 #include "include/pad.h"
 
+//returns the size in Skein/Threefish state_size blocks the padded data will be
 inline uint64_t getNumBlocks(const uint64_t input_length, const SkeinSize_t state_size)
 {
     uint64_t blocks = 0;
@@ -13,13 +14,10 @@ inline uint64_t getNumBlocks(const uint64_t input_length, const SkeinSize_t stat
     return blocks;
 }
 
+//returns the size in bytes the padded data will be
 inline uint64_t getPadSize(const uint64_t input_length, const SkeinSize_t state_size)
 {
-    uint64_t padSize = input_length;
-
-    while(padSize % state_size != 0) 
-    { padSize++; }
-    return padSize/8;  
+    return (getNumBlocks(input_length, state_size)*(uint64_t)state_size)/8; 
 }
 
 uint64_t* pad(const uint8_t* input, const uint64_t input_length, const SkeinSize_t state_size)

@@ -17,8 +17,32 @@ static uint64_t* handleKey(const arguments* args)
     return key;
 }
 
+/*TODO finish me
+* this function will run hmac on every element in the hmac queue
+* then queue the digest 
+*/
+static bool hmacData(ThreefishKey_t* hmac_key, queue* in, queue* out)
+{
+    bool success = true;
+
+    //iterate through the queue and
+    while(in != NULL && front(in)->action != DONE && success)
+    {
+        //pop the current message in the queue out of the hmac stack
+        chunk* cipher_text_to_write = front(in); 
+        deque(in);
+        //run the appropriate hmac function
+        genMAC(hmac_key);
+        if(enque(cipher_text_to_write, out) != true) { success = false; }
+    }
+
+    //queue the HMAC here  
+
+    return success;
+} 
+
 //Put a done flag into the Queue telling all threads using it that there operation on queued data is complete
-static inline bool queueDone(const arguments* args, queue* q)
+static inline bool queueDone(queue* q)
 {
     bool success = false;
     chunk* done = createChunk();
@@ -82,7 +106,7 @@ static bool queueFile(const arguments* args, queue* q) //right now this is block
              if(file_size < MAX_CHUNK_SIZE)
              {
                  newchunk->data = pad(readBlock(file_size, read), file_size, args->state_size);
-                 newchunk->data_size = file_size;
+                 newchunk->data_size = getPadSize(file_size, args->state_size);
                  file_size -= file_size;
              }
              else
@@ -103,7 +127,7 @@ static bool queueFile(const arguments* args, queue* q) //right now this is block
     return status;
 }
 
-static bool decryptChunks(const arguments* args, ThreefishKey_t* tf_key)
+static bool decryptChunks(const arguments* args, const ThreefishKey_t* tf_key)
 {
 
 }
@@ -155,13 +179,35 @@ static bool encryptChunks(ThreefishKey_t* tf_key, queue* in, queue* out) //TODO 
     return success;
 }
 
+static bool asyncWrite(const arguments* args, queue* q)
+{
+    pdebug("asyncWrite()\n");
+    bool success = true;
+    FILE* write = openForBlockWrite("test.fnsa");
+
+    pdebug("chunks in queue %lu\n", q->size);
+
+    while(q != NULL && front(q)->action != DONE && success)
+    {
+        chunk* chunk_to_write = front(q); //get the next chunk in the queue
+        if(deque(q) == false) { success = false; } //and pop it off and check for errors
+        pdebug("Writing chunk of size %lu\n", chunk_to_write->data_size);
+        writeBlock(chunk_to_write->data, chunk_to_write->data_size, write); //write it to file
+        destroyChunk(chunk_to_write); //free the chunk 
+    }
+
+    terminateFile(write);
+    return success;
+}
+
 int32_t runThreefizer(const arguments* args)
 {
     queue* encryptQueue = createQueue(QUE_SIZE);
     queue* macQueue = createQueue(QUE_SIZE);
     queue* writeQueue = createQueue(QUE_SIZE);
     static int32_t status = SUCCESS;
-    static ThreefishKey_t tf_key;
+    static ThreefishKey_t tf_key; 
+    static ThreefishKey_t mac_key; //to be cryptographically secure the mac needs its own key
     uint64_t* key = handleKey(args); //generate the key
     uint64_t file_size = 0;
 
@@ -177,12 +223,15 @@ int32_t runThreefizer(const arguments* args)
         if(queueHeader(args, encryptQueue) && queueFile(args, encryptQueue))
         {
             //queue the done flag and start encryption
-            if(queueDone(args, encryptQueue)) 
+            if(queueDone(encryptQueue)) 
             { 
                 encryptChunks(&tf_key, encryptQueue, macQueue);
-                if(queueDone(args, macQueue))
-                {
-                   //Do the hmac stuff and then move to the write queue
+                if(queueDone(macQueue))
+                { //TODO finish me. This is temporary just to get encryption working
+                    hmacData(&mac_key, macQueue, writeQueue);
+                    queueDone(writeQueue);
+                    //Do the hmac stuff and then move to the write queue
+                    asyncWrite(args, writeQueue); //which simply writes everything in it to file 
                 } 
             }
             else { status = QUEUE_OPERATION_FAIL; }
