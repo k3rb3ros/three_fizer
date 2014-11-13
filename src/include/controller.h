@@ -28,7 +28,8 @@
 *******************/
 
 //define an arbitrary tweak so other versions of threefish w/ the same key won't produce the same cipher text
-static uint64_t tf_tweak[2] = { 0x5368616C6C206E6ULL, 0X26520646976756CULL };
+static uint64_t cipher_tweak[2] = { 0x5368616C6C206E6ULL, 0X26520646976756CULL };
+static uint64_t mac_tweak[2] = { 0X26520646976756CULL, 0x5368616C6C206E6ULL };
 
 /************
 * Functions *

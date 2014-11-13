@@ -1,20 +1,47 @@
 #include "include/controller.h"
 
-static uint64_t* handleKey(const arguments* args)
+/* This takes the argument and hashed the user specified password into a key of block size
+* or uses the user entered key directly if they have elected to use this option
+* the key is then hashed again and this is ued as the hmac key.
+* It assumes the user has correctly allocated block size buffers for the cipher and mac key and passes them into the function
+*/
+static bool handleKeys(const arguments* args, 
+                       ThreefishKey_t* cipher_key, 
+                       ThreefishKey_t* mac_key)
 {
-    uint64_t* key = NULL;
-    if(args->hash == true)
+    bool success = true;
+    if(cipher_key != NULL && mac_key != NULL)
     {
-       //hash the user entered password so the key matches state size
-       key = (uint64_t*)sf_hash(args->password, args->pw_length, args->state_size);
-    }
-    else
-    {
-       //use the user entered password as the key directly
-       key = noHashKey(args->password, args->pw_length, args->state_size);
-    }
+        uint64_t* _cipher_key = NULL;
+        uint64_t* _mac_key = NULL;
+        uint64_t block_byte_size = (uint64_t)args->state_size/8;
 
-    return key;
+        if(args->hash == true)
+        {
+           //hash the user entered password so the key matches state size
+          _cipher_key = (uint64_t*)sf_hash(args->password, args->pw_length, (uint64_t)args->state_size);
+         }
+         else
+         {
+            //use the user entered password as the key directly
+           _cipher_key = noHashKey(args->password, args->pw_length, (uint64_t)args->state_size);
+         }
+
+         //hash the hmac key from the cipher_key
+         _mac_key = (uint64_t*)sf_hash(_cipher_key, block_byte_size, (uint64_t)args->state_size);
+
+         //initialize the key structures
+         threefishSetKey(cipher_key, (ThreefishSize_t) args->state_size, _cipher_key, cipher_tweak);
+                  
+         threefishSetKey(mac_key, (ThreefishSize_t) args->state_size, _mac_key, mac_tweak);
+
+         //free allocated resources
+         if(_cipher_key != NULL) { free(_cipher_key); }
+         if(_mac_key != NULL) { free(_mac_key); }
+    }
+    else { success = false; }
+
+    return success;
 }
 
 /*TODO finish me
@@ -185,13 +212,10 @@ static bool asyncWrite(const arguments* args, queue* q)
     bool success = true;
     FILE* write = openForBlockWrite("test.fnsa");
 
-    pdebug("chunks in queue %lu\n", q->size);
-
     while(q != NULL && front(q)->action != DONE && success)
     {
         chunk* chunk_to_write = front(q); //get the next chunk in the queue
         if(deque(q) == false) { success = false; } //and pop it off and check for errors
-        pdebug("Writing chunk of size %lu\n", chunk_to_write->data_size);
         writeBlock(chunk_to_write->data, chunk_to_write->data_size, write); //write it to file
         destroyChunk(chunk_to_write); //free the chunk 
     }
@@ -207,15 +231,14 @@ int32_t runThreefizer(const arguments* args)
     queue* writeQueue = createQueue(QUE_SIZE);
     static int32_t status = SUCCESS;
     static ThreefishKey_t tf_key; 
-    static ThreefishKey_t mac_key; //to be cryptographically secure the mac needs its own key
-    uint64_t* key = handleKey(args); //generate the key
+    static ThreefishKey_t mac_key; 
     uint64_t file_size = 0;
 
     pdebug("Threefizer controller\n");
     pdebug("Arguments { ");
     pdebug("free: %d, encrypt: %d, hash: %d, argz: [%s], argz_len: %zu, State Size: %u, password: [%s], pw_length %lu, file_length %lu }\n", args->free, args->encrypt, args->hash, args->argz, args->argz_len, args->state_size, args->password, args->pw_length, args->file_size);
 
-    threefishSetKey(&tf_key, (ThreefishSize_t)args->state_size, key, tf_tweak);
+    handleKeys(args, &tf_key, &mac_key); //generate and initialize the keys
 
     if(args->encrypt == true)
     { //most of this nesting will be done away with when threading is added to each queue
@@ -259,10 +282,6 @@ int32_t runThreefizer(const arguments* args)
     //spin up the crypto thread and sick it on the readQueue
     //spin up the write thread and sick it on the writeQueue
     //free all allocated resources
-    if(key != NULL)
-    {
-        free(key);
-    }
     destroyQueue(encryptQueue);
     destroyQueue(macQueue);
     destroyQueue(writeQueue);
