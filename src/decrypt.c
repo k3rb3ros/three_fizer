@@ -24,3 +24,21 @@ void decryptInPlace(const ThreefishKey_t* key,
         break;
     }
 }
+
+bool decryptHeader(const ThreefishKey_t* key,
+                   const uint64_t* header)
+{
+    pdebug("decryptHeader()\n");
+    if(key == NULL || header == NULL) { return false; }    
+
+    /*The begining of all properly formed headers is the iv so we can pass the
+    * header in as the IV as decryptInPlace knows how bug the IV block is and
+    * will only use that data.
+    *
+    * We can the "stripIV" the pointer to point to only the data of the header
+    * and use that as our data to decrypt.
+    */
+    uint64_t* header_data = stripIV(key, header);
+    decryptInPlace(key, header, header_data, 1);
+}
+

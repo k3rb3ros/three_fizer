@@ -1,8 +1,12 @@
 #include "include/tfHeader.h"
 
-bool checkHeader(const uint64_t* header, uint64_t* file_size, 
+/*Checks if the header is valid which is a quick and easy way to tell if the encryption key and block size are correct, with out having to try and decrypt the entire file
+*/
+bool checkHeader(const uint64_t* header,
+                 uint64_t* file_size,
                  const uint32_t state_size)
 {
+    pdebug("checkHeader()\n");
     const uint32_t block_byte_size = (state_size/8);
     
     if(header != NULL && file_size != NULL && validSize(state_size))
@@ -27,7 +31,9 @@ bool checkHeader(const uint64_t* header, uint64_t* file_size,
 * |#######################IV#########################|                *
 * |MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|RESERVED|PADDING|                *
 ***********************************************************************/
-uint64_t* genHeader(const uint64_t* iv, const uint64_t data_size, const uint32_t state_size)
+uint64_t* genHeader(const uint64_t* iv,
+                    const uint64_t data_size,
+                    const uint32_t state_size)
 {
     const uint32_t block_byte_size = state_size/8;
     uint64_t* header = NULL;

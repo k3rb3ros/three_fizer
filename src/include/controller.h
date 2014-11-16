@@ -6,11 +6,15 @@
 #include "chunk.h" //chunk type
 #include "chunkQueue.h" //queue type and supporting functions
 #include "debug.h" //pdebug()
+#include "decrypt.h" //decryptInPlace() and decryptHeader()
+#include "encrypt.h" //encryptInPlace() and encryptHeader()
 #include "fileIO.h" //block read and write operations
 #include "hash.h" //sf_hash()
+#include "hmac.h" //checkHMAC() and genHMAC()
 #include "noHash.h" //set_key()
+#include "limits.h" //ULLONG_MAX
 #include "threefishApi.h" //ThreefishKey_t
-#include "tfHeader.h" //stripIV()
+#include "tfHeader.h" //checkHeader, genHeader() and stripIV()
 
 #define SUCCESS 1
 #define FILE_IO_FAIL 2

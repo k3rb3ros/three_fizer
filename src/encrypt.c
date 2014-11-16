@@ -1,5 +1,17 @@
 #include "include/encrypt.h"
 
+//encrypt a properly formatted header
+bool encryptHeader(const ThreefishKey_t* key,
+                   const uint64_t* header)
+{
+    if(key == NULL || header == NULL) { return false; }
+    
+    uint64_t* header_data = stripIV(header, key->stateSize); //get a pointer to the header w/out iv
+    encryptInPlace(key, header, header_data, 1);
+
+    return true;
+}
+
 /*
 * This function assumes padding and allocation has already been taken care of
 */
@@ -24,4 +36,3 @@ void encryptInPlace(const ThreefishKey_t* key,
         break;
     }
 }
-

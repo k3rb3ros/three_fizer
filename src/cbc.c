@@ -170,8 +170,9 @@ void cbc256Encrypt(const ThreefishKey_t* key,
 {
     //xor the initialization vector with the first block of input
     plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
-    
-    for(uint64_t block=0; block<(num_blocks*SAFE_SLICE); block+=SAFE_SLICE) //run each block through the cipher
+   
+    //run each block through the cipher chaining on the previous block 
+    for(uint64_t block=0; block<(num_blocks*SAFE_SLICE); block+=SAFE_SLICE)
     { 
        if(block > 0) //feedback the previous into the next block by xoring them together
        {
@@ -192,7 +193,8 @@ void cbc512Encrypt(const ThreefishKey_t* key,
     plain_text[0] ^= iv[0]; plain_text[1] ^= iv[1]; plain_text[2] ^= iv[2]; plain_text[3] ^= iv[3];
     plain_text[4] ^= iv[4]; plain_text[5] ^= iv[5]; plain_text[6] ^= iv[6]; plain_text[7] ^= iv[7];
 
-    for(uint64_t block=0; block<(num_blocks*SECURE_SLICE); block+=SECURE_SLICE) //run each block through the cipher
+    //run each block through the cipher chaining on the previous block
+    for(uint64_t block=0; block<(num_blocks*SECURE_SLICE); block+=SECURE_SLICE)
     { 
        if(block > 0) //feedback the previous block into the next block by xoring them together
        {
@@ -216,7 +218,8 @@ void cbc1024Encrypt(const ThreefishKey_t* key,
     plain_text[4] ^= iv[4]; plain_text[5] ^= iv[5]; plain_text[6] ^= iv[6]; plain_text[7] ^= iv[7];
     plain_text[8] ^= iv[8]; plain_text[9] ^= iv[9]; plain_text[10] ^= iv[10]; plain_text[11] ^= iv[11];
     plain_text[12] ^= iv[12]; plain_text[13] ^= iv[13]; plain_text[14] ^= iv[14]; plain_text[15] ^= iv[15];
-    
+   
+    //run each block through the cipher chaining on the previous block 
     for(uint64_t block=0; block<(num_blocks*FUTURE_PROOF_SLICE); block+=FUTURE_PROOF_SLICE) //run each block through the cipher (in decrypt mode)
     { 
        if(block > 0) //feedback the previous into the next block by xoring them together
