@@ -7,14 +7,21 @@ bool checkHeader(const uint64_t* header,
                  const uint32_t state_size)
 {
     pdebug("checkHeader()\n");
-    const uint32_t block_byte_size = (state_size/8);
+    const uint32_t iv_offset = (state_size/64);
     
     if(header != NULL && file_size != NULL && validSize(state_size))
     {
-        if(header[block_byte_size+0] == MAGIC_NUMBER && 
-           header[block_byte_size+2] == state_size)//if the header check passes
+        pdebug("Header{ ");
+        pdebug("%lu, ", header[iv_offset+0]);
+        pdebug("%lu, ", header[iv_offset+1]);
+        pdebug("%lu, ", header[iv_offset+2]);
+        pdebug("%lu ", header[iv_offset+3]);
+        pdebug("}\n");
+
+        if(header[iv_offset+0] == MAGIC_NUMBER && 
+           header[iv_offset+2] == state_size)//if the header check passes
         {
-            *file_size = header[block_byte_size+1]; //store the unpadded file size
+            *file_size = header[iv_offset+1]; //store the unpadded file size
             return true;
         }
     }
@@ -35,18 +42,26 @@ uint64_t* genHeader(const uint64_t* iv,
                     const uint64_t data_size,
                     const uint32_t state_size)
 {
-    const uint32_t block_byte_size = state_size/8;
+    pdebug("genHeader()\n");
+    const uint32_t block_byte_size = (state_size/8);
+    const uint32_t block_uint64_size = (state_size/64);
     uint64_t* header = NULL;
 
     if(iv != NULL && validSize(state_size) && data_size > 1)
     {
-        header = calloc(sizeof(uint64_t), block_byte_size*2); //allocate memory for the header
+        header = calloc(2*block_uint64_size, sizeof(uint64_t)); //allocate memory for the header
 
         memcpy(header, iv, block_byte_size);
-        header[block_byte_size+0] = MAGIC_NUMBER; 
-        header[block_byte_size+1] = data_size; 
-        header[block_byte_size+2] = state_size;
-        header[block_byte_size+3] = RESERVED;
+        header[block_uint64_size+0] = MAGIC_NUMBER; 
+        header[block_uint64_size+1] = data_size; 
+        header[block_uint64_size+2] = state_size;
+        header[block_uint64_size+3] = RESERVED;
+        pdebug("Header{ ");
+        pdebug("%lu, ", header[block_uint64_size+0]);
+        pdebug("%lu, ", header[block_uint64_size+1]);
+        pdebug("%lu, ", header[block_uint64_size+2]);
+        pdebug("%lu ", header[block_uint64_size+3]);
+        pdebug("}\n");
     }
 
     return header;

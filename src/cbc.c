@@ -5,7 +5,6 @@ inline uint64_t* getChain(const uint64_t* cipher_text,
                    const uint64_t num_blocks)
 {
     return cipher_text + num_blocks;
-    //cipher_text + ((num_blocks-1)*(state_size/64));
 }
 
 void cbc256Decrypt(const ThreefishKey_t* key, 

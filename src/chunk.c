@@ -14,6 +14,7 @@ inline void destroyChunk(chunk* chunk)
 {
     if(chunk != NULL)
     {
+        pdebug("Freeing chunk of size %lu\n", chunk->data_size);
         free(chunk->data);
         free(chunk);
     }

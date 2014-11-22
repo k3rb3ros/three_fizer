@@ -5,6 +5,7 @@
 #include <stdint.h> //uint and specified int size types
 #include <stdio.h> //NULL Macro
 #include <stdlib.h> //calloc()
+#include "debug.h" //pdebug()
 
 /***********************************
 * Compile Time Numerical Constants *

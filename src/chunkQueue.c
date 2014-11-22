@@ -54,7 +54,7 @@ queue* createQueue(const int max_elements)
     q->tail = -1;
     q->elements = calloc(max_elements, sizeof(chunk*));
 
-    for (uint64_t i=0; i<max_elements; ++i)
+    for (int i=0; i<max_elements; ++i)
     {
         q->elements[i] = NULL;
     }

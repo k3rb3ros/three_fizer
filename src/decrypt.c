@@ -25,8 +25,7 @@ void decryptInPlace(const ThreefishKey_t* key,
     }
 }
 
-bool decryptHeader(const ThreefishKey_t* key,
-                   const uint64_t* header)
+bool decryptHeader(const ThreefishKey_t* key, const uint64_t* header)
 {
     pdebug("decryptHeader()\n");
     if(key == NULL || header == NULL) { return false; }    
@@ -38,7 +37,7 @@ bool decryptHeader(const ThreefishKey_t* key,
     * We can the "stripIV" the pointer to point to only the data of the header
     * and use that as our data to decrypt.
     */
-    uint64_t* header_data = stripIV(key, header);
+    uint64_t* header_data = stripIV(header, (uint64_t)key->stateSize);
     decryptInPlace(key, header, header_data, 1);
+    return true;
 }
-

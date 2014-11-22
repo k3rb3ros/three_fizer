@@ -36,7 +36,7 @@ static bool handleKeys(const arguments* args,
          }
 
          //hash the hmac key from the cipher_key
-         _mac_key = (uint64_t*)sf_hash(_cipher_key, block_byte_size, (uint64_t)args->state_size);
+         _mac_key = (uint64_t*)sf_hash((uint8_t*)_cipher_key, block_byte_size, (uint64_t)args->state_size);
 
          //initialize the key structures
          threefishSetKey(cipher_key, (ThreefishSize_t) args->state_size, _cipher_key, cipher_tweak);
@@ -101,21 +101,15 @@ static bool queueHeader(const arguments* args, queue* q)
     bool success = false;
     const uint64_t block_byte_size = ((uint64_t)args->state_size/8);
     uint64_t* iv = getRand((uint64_t) args->state_size);
-    uint64_t* header_info = genHeader(iv, args->file_size, args->state_size);
 
     chunk* header = createChunk();
     header->action = ENCRYPT;
-    header->data = calloc(1, 2*block_byte_size); 
+    header->data = genHeader(iv, args->file_size, args->state_size); 
     header->data_size = 2*block_byte_size;
     
     if(header->data != NULL) //check that allocate succeeded
     {
-        //test that header was created in ram
-        if(memcpy(header->data, iv, block_byte_size)) 
-        { 
-            success = true;
-            enque(header, q); 
-        }
+        if(enque(header, q)) { success = true; }
         else 
         { 
             destroyChunk(header);
@@ -124,7 +118,6 @@ static bool queueHeader(const arguments* args, queue* q)
     }
 
     if(iv != NULL) { free(iv); }
-    if(header_info != NULL) { free(header_info); }
     return success;
 } 
 
@@ -133,15 +126,16 @@ static bool queueFile(const arguments* args, queue* q) //right now this is block
 {
     pdebug("queueFile()\n");
     bool header = false;
-    const uint64_t block_size = ((uint64_t)args->state_size/8); //get the threefish block size
-    const uint64_t header_size = 2*(block_size);
+    const uint64_t block_byte_size = ((uint64_t)args->state_size/8); //get the threefish block size
+    const uint64_t header_byte_size = 2*(block_byte_size);
     uint64_t file_size = getSize(args->argz); //get the file size in bytes
     FILE* read = openForBlockRead(args->argz); //open a handle to the file
 
-    if(!args->encrypt) { header = true; } //if we are decrypting then we need to look for a header
+    if(!args->encrypt) { header = true; pdebug("Decrypt mode queuing header\n"); } //if we are decrypting then we need to look for a header
 
     while(file_size > 0)
     {
+         pdebug("queueFile looping\n");
          if(!queueIsFull(q))
          {
               chunk* newchunk = calloc(1, sizeof(chunk)); //create a new chunk        
@@ -150,14 +144,15 @@ static bool queueFile(const arguments* args, queue* q) //right now this is block
               if(header) //decrypt mode then read the header into its own check to make checking it simpler
               {
                   if(!isAtLeastThreeBlocks(args)) //sanity check
-                  {
+                  
+	          {
+                      destroyChunk(newchunk);
                       fclose(read);
                       return false;
                   }
-                  newchunk->data = readBlock(header_size, read);
-                  newchunk->data_size = header_size;
-                  file_size -= header_size;
-                  header = false;
+                  newchunk->data = readBlock(header_byte_size, read);
+                  newchunk->data_size = header_byte_size;
+                  file_size -= header_byte_size;
               }
               else //Normal Operation (not queueing just the header)
               {
@@ -178,10 +173,20 @@ static bool queueFile(const arguments* args, queue* q) //right now this is block
               }
               if(newchunk->data == NULL) //file read failed for whatever reason
               { 
+                  destroyChunk(newchunk);
                   fclose(read);
                   return false; 
               } 
-              enque(newchunk, q); //If the file read was succesfull que the chunk
+              if(enque(newchunk, q))
+              {
+                  if(header) { header = false; }
+              }
+              else
+              {
+                  destroyChunk(newchunk);
+                  fclose(read);
+                  return false; 
+              }
          }
          //otherwise spin (this will create an infinite loop until threading is introduced)
     }
@@ -190,43 +195,38 @@ static bool queueFile(const arguments* args, queue* q) //right now this is block
     return true;
 }
 
-static int decryptChunks(const ThreefishKey_t* tf_key, 
-                         uint64_t* file_size, //a pointer to a 64bit integer that stores the file size as listed in the header  
-                         queue* in, 
-                         queue* out)
+//decrypt the header and check if it is valid
+static bool headerIsValid(const ThreefishKey_t* tf_key, 
+                          chunk* header, 
+                          uint64_t* file_size)
 {
-    pdebug("decryptChunks()\n");
+    if(decryptHeader(tf_key, header->data))
+    {
+        if(checkHeader(header->data, file_size, (uint32_t)tf_key->stateSize))
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
-    bool first_chunk = true;
-    bool hmac_good = false;
-    uint64_t* chain = NULL;
+static int decryptBody(const ThreefishKey_t* tf_key, 
+                       const uint64_t file_size,
+                       const uint64_t* chain,  
+                       queue* in,
+                       queue* out)
+{
+    pdebug("decryptBody()\n");
+    uint64_t* _chain = chain;
 
     while(front(in) != NULL && front(in)->action != DONE)
     {
        chunk* decrypt_chunk = front(in); //get the chunk on the top of the queue
        deque(in); //pop it off the queue   
      
-       if(first_chunk)
-       {
-           decryptHeader(tf_key, decrypt_chunk->data);
-           //check the header and only continue if its valid
-           if(!checkHeader(decrypt_chunk->data, &file_size, tf_key->stateSize))
-           {
-               perror("Header check failed either the password is incorrect (most likely) or the file has been corrupted or the file was not encrypted with this program\n");
-               return HEADER_CHECK_FAIL;
-           }
-           chain = getChain(decrypt_chunk->data, (uint64_t)tf_key->stateSize, 2);
-           first_chunk = false;
-           pdebug("read valid header\n");
-       }
-       else
-       {
-           uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size, (uint64_t)tf_key->stateSize);
-           decryptInPlace(tf_key, chain, decrypt_chunk->data, num_blocks); //decrypt the chunk
-
-           chain = getChain(decrypt_chunk->data, (uint64_t)tf_key->stateSize, num_blocks);
-       } 
-
+       uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size, (uint64_t)tf_key->stateSize);
+       decryptInPlace(tf_key, chain, decrypt_chunk->data, num_blocks); //decrypt the chunk
+       chain = getChain(decrypt_chunk->data, (uint64_t)tf_key->stateSize, num_blocks);
        if(enque(decrypt_chunk, out) != true) { return QUEUE_OPERATION_FAIL; }
     }
     return SUCCESS;
@@ -341,16 +341,20 @@ int32_t runThreefizer(const arguments* args)
         if(queueFile(args, cryptoQueue)) //in decrypt mode the first chunk queued will be the header
         {
             chunk* header = front(cryptoQueue);
-            deque(cryptoQueue);
-            destroyChunk(header);
+            uint64_t file_size = 0;
+            uint64_t* chain = NULL;
 
-            //check the header if it is valid continue with decrypt
-            if(checkHeader(header->data, file_size , (uint32_t)args->state_size))
+            deque(cryptoQueue);
+
+            //headerIsValid decrypts the header if it is valid
+            if(headerIsValid(&tf_key, header, &file_size)) 
             {
-                pdebug("Valid header encountered\n");
-                status = decryptChunks(&tf_key, &file_size, cryptoQueue, macQueue);
+                //chain the 
+                chain = getChain(header, (uint64_t)tf_key.stateSize, 1);
+                status = decryptBody(&tf_key, file_size, chain, cryptoQueue, macQueue);
             }
-            else { status = HEADER_CHECK_FAIL; }
+            else { status = HEADER_CHECK_FAIL; } 
+            destroyChunk(header);
         }
         else { status = FILE_IO_FAIL; }
     }
