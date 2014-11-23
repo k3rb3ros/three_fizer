@@ -6,8 +6,7 @@
 #include "random.h"
 #include "threefishApi.h" //threefish encrypt and decrypt functions
 #include <stdint.h> //uint types
-#include <stdio.h> //printf()
-#include <stdlib.h> //free(), exit()
+#include <stdio.h> //printf(), memcpy
 
 #define SAFE_SLICE 4
 #define SECURE_SLICE 8
@@ -17,11 +16,22 @@
 //Skein is used internally to hash the password into a full length key
 
 /*
-* used to get the last block from the previous cbc operation in cases where continuous chaining is interupted
+* used to get the last block from the cipher text from the previous cbc 
+* operation in cases where the cipher text is being decrypted and needs to be 
+* stored in its own buffer
 */
-uint64_t* getChain(const uint64_t* cipher_text, 
-                   const uint64_t state_size, 
-                   const uint64_t num_blocks);
+bool getChainInBuffer(const uint64_t* cipher_text,
+                      const uint64_t* buffer,
+                      const uint64_t num_blocks,
+                      const uint32_t state_size);
+
+/*
+* used to get the last block from the previous cbc operation in cases where 
+* continuous chaining is interupted for encryption(so the chain can exist in place)
+*/
+uint64_t* getChainInPlace(const uint64_t* cipher_text,
+                          const uint64_t num_blocks, 
+                          const uint32_t state_size);
 
 /*
 * Used internally to cbc decrypt 256bit blocks

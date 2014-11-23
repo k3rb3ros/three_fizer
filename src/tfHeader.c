@@ -22,6 +22,7 @@ bool checkHeader(const uint64_t* header,
            header[iv_offset+2] == state_size)//if the header check passes
         {
             *file_size = header[iv_offset+1]; //store the unpadded file size
+            pdebug("Header check passed, header is valid\n");
             return true;
         }
     }

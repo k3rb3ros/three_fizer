@@ -3,6 +3,7 @@
 
 #include <arguments.h> //arguments structure
 #include <stdint.h> //uint types
+#include "cbc.h" //getChainInPlace() and getChainInBuffer()
 #include "chunk.h" //chunk type
 #include "chunkQueue.h" //queue type and supporting functions
 #include "debug.h" //pdebug()
@@ -21,6 +22,8 @@
 #define HEADER_CHECK_FAIL 3
 #define MAC_CHECK_FAIL 4
 #define QUEUE_OPERATION_FAIL 5
+#define CIPHER_OPERATION_FAIL 6
+#define MEMORY_ALLOCATION_FAIL 7
 
 //number of chunks in QUEUE
 #define QUE_SIZE 10

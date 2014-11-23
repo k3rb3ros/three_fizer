@@ -1,10 +1,24 @@
 #include "include/cbc.h"
 
-inline uint64_t* getChain(const uint64_t* cipher_text,
-                   const uint64_t state_size,
-                   const uint64_t num_blocks)
+bool getChainInBuffer(const uint64_t* cipher_text,
+                 const uint64_t* buffer, 
+                 const uint64_t num_blocks, 
+                 const uint32_t state_size)
 {
-    return cipher_text + num_blocks;
+    const uint64_t block_byte_size = (state_size/8);
+    const uint64_t offset = (state_size/64)*(num_blocks-1);
+    const uint64_t* chain = cipher_text + offset;
+
+    if(memcpy(buffer, chain, block_byte_size) == NULL) { return false; }  
+    return true;
+}
+
+inline uint64_t* getChainInPlace(const uint64_t* cipher_text,
+                   const uint64_t num_blocks,
+                   const uint32_t state_size)
+{
+    const uint64_t offset = (state_size/64) * (num_blocks-1);
+    return cipher_text + offset;
 }
 
 void cbc256Decrypt(const ThreefishKey_t* key, 
@@ -29,7 +43,7 @@ void cbc256Decrypt(const ThreefishKey_t* key,
             prev_block_odd[0] = cipher_text[block]; prev_block_odd[1] = cipher_text[block+1]; prev_block_odd[2] = cipher_text[block+2]; prev_block_odd[3] = cipher_text[block+3];
         }
         threefishDecryptBlockWords(key, &cipher_text[block], &cipher_text[block]); //decrypt the block
-        if(block == 0)
+        if(block == 0) //If this is the first block xor it with the iv
         {
             cipher_text[0] ^= iv[0]; cipher_text[1] ^= iv[1]; cipher_text[2] ^= iv[2]; cipher_text[3] ^= iv[3];
         }
@@ -109,7 +123,7 @@ void cbc1024Decrypt(const ThreefishKey_t* key,
     for(uint64_t block=0; block<(num_blocks*FUTURE_PROOF_SLICE); block+=FUTURE_PROOF_SLICE) //run each block through the cipher (in decrypt mode)
     {
         bool even = ((block/FUTURE_PROOF_SLICE)%2 == 0) ? true : false;
-        if(even) //Xor the first plain text block with the plain_text
+        if(even) //Xor the first plain text block with the plain text
         {
 	    //save the previous cipher text block if it is even 
             prev_block_even[0] = cipher_text[block]; prev_block_even[1] = cipher_text[block+1]; prev_block_even[2] = cipher_text[block+2]; prev_block_even[3] = cipher_text[block+3];

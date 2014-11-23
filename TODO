@@ -1,7 +1,7 @@
 * Write to a seperate file then rename to original file re-name on success
 * Add buffered block decryption and encryption for doing header generation and checking #DONE#
 * Add asynchronous fileIO #DONE#
-* Add queue based decrypting
+* Add queue based decrypting #DONE#
 * Implement a proper HMAC 
 * Add the ability for the user to manually specify an IV
 * Add threading to all blocking controller operaitons
@@ -10,4 +10,4 @@
 * Add tests for util 
 * Add tests for pad operations
 * Get code reviewed by a security expert
-* Add min size check to all decrypt operations
+* Add min size check to all decrypt operations #DONE#
