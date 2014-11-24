@@ -12,7 +12,7 @@
 #define ENCRYPT 1
 #define DECRYPT 5
 #define DONE 4
-#define GEN_MAC 2
+#define MAC 2
 #define WRITE 3
 
 /******************

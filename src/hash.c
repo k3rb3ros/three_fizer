@@ -1,6 +1,8 @@
 #include "include/hash.h"
 
-uint8_t* hash(const uint8_t* input, const uint64_t digest_length, const SkeinSize_t state_size)
+uint8_t* hash(const uint8_t* input, 
+              const uint64_t digest_length, 
+              const SkeinSize_t state_size)
 {
     struct SkeinCtx skein_state; //Skein state
     uint8_t* digest = NULL;
@@ -17,7 +19,9 @@ uint8_t* hash(const uint8_t* input, const uint64_t digest_length, const SkeinSiz
     return digest;
 }
 
-uint8_t* sf_hash(const uint8_t* input, const uint64_t input_length, const SkeinSize_t state_size)
+uint8_t* sf_hash(const uint8_t* input, 
+                 const uint64_t input_length, 
+                 const SkeinSize_t state_size)
 {
     struct SkeinCtx skein_state; //Skein state
     uint8_t* digest = NULL;

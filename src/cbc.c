@@ -193,7 +193,7 @@ void cbc256Encrypt(const ThreefishKey_t* key,
            plain_text[block] ^= plain_text[offset]; plain_text[block+1] ^= plain_text[offset+1];
            plain_text[block+2] ^= plain_text[offset+2]; plain_text[block+3] ^= plain_text[offset+3];
        }
-       threefishEncryptBlockWords(key, &plain_text[block], &plain_text[block]);
+       threefishEncryptBlockWords(key, &plain_text[block], &plain_text[block]); //run the current block through the cipher
     }
 }
 
@@ -248,6 +248,6 @@ void cbc1024Encrypt(const ThreefishKey_t* key,
            plain_text[block+12] ^= plain_text[offset+12]; plain_text[block+13] ^= plain_text[offset+13];
            plain_text[block+14] ^= plain_text[offset+14]; plain_text[block+15] ^= plain_text[offset+15];
        }
-       threefishEncryptBlockWords(key, &plain_text[block], &plain_text[block]);
+       threefishEncryptBlockWords(key, &plain_text[block], &plain_text[block]); //run the current block through the cipher
     }
 }
