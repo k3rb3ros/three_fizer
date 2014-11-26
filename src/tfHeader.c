@@ -4,10 +4,10 @@
 */
 bool checkHeader(const uint64_t* header,
                  uint64_t* file_size,
-                 const uint32_t state_size)
+                 const SkeinSize_t state_size)
 {
     pdebug("checkHeader()\n");
-    const uint32_t iv_offset = (state_size/64);
+    const uint32_t iv_offset = ((uint32_t)state_size/64);
     
     if(header != NULL && file_size != NULL && validSize(state_size))
     {

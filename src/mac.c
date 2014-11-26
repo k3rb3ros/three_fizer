@@ -33,14 +33,14 @@ uint64_t* genMAC(MacCtx_t* mac_context, queue* in, queue* out)
     uint64_t* mac = NULL;
 
     //iterate through the queue and generate a MAC for everything in it
-    while(in != NULL && front(in)->action != DONE)
+    while(in != NULL && front(in)->action != DONE && front(in)->action != MAC)
     {
         //check if we are free to MAC a chunk if so do it
         if(update_chunk == NULL)
         {
              update_chunk = front(in);
              deque(in); //pop the 
-             if(update_chunk->action != MAC) //sanity check
+             if(update_chunk->action != GEN_MAC) //sanity check
              {
                  perror("Bad data in mac queue aborting operation\n");
                  destroyChunk(update_chunk);

@@ -10,10 +10,12 @@
 **********************************/
 
 #define ENCRYPT 1
-#define DECRYPT 5
-#define DONE 4
-#define MAC 2
-#define WRITE 3
+#define CHECK_HEADER 2
+#define DECRYPT 3
+#define GEN_MAC 4
+#define DONE 5
+#define MAC 6
+#define WRITE 7
 
 /******************
 * Data Structures *
