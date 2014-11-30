@@ -27,6 +27,7 @@
 #define CIPHER_OPERATION_FAIL 6
 #define MEMORY_ALLOCATION_FAIL 7
 #define SIZE_CHECK_FAIL 8
+#define MAC_GENERATION_FAIL 9
 
 //number of chunks in QUEUE
 #define QUE_SIZE 10

@@ -7,6 +7,7 @@
 
 bool checkMAC(chunk* expected, uint8_t* generated, uint64_t mac_byte_size)
 {
+     pdebug("checkMAC()\n");
      if(expected->data_size != mac_byte_size) { return false; } //size check
 
      uint8_t* check = expected->data;
@@ -42,9 +43,9 @@ uint64_t* genMAC(MacCtx_t* mac_context, queue* in, queue* out)
              deque(in); //pop the 
              if(update_chunk->action != GEN_MAC) //sanity check
              {
-                 perror("Bad data in mac queue aborting operation\n");
-                 destroyChunk(update_chunk);
-                 return NULL;
+                  perror("Bad data in mac queue aborting operation\n");
+                  destroyChunk(update_chunk);
+                  return NULL;
              }
 
              update_chunk->action = mac_context->out_action; //set the chunk action to WRITE
@@ -53,12 +54,12 @@ uint64_t* genMAC(MacCtx_t* mac_context, queue* in, queue* out)
 
         if(update_chunk != NULL && enque(update_chunk, out) == true) //attempt to queue the chunk
         {
-            update_chunk = NULL; //Set mac chunk to NULL so the next chunk will be maced
+             update_chunk = NULL; //Set mac chunk to NULL so the next chunk will be maced
         }
         //otherwise spin and wait for the queue to empty
     }
 
-    if(in != NULL && front(in)->action == DONE)
+    if(in != NULL)
     {
          mac = calloc(mac_context->digest_byte_size, sizeof(uint8_t));
          skeinFinal(mac_context->skein_context_ptr, mac);
@@ -68,24 +69,21 @@ uint64_t* genMAC(MacCtx_t* mac_context, queue* in, queue* out)
 }
 
 //Initialize the mac (do all the Skein initing here)
-void InitMacCtx(MacCtx_t* context,
-                  uint64_t* mac_key,
-                  uint64_t digest_byte_size,
-                  SkeinSize_t state_size)
+void InitMacCtx(const arguments* args,
+                MacCtx_t* context,
+                uint64_t* mac_key)
 {
-    
-    const uint16_t key_byte_size = (const uint16_t)state_size/8;
+    const uint16_t key_byte_size = (const uint16_t)args->state_size/8;
 
     context->skein_context_ptr = &(context->skein_context);
-    context->out_action = DONE;
+    context->out_action = args->encrypt ? DECRYPT : WRITE;
     context->mac_key = mac_key;
-    context->digest_byte_size = digest_byte_size;
-    context->key_size = (state_size/8);
-    
-    skeinCtxPrepare(context->skein_context_ptr, state_size);
+    context->digest_byte_size = (uint64_t)args->state_size/8;
+
+    skeinCtxPrepare(context->skein_context_ptr, args->state_size);
 
     skeinMacInit(context->skein_context_ptr, 
                  (uint8_t*)mac_key, 
                  key_byte_size, 
-                 (digest_byte_size*8)); //digest size is in bits in Skein Mac Init
+                 args->state_size); //digest size is in bits in Skein Mac Init
 }

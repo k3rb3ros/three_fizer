@@ -4,10 +4,10 @@
 inline uint64_t getNumBlocks(const uint64_t input_length, const SkeinSize_t state_size)
 {
     uint64_t blocks = 0;
-    uint64_t bytes = 0;
+    uint32_t bytes = 0;
     while(bytes < input_length)
     {
-      bytes += (uint64_t) state_size/8;
+      bytes += (uint32_t) state_size/8;
       blocks++;
     }
 

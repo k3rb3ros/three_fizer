@@ -23,7 +23,7 @@
 bool getChainInBuffer(const uint64_t* cipher_text,
                       const uint64_t* buffer,
                       const uint64_t num_blocks,
-                      const uint32_t state_size);
+                      const SkeinSize_t state_size);
 
 /*
 * used to get the last block from the previous cbc operation in cases where 
@@ -31,7 +31,7 @@ bool getChainInBuffer(const uint64_t* cipher_text,
 */
 uint64_t* getChainInPlace(const uint64_t* cipher_text,
                           const uint64_t num_blocks, 
-                          const uint32_t state_size);
+                          const SkeinSize_t state_size);
 
 /*
 * Used internally to cbc decrypt 256bit blocks

@@ -6,7 +6,7 @@ chunk* createChunk()
     chunk* ch = calloc(1, sizeof(chunk));
     ch->action = INIT;
     ch->data = NULL;
-    ch->data_size = INIT;
+    ch->data_size = 0;
     return ch;
 }
 

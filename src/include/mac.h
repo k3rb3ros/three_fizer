@@ -3,6 +3,7 @@
 
 #include <stdbool.h> //bool type
 #include <stdint.h> //stdint types
+#include "arguments.h" //arguments type
 #include "chunk.h" //chunk type and support functions
 #include "chunkQueue.h" //queue type and support functions
 #include "skeinApi.h" 
@@ -23,9 +24,9 @@ uint64_t* genMAC(MacCtx_t* context,
                  queue* in, 
                  queue* out);
 
-void InitMacCtx(MacCtx_t* context,
-                  uint64_t* mac_key,
-                  uint64_t digest_byte_size,
-                  SkeinSize_t state_size);
+void InitMacCtx(const arguments* args,
+                MacCtx_t* context,
+                uint64_t* mac_key);
+
 
 #endif

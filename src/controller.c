@@ -39,7 +39,7 @@ static bool handleKeys(const arguments* args,
     //initialize the key structure for the cipher key
     threefishSetKey(cipher_context, (ThreefishSize_t)args->state_size, cipher_key, cipher_tweak);
     //initialize the mac context and undelying skein structures
-    InitMacCtx(mac_context, mac_key, block_byte_size, args->state_size);
+    InitMacCtx(args, mac_context, mac_key);
 
     //free allocated resources
     if(cipher_key != NULL) { free(cipher_key); }
@@ -76,12 +76,8 @@ static bool queueHeader(const arguments* args, queue* out)
     
     if(header->data != NULL) //check that allocate succeeded
     {
-        if(enque(header, out)) { success = true; }
-        else 
-        { 
-            destroyChunk(header);
-            perror("Error allocating memory for header cannot continue\n"); 
-        }
+        while(enque(header, out) != true);
+        success = true;
     }
 
     if(iv != NULL) { free(iv); }
@@ -149,13 +145,10 @@ static bool queueFile(const arguments* args, queue* out) //right now this is blo
                               return false;
                           }
                           //Read the last bit of data into a chunk
-                          pdebug("Remaining file size %lu, start of MAC %lu\n", orig_file_size, orig_file_size-block_byte_size);
                           data_chunk->action = GEN_MAC;
-                          data_chunk->data = pad(readBlock(orig_file_size-block_byte_size, read),
-                                                 (orig_file_size-block_byte_size),
-                                                 args->state_size);
-
-                          data_chunk->data_size = getPadSize(orig_file_size, args->state_size);
+                          data_chunk->data = readBlock(orig_file_size-block_byte_size, read);
+                          data_chunk->data_size = (orig_file_size-block_byte_size);
+                          pdebug("###padsize %lu###\n", data_chunk->data_size);
 
                           orig_file_size -= (orig_file_size-block_byte_size);
                           //Read the MAC into its own chunk
@@ -202,25 +195,25 @@ static bool queueFile(const arguments* args, queue* out) //right now this is blo
             }
               
             //Queue any read chunks in their prefered order
-             if(header_chunk != NULL) //attempt to queue the header
-             {
+            if(header_chunk != NULL) //attempt to queue the header
+            {
                  if(enque(header_chunk, out)) 
                  {
-                     pdebug("Queueing header of size %lu\n", header_chunk->data_size);
-                     header = false; 
-                     header_chunk = NULL;
+                      pdebug("Queueing header of size %lu\n", header_chunk->data_size);
+                      header = false; 
+                      header_chunk = NULL;
                  }
-             }
-             if(data_chunk != NULL) //attempt to enque the data
-             {
+            }
+            if(data_chunk != NULL) //attempt to enque the data
+            {
                  if(enque(data_chunk, out)) 
                  {
                       pdebug("Queueing data of size %lu\n", data_chunk->data_size); 
                       data_chunk = NULL;
-                  }
-             }
-             if(mac_chunk != NULL) //attempt to enque 
-             {
+                 }
+            }
+            if(mac_chunk != NULL) //attempt to enque 
+            {
                  if(enque(mac_chunk, out)) 
                  {
                       pdebug("Queueing mac of size %lu\n", mac_chunk->data_size); 
@@ -284,6 +277,8 @@ static int decryptBody(const ThreefishKey_t* tf_key,
 {
 
     pdebug("decryptBody()\n");
+    if(tf_key == NULL || chain == NULL || in == NULL || out == NULL) { return CIPHER_OPERATION_FAIL; }
+
     int status = SUCCESS;
     uint64_t bytes_decrypted = 0;
     uint64_t count = 0;
@@ -291,31 +286,33 @@ static int decryptBody(const ThreefishKey_t* tf_key,
     const uint64_t block_uint64_size = (tf_key->stateSize)/64;
     const uint64_t* even_chain = calloc(block_uint64_size, sizeof(uint64_t));
     const uint64_t* odd_chain = calloc(block_uint64_size, sizeof(uint64_t));
-     
+    
+    memcpy(even_chain, chain, block_byte_size);
+ 
     //copy the last cipher text block of the header to the even chain to start things off
     if(memcpy(even_chain, chain, block_byte_size) == NULL) { status = MEMORY_ALLOCATION_FAIL; }
 
-    while(front(in) != NULL && 
+    while(front(in) != NULL &&
           front(in)->action != DONE && 
           bytes_decrypted < body_size && 
           status == SUCCESS)
     {
-       bool even = ((count++)%2 == 0) ? true : false;
+       const bool even = ((count++)%2 == 0) ? true : false;
        chunk* decrypt_chunk = front(in); //get the next encrypted chunk in the queue
        decrypt_chunk->action = WRITE;
        deque(in); //pop it off the queue   
-       uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size, (uint64_t)tf_key->stateSize); //get the size of the chunk
+       const uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size, tf_key->stateSize); //get the size of the chunk
 
-       //decrypt the chunk using even odd alternation to save the the previous chain to be xored into the next chunk
+       //decrypt the chunk using even odd alternation to save the last block of the previous chunk to be xored with the first block of the next chunk
        if(even) 
        {
-           if(getChainInBuffer(decrypt_chunk->data, odd_chain, num_blocks, (uint32_t)tf_key->stateSize) != true)
+           if(getChainInBuffer(decrypt_chunk->data, odd_chain, num_blocks, tf_key->stateSize) != true)
             { status = MEMORY_ALLOCATION_FAIL; }  
             decryptInPlace(tf_key, even_chain, decrypt_chunk->data, num_blocks);
        }
        else
        { 
-            if(getChainInBuffer(decrypt_chunk->data, even_chain, num_blocks, (uint32_t)tf_key->stateSize) != true)
+            if(getChainInBuffer(decrypt_chunk->data, even_chain, num_blocks, tf_key->stateSize) != true)
             { status = MEMORY_ALLOCATION_FAIL; }
             decryptInPlace(tf_key, odd_chain, decrypt_chunk->data, num_blocks);
        }
@@ -324,6 +321,8 @@ static int decryptBody(const ThreefishKey_t* tf_key,
        //put the decrypted chunk into the out queue
        if(enque(decrypt_chunk, out) != true) { status = QUEUE_OPERATION_FAIL; }
     }
+
+    queueDone(out);
 
     if(even_chain != NULL) { free(even_chain); }
     if(odd_chain != NULL) { free(odd_chain); }
@@ -348,41 +347,52 @@ static bool encryptChunks(const ThreefishKey_t* tf_key, queue* in, queue* out)
     pdebug("encryptChunks()\n");
 
     bool first_chunk = true;
-    bool success = true;
+    chunk* encrypt_chunk = NULL;
     uint64_t* chain = NULL;
 
-    while(front(in) != NULL && front(in)->action != DONE && success)
+    while(front(in) != NULL && front(in)->action != DONE)
     {
-        //get the top chunk in the queue
-        chunk* encrypt_chunk = front(in); 
-        deque(in); //pop it off the queue        
+        if(encrypt_chunk == NULL)
+        {
+            //get the top chunk in the queue
+            encrypt_chunk = front(in); 
+            deque(in); //pop it off the queue        
 
-        if(first_chunk)
-        {
-            encryptHeader(tf_key, encrypt_chunk->data);
-            chain = getChainInPlace(encrypt_chunk->data, 2, (uint32_t)tf_key->stateSize); //save the chain of cipher text for use in the next chunk           
-            first_chunk = false;
+            if(first_chunk) //encrypt header
+            {
+                if(!encryptHeader(tf_key, encrypt_chunk->data)) 
+                { 
+                    destroyChunk(encrypt_chunk);
+                    return false;
+                }
+                chain = getChainInPlace(encrypt_chunk->data, 2, (uint32_t)tf_key->stateSize); //save the chain of cipher text for use in the next chunk           
+                first_chunk = false;
+            }
+            else
+            {
+                uint64_t num_blocks = getNumBlocks(encrypt_chunk->data_size, (uint64_t)tf_key->stateSize);
+                encryptInPlace(tf_key, chain, encrypt_chunk->data, num_blocks); //encrypt the chunk
+                chain = getChainInPlace(encrypt_chunk->data, num_blocks, (uint32_t)tf_key->stateSize);
+            }
         }
-        else
+        //spin until the last chunk has been enqued
+        
+        if(encrypt_chunk != NULL && !queueIsFull(out) ) //attempt to queue the last encrypted chunk
         {
-            uint64_t num_blocks = getNumBlocks(encrypt_chunk->data_size, (uint64_t)tf_key->stateSize);
-            encryptInPlace(tf_key, chain, encrypt_chunk->data, num_blocks); //encrypt the chunk
-            chain = getChainInPlace(encrypt_chunk->data, num_blocks, (uint32_t)tf_key->stateSize);
-        }
-        //que the encrypted chunk into the out buffer
-        encrypt_chunk->action = MAC;
-        if(enque(encrypt_chunk, out) != true) { success = false; } 
+            encrypt_chunk->action = GEN_MAC; //change the next queued action
+            //on success clear the chunk ptr so the next operation can happen
+            if(enque(encrypt_chunk, out)) { encrypt_chunk = NULL; }
+        } 
     }
  
-    pdebug("Before return\n");
-    return success;
+    return true;
 }
 
 //Write everything queued to file
 static bool asyncWrite(const arguments* args, 
                        const char* file_name, 
                        uint64_t header_file_size, 
-                       queue* q)
+                       queue* in)
 {
     pdebug("asyncWrite(args, %s, %lu, q)\n", file_name, header_file_size);
     FILE* write = openForBlockWrite(file_name);
@@ -390,10 +400,10 @@ static bool asyncWrite(const arguments* args,
     uint64_t bytes_to_write = 0;
     if(header_file_size == 0) { header_file_size = ULLONG_MAX; } //if header_file_size is 0 then set it to max effectively disabling header_file_size limits
 
-    while(q != NULL && front(q)->action != DONE  && bytes_written < header_file_size)
+    while(in != NULL && front(in)->action != DONE  && bytes_written < header_file_size)
     {
-        chunk* chunk_to_write = front(q); //get the next chunk in the queue
-        if(deque(q) == false) { return false; } // pop it off and 
+        chunk* chunk_to_write = front(in); //get the next chunk in the queue
+        if(deque(in) == false) { return false; } // pop it off and 
 
         //ensure we aren't writing padding or attempts
         if(bytes_written + chunk_to_write->data_size > header_file_size)
@@ -401,6 +411,7 @@ static bool asyncWrite(const arguments* args,
         else { bytes_to_write = chunk_to_write->data_size; }
 
         //write it to the file
+        pdebug("Writing a chunk of size of %lu\n", bytes_to_write);
         writeBlock((uint8_t*)chunk_to_write->data, bytes_to_write, write);
         bytes_written += bytes_to_write;
         destroyChunk(chunk_to_write); //free the chunk 
@@ -412,7 +423,7 @@ static bool asyncWrite(const arguments* args,
 
 int32_t runThreefizer(const arguments* args)
 {
-    const uint8_t* temp_file_name = hash(args->argz, 16, args->state_size); 
+    const uint8_t* temp_file_name = hash(args->argz, 10, args->state_size); 
     const uint64_t block_byte_size = (args->state_size/8); 
     const uint64_t block_uint64_size = (args->state_size/64);
     queue* cryptoQueue = createQueue(QUE_SIZE);
@@ -444,12 +455,12 @@ int32_t runThreefizer(const arguments* args)
                     chunk* mac_chunk = createChunk();
                     mac_chunk->data = mac;
                     mac_chunk->data_size = mac_context.digest_byte_size;
-                    while(enque(mac_chunk, writeQueue) != true); //spin until the mac is queued
-
+                    while(enque(mac_chunk, writeQueue) != true); //this should be its own function
                     queueDone(writeQueue);
                     if(asyncWrite(args, temp_file_name, 0, writeQueue))
                     { rename(temp_file_name, "encrypted.txt"); }
                 }
+                else { status = MAC_GENERATION_FAIL; }
             }
             else { status = QUEUE_OPERATION_FAIL; }
         }
@@ -472,18 +483,27 @@ int32_t runThreefizer(const arguments* args)
             if(headerIsValid(&tf_key, header, &file_size)) 
             {
                 pdebug("Header is valid\n");
-                chunk* expected_mac = front(macQueue);
                 uint64_t* generated_mac = genMAC(&mac_context, macQueue, cryptoQueue);
+                chunk* expected_mac = front(macQueue);
 
-                if(!checkMAC(expected_mac, generated_mac, block_byte_size)) 
+                if(checkMAC(expected_mac, generated_mac, block_byte_size))
                 {
-                    pdebug("MAC check failure\n");
-                    status = MAC_CHECK_FAIL;
+                    pdebug("MAC Check Passed\n");
+                    header = front(cryptoQueue);
+                    uint64_t* chain = getChainInPlace(header->data, 2, tf_key.stateSize);
+                    deque(cryptoQueue); //pop out the header because we no longer need it
+                    status = decryptBody(&tf_key, file_size, chain, cryptoQueue, writeQueue);
+                    destroyChunk(header); //free its memory
+                    if(asyncWrite(args, temp_file_name, file_size, writeQueue))
+                    { rename(temp_file_name, "decrypted.txt"); }
+                }   
+                else 
+                {
+                    pdebug("MAC Check Failed\n"); 
+                    status = MAC_CHECK_FAIL; 
                 }
                 
-                //status = decryptBody(&tf_key, file_size, chain, cryptoQueue, writeQueue);
-                //queueDone(writeQueue);
-                //asyncWrite(args, "decrypted.txt", file_size, writeQueue);                
+                if(generated_mac != NULL) { free(generated_mac); }                
             }
             else { status = HEADER_CHECK_FAIL; }
         }
