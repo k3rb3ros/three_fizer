@@ -38,13 +38,13 @@ static keyBlock_t block_lookup[] = //a lookup table containing skein/threefish c
     { "FUTURE_PROOF", Skein1024 }, { "future_proof", Skein1024 }, { "Future_Proof", Skein1024 }
 };
 
+bool isAtLeastFourBlocks(const arguments* args);
+
 bool validSize(const size_t size);
 
 SkeinSize_t getSkeinSize(const char* key);
 
 void askPassword(arguments* args);
-
-//void getLine(uint8_t* buffer, uint64_t buffer_size);
 
 //void zeroFill(void* buffer, uint64_t length);
 

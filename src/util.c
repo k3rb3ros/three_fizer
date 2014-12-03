@@ -1,10 +1,16 @@
 #include "util.h"
 
+//A sanity check for decrypting any files smaller then 4 blocks couldn't have been encrypted by this program
+inline bool isAtLeastFourBlocks(const arguments* args)
+{
+    return args != NULL && (args->file_size >= ((uint64_t)(args->state_size/8) * 4));
+}
+
 static inline void getLine(uint8_t* buffer, const uint64_t buffer_size) //get a line without the \n character from enter press
 {
    uint8_t ch = 0;
    uint16_t count = 0;
-   while((ch = getchar()) != '\n' && strlen(buffer) < buffer_size)
+   while((ch = getchar()) != '\n' && strlen((const char*)buffer) < buffer_size)
    {
        buffer[count++] = ch;
    }
@@ -67,9 +73,9 @@ void askPassword(arguments* args)
         }
 
         printf("\nEnter password:");
-        getLine(pw1, BUFF_SIZE);
+        getLine((uint8_t*)pw1, BUFF_SIZE);
         printf("\nConfirm password:");
-        getLine(pw2, BUFF_SIZE);
+        getLine((uint8_t*)pw2, BUFF_SIZE);
 
         /* restore terminal */
         if (tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)

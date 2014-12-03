@@ -9,6 +9,7 @@
 * Compile Time Numeric Constants *
 **********************************/
 
+//Actions
 #define ENCRYPT 1
 #define CHECK_HEADER 2
 #define DECRYPT 3
@@ -16,6 +17,12 @@
 #define DONE 5
 #define MAC 6
 #define WRITE 7
+
+//Queue constants
+//number of chunks in QUEUE
+#define QUE_SIZE 10
+//size of each queue chunk
+#define MAX_CHUNK_SIZE 524288
 
 /******************
 * Data Structures *

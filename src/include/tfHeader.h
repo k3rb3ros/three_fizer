@@ -3,9 +3,12 @@
 
 #include <stdbool.h> //bool type
 #include <stdint.h> //int types
+#include <stdlib.h> //calloc()
+#include <string.h> //memcpy()
 #include "debug.h" //pdebug()
 #include "skeinApi.h" //SkeinSize_t type
 #include "threefishApi.h" //ThreefishKey_t type
+#include "util.h" //validSize()
 
 #define MAGIC_NUMBER 0x0909202009092009ULL
 #define RESERVED 0x7256736572766564ULL

@@ -21,12 +21,12 @@ static void testChunkEnque()
     chunk1->action = WRITE;
     chunk1->data = malloc(7);
     memcpy(chunk1->data, DATA1, 7);
-    chunk1->data_size = strlen(chunk1->data);   
+    chunk1->data_size = strlen((const char*)chunk1->data);   
 
     queue* q = createQueue(TEST_QUE_SIZE);
     enque(chunk1, q);    
 
-    assert(strcmp(q->elements[0]->data, DATA1) == 0);
+    assert(strcmp((const char*)q->elements[0]->data, DATA1) == 0);
     destroyQueue(q);
 }
 
@@ -38,7 +38,7 @@ static void testChunkDeque()
     chunk1->action = WRITE;
     chunk1->data = malloc(7);
     memcpy(chunk1->data, DATA1, 7);
-    chunk1->data_size = strlen(chunk1->data);   
+    chunk1->data_size = strlen((const char*)chunk1->data);   
 
     queue* q = createQueue(TEST_QUE_SIZE);
     assert(enque(chunk1, q) == true);
@@ -58,14 +58,14 @@ static void testChunkFront()
     chunk1->action = WRITE;
     chunk1->data = malloc(7);
     memcpy(chunk1->data, DATA1, 7);
-    chunk1->data_size = strlen(chunk1->data);   
+    chunk1->data_size = strlen((const char*)chunk1->data);   
 
     queue* q = createQueue(TEST_QUE_SIZE);
     enque(chunk1, q);
     chunk* test1 = front(q);
     assert(test1->action == WRITE); 
-    assert(strcmp(test1->data, DATA1) == 0);
-    assert(test1->data_size == strlen(DATA1));
+    assert(strcmp((const char*)test1->data, DATA1) == 0);
+    assert(test1->data_size == strlen((const char*)DATA1));
 
     destroyQueue(q);
 }
@@ -183,19 +183,19 @@ static void testChunkQueueBuffer()
     enque(chunk4, q);
     enque(chunk5, q);
 
-    assert(strcmp(front(q)->data, DATA1) == 0);
+    assert(strcmp((const char*)front(q)->data, DATA1) == 0);
     deque(q);
     destroyChunk(chunk1);
-    assert(strcmp(front(q)->data, DATA2) == 0);
+    assert(strcmp((const char*)front(q)->data, DATA2) == 0);
     deque(q);
     destroyChunk(chunk2);
-    assert(strcmp(front(q)->data, DATA3) == 0);
+    assert(strcmp((const char*)front(q)->data, DATA3) == 0);
     deque(q);
     destroyChunk(chunk3);
-    assert(strcmp(front(q)->data, DATA4) == 0);
+    assert(strcmp((const char*)front(q)->data, DATA4) == 0);
     deque(q);
     destroyChunk(chunk4);
-    assert(strcmp(front(q)->data, DATA5) == 0);
+    assert(strcmp((const char*)front(q)->data, DATA5) == 0);
     deque(q);
     destroyChunk(chunk5);
    

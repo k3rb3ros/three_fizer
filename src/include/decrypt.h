@@ -7,12 +7,19 @@
 #include "threefishApi.h" //ThreefishKey_t type
 #include "tfHeader.h" //stripIV()
 
+/*
 bool decryptChunk(const ThreefishKey_t* key,
                   const uint64_t* chain,
-                  const uint64_t* plain_text,
+                  uint64_t* plain_text,
                   const uint64_t num_blocks);
+*/
 
-bool decryptHeader(const ThreefishKey_t* key,
-                   const uint64_t* header);
+bool decryptHeader(ThreefishKey_t* key,
+                   uint64_t* header);
+
+void decryptInPlace(ThreefishKey_t* key,
+                    const uint64_t* chain,
+                    uint64_t* plain_text,
+                    const uint64_t num_blocks);
 
 #endif

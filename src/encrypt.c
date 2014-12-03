@@ -1,7 +1,7 @@
 #include "include/encrypt.h"
 
 //encrypt a properly formatted header
-bool encryptHeader(const ThreefishKey_t* key,
+bool encryptHeader(ThreefishKey_t* key,
                    const uint64_t* header)
 {
     if(key == NULL || header == NULL) { return false; }
@@ -15,9 +15,9 @@ bool encryptHeader(const ThreefishKey_t* key,
 /*
 * This function assumes padding and allocation has already been taken care of
 */
-void encryptInPlace(const ThreefishKey_t* key,
+void encryptInPlace(ThreefishKey_t* key,
                     const uint64_t* chain, 
-                    const uint64_t* plain_text, 
+                    uint64_t* plain_text, 
                     const uint64_t num_blocks) 
 {
     switch(key->stateSize) //call the corresponding cbc Encrypt function

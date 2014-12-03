@@ -15,7 +15,7 @@ inline FILE* openForBlockWrite(const char* fname)
     return fopen(fname, "wb+");
 }
 
-uint8_t* readBlock(const uint64_t data_size, const FILE* read)
+uint8_t* readBlock(const uint64_t data_size, FILE* read)
 {
     pdebug("readBlock()\n");
     if(ferror(read))
@@ -25,7 +25,7 @@ uint8_t* readBlock(const uint64_t data_size, const FILE* read)
         return NULL;
     } 
 
-    const uint8_t* data = calloc(data_size, sizeof(uint8_t));
+    uint8_t* data = calloc(data_size, sizeof(uint8_t));
     const uint64_t size = fread(data, sizeof(uint8_t), data_size, read);
 
     if(ferror(read))
@@ -47,15 +47,13 @@ uint8_t* readBlock(const uint64_t data_size, const FILE* read)
 
 uint8_t* readFile(const char* fname)
 {
-    const FILE* my_read = fopen(fname, "rb");
-    uint64_t file_size = 0;
+    FILE* my_read = fopen(fname, "rb");
 
     if(my_read == NULL || !fseek(my_read, 0L, SEEK_END) == 0) { return NULL; };
     
-    file_size = ftell(my_read);
+    const uint64_t file_size = ftell(my_read);
     rewind(my_read);
-
-    const uint8_t* data = calloc(file_size+1, sizeof(uint8_t));
+    uint8_t* data = calloc(file_size+1, sizeof(uint8_t));
     fread(data, sizeof(uint8_t), file_size, my_read);
     if(ferror(my_read)) 
     {
@@ -66,7 +64,7 @@ uint8_t* readFile(const char* fname)
     return data;
 }
 
-bool writeBlock(const uint8_t* data, const uint64_t data_size, const FILE* write)
+bool writeBlock(const uint8_t* data, const uint64_t data_size, FILE* write)
 {
     if(ferror(write)) { return false; }
     fwrite(data, sizeof(uint8_t), data_size, write);
@@ -78,7 +76,7 @@ bool writeBlock(const uint8_t* data, const uint64_t data_size, const FILE* write
 bool writeFile(const char* fname, uint8_t* data, uint64_t data_size)
 {
     bool status = true;
-    const FILE* my_write = fopen(fname, "wb");
+    FILE* my_write = fopen(fname, "wb");
 
     if(my_write == NULL)
     {
@@ -102,7 +100,7 @@ inline uint64_t getSize(const char* fname)
     return st.st_size;
 }
 
-inline void terminateFile(const FILE* write) //write the terminating \n and close the File
+inline void terminateFile(FILE* write) //write the terminating \n and close the File
 {
     const static uint8_t eol[1] = { '\n' };
     if(!ferror(write)) 

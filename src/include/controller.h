@@ -14,6 +14,7 @@
 #include "hash.h" //sf_hash()
 #include "mac.h" //checkHMAC() and genHMAC()
 #include "noHash.h" //set_key()
+#include "pad.h" //getNumBlocks()
 #include "limits.h" //ULLONG_MAX
 #include "skeinApi.h" //SkeinCtx
 #include "threefishApi.h" //ThreefishKey_t
@@ -28,11 +29,6 @@
 #define MEMORY_ALLOCATION_FAIL 7
 #define SIZE_CHECK_FAIL 8
 #define MAC_GENERATION_FAIL 9
-
-//number of chunks in QUEUE
-#define QUE_SIZE 10
-//size of each queue chunk
-#define MAX_CHUNK_SIZE 524288  
 
 /******************
 * Data structures *
