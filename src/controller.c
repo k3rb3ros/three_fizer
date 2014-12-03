@@ -1,83 +1,5 @@
 #include "include/controller.h"
 
-/* This takes the argument and hashed the user specified password into a key of block size
-* or uses the user entered key directly if they have elected to use this option
-* the key is then hashed again and this is ued as the hmac key.
-* It assumes the user has correctly allocated block size buffers for the cipher and mac key and passes them into the function
-*/
-static bool handleKeys(const arguments* args, 
-                       ThreefishKey_t* cipher_context, 
-                       MacCtx_t* mac_context)
-{
-    pdebug("handleKeys()\n");
-    if(cipher_context == NULL && mac_context == NULL) { return false; } //sanity check
-
-    const uint64_t block_byte_size = (uint64_t)args->state_size/8;
-    uint64_t* cipher_key = NULL;
-    uint64_t* mac_key = NULL;
-
-    if(args->hash == true)
-    {
-        //hash the user entered password so the key matches state size
-        cipher_key = (uint64_t*)sf_hash(args->password, args->pw_length, args->state_size);
-    }
-    else
-    {
-        //use the user entered password as the key directly
-        cipher_key = noHashKey(args->password, args->pw_length, args->state_size);
-    }
-
-    //generate the mac key from the cipher_key
-    mac_key = (uint64_t*)sf_hash((uint8_t*)cipher_key, block_byte_size, args->state_size);
-
-    //initialize the key structure for the cipher key
-    threefishSetKey(cipher_context, (ThreefishSize_t)args->state_size, cipher_key, cipher_tweak);
-    //initialize the mac context and undelying skein structures
-    InitMacCtx(args, mac_context, mac_key);
-
-    //free allocated resources
-    if(cipher_key != NULL) { free(cipher_key); }
-    if(mac_key != NULL) { free(mac_key); }
-
-    return true;
-}
-
-//Put a done flag into the Queue telling all threads using it that there operation on queued data is complete
-static inline bool queueDone(queue* q)
-{
-    pdebug("queueDone()\n");
-    bool success = false;
-    chunk* done = createChunk();
-    done->action = DONE;
-
-    if(enque(done, q)) { success = true; }
-
-    return success; 
-} 
-
-//queue IV and Header pair into cryptoQueue. Must be called before queueFile
-static bool queueHeader(const arguments* args, queue* out)
-{
-    pdebug("queueHeader()\n");
-    bool success = false;
-    const uint64_t block_byte_size = ((uint64_t)args->state_size/8);
-    uint64_t* iv = (uint64_t*)getRand((uint64_t) args->state_size);
-
-    chunk* header = createChunk();
-    header->action = ENCRYPT;
-    header->data = genHeader(iv, args->file_size, args->state_size); 
-    header->data_size = 2*block_byte_size;
-    
-    if(header->data != NULL) //check that allocate succeeded
-    {
-        while(enque(header, out) != true);
-        success = true;
-    }
-
-    if(iv != NULL) { free(iv); }
-    return success;
-} 
-
 //Queues the file into out if threefizer is running in decrypt mode the header is queud as a seperate chunk and the 
 static bool queueFile(const arguments* args, queue* out) //right now this is blocking until the entire file is queued TODO put me on my own thread so MAC and ENCRYPTION can take place as the file is buffered not just after it
 {
@@ -223,53 +145,12 @@ static bool queueFile(const arguments* args, queue* out) //right now this is blo
     return true;
 }
 
-/*******************************************************************************************
- * decrypt the header and check if it is valid this is done in a buffer and then freed     *
- * because the encrypted header is still neaded to run the mac check.                      *
- * *****************************************************************************************/
-static bool headerIsValid(ThreefishKey_t* tf_key, 
-                          chunk* header, 
-                          uint64_t* file_size)
-{
-    if(header == NULL) { return false; } 
-
-    bool success = true;
-    const uint64_t header_byte_size = header->data_size; 
-    uint64_t* header_copy = calloc(header_byte_size, sizeof(uint8_t));
-
-    if(header_copy == NULL) 
-    {
-	perror("Error unable to allocate memory for header check\n"); 
-        return false;
-    } 
-
-    memcpy(header_copy, header->data, header_byte_size);
-
-    if(decryptHeader(tf_key, header_copy))
-    {
-        if(checkHeader(header_copy, file_size, tf_key->stateSize))
-        {
-            header->action = GEN_MAC;
-            success = true;
-        }
-        else
-        {
-            pdebug("Header check failed either password is incorrect or not a threefizer encrypted file\n");
-        }
-    }
-
-    if(header_copy != NULL) { free(header_copy); } //free any allocated resorces
-
-    return success;
-}
-
 static int decryptBody(ThreefishKey_t* tf_key, 
                        const uint64_t body_size,
                        const uint64_t* chain,  
                        queue* in,
                        queue* out)
 {
-
     pdebug("decryptBody()\n");
     if(tf_key == NULL || chain == NULL || in == NULL || out == NULL) { return CIPHER_OPERATION_FAIL; }
 

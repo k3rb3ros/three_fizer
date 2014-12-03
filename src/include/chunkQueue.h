@@ -1,22 +1,19 @@
 #ifndef CHUNKQUEUE_H
 #define CHUNKQUEUE_H
 
-#include "chunk.h"
+#include <stdbool.h> //bool types
+#include <stdint.h> //std uint types
+#include "arguments.h" //arguments structure
+#include "chunk.h" //chunk type
+#include "queueActions.h" //que actions
+#include "random.h" //getRand()
+#include "tfHeader.h" //genHeader()
 
 /*defines the queue data structure used to queue asymmetric IO and Crypto operation*/
 
 /*********************************
 * Compile Time Numeric Constants *
 **********************************/
-
-//Actions
-#define ENCRYPT 1
-#define CHECK_HEADER 2
-#define DECRYPT 3
-#define GEN_MAC 4
-#define DONE 5
-#define MAC 6
-#define WRITE 7
 
 //Queue constants
 //number of chunks in QUEUE
@@ -40,6 +37,10 @@ typedef struct
 bool deque(queue* q);
 
 bool enque(chunk* chunk, queue* q);
+
+bool queueDone(queue* q);
+
+bool queueHeader(const arguments* args, queue* out);
 
 bool queueIsFull(queue* q);
 

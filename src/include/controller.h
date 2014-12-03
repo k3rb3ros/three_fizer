@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include <arguments.h> //arguments structure
+#include <limits.h> //ULLONG_MAX
 #include <stdint.h> //uint types
 #include <stdio.h> //rename()
 #include "cbc.h" //getChainInPlace() and getChainInBuffer()
@@ -12,10 +13,10 @@
 #include "encrypt.h" //encryptInPlace() and encryptHeader()
 #include "fileIO.h" //block read and write operations
 #include "hash.h" //sf_hash()
+#include "key.h" //handleKeys()
 #include "mac.h" //checkHMAC() and genHMAC()
 #include "noHash.h" //set_key()
 #include "pad.h" //getNumBlocks()
-#include "limits.h" //ULLONG_MAX
 #include "skeinApi.h" //SkeinCtx
 #include "threefishApi.h" //ThreefishKey_t
 #include "tfHeader.h" //checkHeader, genHeader() and stripIV()
@@ -33,9 +34,6 @@
 /******************
 * Data structures *
 *******************/
-
-//define an arbitrary tweak so other versions of threefish w/ the same key won't produce the same cipher text
-static uint64_t cipher_tweak[2] = { 0x5368616C6C206E6ULL, 0X26520646976756CULL };
 
 /************
 * Functions *

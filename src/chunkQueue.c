@@ -26,6 +26,41 @@ bool enque(chunk* chunk, queue* q)
     return true;
 }
 
+//Put a done flag into the Queue telling all threads using it that there operation on queued data is complete
+inline bool queueDone(queue* q)
+{
+    pdebug("queueDone()\n");
+    chunk* done = createChunk();
+    done->action = DONE;
+
+    if(enque(done, q)) { return true; }
+
+    return false;
+}
+
+//generate a header with the arguments given and queue it into the que passed in
+bool queueHeader(const arguments* args, queue* out)
+{
+    pdebug("queueHeader()\n");
+    bool success = false;
+    const uint64_t block_byte_size = ((uint64_t)args->state_size/8);
+    uint64_t* iv = (uint64_t*)getRand((uint64_t) args->state_size);
+
+    chunk* header = createChunk();
+    header->action = ENCRYPT;
+    header->data = genHeader(iv, args->file_size, args->state_size);
+    header->data_size = 2*block_byte_size;
+
+    if(header->data != NULL) //check that allocate succeeded
+    {
+        while(enque(header, out) != true);
+        success = true;
+    }
+
+    if(iv != NULL) { free(iv); }
+    return success;
+}
+
 inline bool queueIsFull(queue* q)
 {
    return q->size == q->capacity;
