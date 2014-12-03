@@ -5,7 +5,7 @@
  * byte by byte returns true if the MAC's match
  */
 
-bool checkMAC(chunk* expected, const uint64_t* generated, uint64_t mac_byte_size)
+bool checkMAC(chunk* expected, const uint8_t* generated, uint64_t mac_byte_size)
 {
      pdebug("checkMAC()\n");
      if(expected->data_size != mac_byte_size) { return false; } //size check

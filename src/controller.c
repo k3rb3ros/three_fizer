@@ -479,7 +479,7 @@ int32_t runThreefizer(const arguments* args)
                 uint64_t* generated_mac = genMAC(&mac_context, macQueue, cryptoQueue);
                 chunk* expected_mac = front(macQueue);
 
-                if(checkMAC(expected_mac, generated_mac, block_byte_size))
+                if(checkMAC(expected_mac, (uint8_t*)generated_mac, block_byte_size))
                 {
                     pdebug("MAC Check Passed\n");
                     header = front(cryptoQueue);

@@ -18,7 +18,7 @@ typedef struct
     uint64_t digest_byte_size;
 } MacCtx_t;
 
-bool checkMAC(chunk* expected, const uint64_t* generated, uint64_t mac_byte_size);
+bool checkMAC(chunk* expected, const uint8_t* generated, uint64_t mac_byte_size);
 
 uint64_t* genMAC(MacCtx_t* context, 
                  queue* in, 
