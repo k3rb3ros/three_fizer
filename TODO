@@ -1,10 +1,7 @@
-* Write to a seperate file then rename to original file re-name on success #IN PROGRESS#
-* Add buffered block decryption and encryption for doing header generation and checking #DONE#
-* Add asynchronous fileIO #DONE#
-* Add queue based decrypting #DONE#
-* Implement a proper HMAC #CHANGED# (research shows Skein MAC is just as secure as HMAC but runs faster) 
-* Add the ability for the user to manually specify an IV #Partially 
+* Add the ability for the user to manually specify an IV
+* Add key derrivation function for all hashed keys 
 * Add threading to all blocking controller operaitons 
+* fix password files so files are no longer buffered
 * Add tests for cbc operations
 * Add tests for fileIO
 * Add tests for util 
