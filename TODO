@@ -7,3 +7,4 @@
 * Add tests for util 
 * Add tests for pad operations
 * Get code reviewed by a security expert
+* Add mutexes to shared data operations

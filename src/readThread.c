@@ -1,17 +1,5 @@
 #include "include/readThread.h"
 
-inline void setUpReadParams(readParams* read_params, 
-                     const arguments* args, 
-                     bool* error, 
-                     bool* running, 
-                     queue* out)
-{
-    read_params->args = args;
-    read_params->error = error;
-    read_params->running = running;
-    read_params->out = out;
-}
-
 //Queues the file into out if threefizer is running in decrypt mode the header is queud as a seperate chunk and the MAC is queued as a seperate chunk 
 void* queueFile(void* parameters) //right now this is blocking until the entire file is queued TODO put me on my own thread so MAC and ENCRYPTION can take place as the file is buffered not just after it
 {
@@ -28,7 +16,7 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
 
     if(!params->args->encrypt) { header = true; pdebug("Decrypt mode queuing header\n"); } //if we are decrypting then we need to look for a header
 
-    while(*(params->running) && ! *(params->error) && orig_file_size > 0)
+    while(*(params->running) && *(params->error) == 0 && orig_file_size > 0)
     {
         if(!queueIsFull(params->out))
         {
@@ -46,7 +34,8 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
                          perror("Error allocating memory for file read\n");
                          fclose(read);
                          destroyChunk(header_chunk);
-                         return false;
+                         *(params->error) = MEMORY_ALLOCATION_FAIL;
+                         break;
                      }
                      header_chunk->action = CHECK_HEADER;
                      header_chunk->data = (uint64_t*)readBlock(header_byte_size, read);
@@ -70,7 +59,8 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
                               fclose(read);
                               destroyChunk(data_chunk);
                               destroyChunk(mac_chunk);
-                              return false;
+                              *(params->error) = MEMORY_ALLOCATION_FAIL;
+                              break;
                           }
                           //Read the last bit of data into a chunk
                           data_chunk->action = GEN_MAC;
@@ -94,7 +84,8 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
                           perror("Error allocating memory for file read\n");
                           fclose(read);
                           destroyChunk(data_chunk);
-                          return false;
+                          *(params->error) = MEMORY_ALLOCATION_FAIL;
+                          break;
                       }
                       data_chunk->action = ENCRYPT;
                       data_chunk->data = pad(readBlock(orig_file_size, read),
@@ -112,7 +103,8 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
                           perror("Error allocating memory for file read\n");
                           fclose(read);
                           destroyChunk(header_chunk);
-                          return false;
+                          *(params->error) = MEMORY_ALLOCATION_FAIL;
+                          break;
                       }
                       data_chunk->action = params->args->encrypt ? ENCRYPT : GEN_MAC;
                       data_chunk->data = (uint64_t*)readBlock(MAX_CHUNK_SIZE, read);
@@ -154,6 +146,18 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
 
     fclose(read); //close the file handle
     queueDone(params->out); //put the DONE flag in the queue
-    pdebug("success\n");
+    pdebug("readThread() success\n");
     return NULL;
+}
+
+inline void setUpReadParams(readParams* read_params, 
+                     const arguments* args, 
+                     bool* running, 
+                     queue* out,
+                     uint32_t* error)
+{
+    read_params->args = args;
+    read_params->running = running;
+    read_params->out = out;
+    read_params->error = error;
 }

@@ -7,7 +7,6 @@
 #include "chunk.h" //chunk type
 #include "queueActions.h" //que actions
 #include "random.h" //getRand()
-#include "tfHeader.h" //genHeader()
 
 /*defines the queue data structure used to queue asymmetric IO and Crypto operation*/
 
@@ -39,8 +38,6 @@ bool deque(queue* q);
 bool enque(chunk* chunk, queue* q);
 
 bool queueDone(queue* q);
-
-bool queueHeader(const arguments* args, queue* out);
 
 bool queueIsFull(queue* q);
 

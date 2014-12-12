@@ -39,7 +39,7 @@ static bool checkHeader(const uint64_t* header,
 * |#######################IV#########################|                *
 * |MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|RESERVED|PADDING|                *
 ***********************************************************************/
-uint64_t* genHeader(const uint64_t* iv,
+static uint64_t* genHeader(const uint64_t* iv,
                     const uint64_t data_size,
                     const uint32_t state_size)
 {
@@ -108,6 +108,28 @@ bool headerIsValid(ThreefishKey_t* tf_key,
     return success;
 }
 
+//generate a header with the arguments given and queue it into the que passed in
+bool queueHeader(const arguments* args, queue* out)
+{
+    pdebug("queueHeader()\n");
+    bool success = false;
+    const uint64_t block_byte_size = ((uint64_t)args->state_size/8);
+    uint64_t* iv = (uint64_t*)getRand((uint64_t) args->state_size);
+
+    chunk* header = createChunk();
+    header->action = ENCRYPT;
+    header->data = genHeader(iv, args->file_size, args->state_size);
+    header->data_size = 2*block_byte_size;
+
+    if(header->data != NULL) //check that allocate succeeded
+    {
+        while(enque(header, out) != true); //spin until the header has been queued
+        success = true;
+    }
+
+    if(iv != NULL) { free(iv); }
+    return success;
+}
 
 /*Knowing the internal structure of the header it is possible to return a pointer directly to the data of the header ignoring the iv*/
 inline uint64_t* stripIV(const uint64_t* header, const uint64_t state_size)

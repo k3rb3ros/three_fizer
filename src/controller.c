@@ -65,8 +65,8 @@ static int decryptBody(ThreefishKey_t* tf_key,
 * is the first thing queued and an empty chunk with the action set to DONE is the
 * last thing queued. 
 *************************************************************************************/
-static bool encryptChunks(ThreefishKey_t* tf_key, queue* in, queue* out)
-{
+//static bool encryptChunks(ThreefishKey_t* tf_key, queue* in, queue* out)
+//{
     /***********************************************************
     * The encrypted file should be written like this           *
     * |HEADER|CIPHER_TEXT|MAC|                                 *
@@ -74,7 +74,7 @@ static bool encryptChunks(ThreefishKey_t* tf_key, queue* in, queue* out)
     * which in turn includes the IV                            *
     * The mac size is the same as the block size of the cipher *
     ************************************************************/
-    pdebug("encryptChunks()\n");
+/*    pdebug("encryptChunks()\n");
 
     bool first_chunk = true;
     chunk* encrypt_chunk = NULL;
@@ -107,7 +107,7 @@ static bool encryptChunks(ThreefishKey_t* tf_key, queue* in, queue* out)
         }
         //spin until the last chunk has been enqued
         
-        if(encrypt_chunk != NULL && !queueIsFull(out) ) //attempt to queue the last encrypted chunk
+        if(encrypt_chunk != NULL && !queueIsFull(out)) //attempt to queue the last encrypted chunk
         {
             encrypt_chunk->action = GEN_MAC; //change the next queued action
             //on success clear the chunk ptr so the next operation can happen
@@ -116,8 +116,9 @@ static bool encryptChunks(ThreefishKey_t* tf_key, queue* in, queue* out)
     }
  
     return true;
-}
+}*/
 
+/*
 //Write everything queued to file
 static bool asyncWrite(const uint8_t* file_name, 
                        uint64_t header_file_size, 
@@ -129,7 +130,7 @@ static bool asyncWrite(const uint8_t* file_name,
     uint64_t bytes_to_write = 0;
     if(header_file_size == 0) { header_file_size = ULLONG_MAX; } //if header_file_size is 0 then set it to max effectively disabling header_file_size limits
 
-    while(in != NULL && front(in)->action != DONE  && bytes_written < header_file_size)
+    while(in != NULL && front(in)->action != DONE && bytes_written < header_file_size)
     {
         chunk* chunk_to_write = front(in); //get the next chunk in the queue
         if(deque(in) == false) { return false; } // pop it off and 
@@ -148,67 +149,83 @@ static bool asyncWrite(const uint8_t* file_name,
 
     fclose(write);
     return true;
-}
+}*/
 
 int32_t runThreefizer(const arguments* args)
 {
-    bool error = false;
-    bool crypto_running = true;
-    bool read_running = true;
-    bool mac_running = true;
-    bool write_running = true;
+    bool mac_status = true;
+    bool running = true;
+    bool threads_active = false;
+    uint32_t error = 0;
     const uint8_t* temp_file_name = hash((uint8_t*)args->argz, 10, args->state_size); 
     const uint64_t block_byte_size = (args->state_size/8);
     pthread_t read_thread;
     pthread_t crypto_thread;
     pthread_t mac_thread;
     pthread_t write_thread; 
-    queue* cryptoQueue = createQueue(QUE_SIZE);
-    queue* macQueue = createQueue(QUE_SIZE);
-    queue* writeQueue = createQueue(QUE_SIZE);
+    queue* crypto_queue = createQueue(QUE_SIZE);
+    queue* mac_queue = createQueue(QUE_SIZE);
+    queue* write_queue = createQueue(QUE_SIZE);
+    cryptParams crypto_params;
+    macParams mac_params;
     readParams read_params;
+    writeParams write_params;
+    MacCtx_t mac_context;
     static int32_t status = SUCCESS;
     static uint64_t file_size = 0;
-    static MacCtx_t mac_context;
     static ThreefishKey_t tf_key; 
 
     pdebug("Threefizer controller\n");
     pdebug("Arguments { ");
     pdebug("free: %d, encrypt: %d, hash: %d, argz: [%s], argz_len: %zu, State Size: %u, password: [%s], pw_length %lu, file_length %lu }\n", args->free, args->encrypt, args->hash, args->argz, args->argz_len, args->state_size, args->password, args->pw_length, args->file_size);
 
-
     handleKeys(args, &tf_key, &mac_context); //generate and initialize the keys
-    if(args->encrypt == true)
+    if(args->encrypt == true && args->file_size > 0)
     {
-        queueHeader(args, cryptoQueue);       
-        setUpReadParams(&read_params, args, &error, &read_running, cryptoQueue);
+        setUpCryptoParams(&crypto_params, args, &running, &tf_key, crypto_queue, mac_queue, &error);
+        setUpMac(&mac_params, &mac_status, &running, &mac_context, mac_queue, write_queue, &error); 
+        setUpReadParams(&read_params, args, &running, crypto_queue, &error);
+        setUpWriteParams(&write_params, args, &running, write_queue, temp_file_name, &error, file_size);
+        queueHeader(args, crypto_queue);
+        threads_active = true;
         pthread_create(&read_thread, NULL, queueFile, &read_params);
+        pthread_create(&crypto_thread, NULL, encryptQueue, &crypto_params);
+        pthread_create(&mac_thread, NULL, generateMAC, &mac_params);
+        pthread_create(&write_thread, NULL, asyncWrite, &write_params);
+    }
+    else if(args->file_size == 0)
+    {
+        perror("File to encrypt is empty aborting\n");
+        status = FILE_TOO_SMALL;
     }
     else
     {
-        setUpReadParams(&read_params, args, &error, &read_running, macQueue);
+        setUpReadParams(&read_params, args, &running, mac_queue, &error);
+        threads_active = true;
         pthread_create(&read_thread, NULL, queueFile, &read_params);
+        pthread_create(&crypto_thread, NULL, decryptQueue, &crypto_params);
+        pthread_create(&write_thread, NULL, asyncWrite, &write_params);
     }
 
     if(args->encrypt == true)
     { //most of this nesting will be done away with when threading is added to each queue
         //generate header and queue the file
-        //if(queueHeader(args, cryptoQueue))
+        //if(queueHeader(args, crypto_queue))
         //{
             //queueFile(&read_params);
-            /*encryptChunks(&tf_key, cryptoQueue, macQueue);
-            if(queueDone(macQueue))
+            /*encryptChunks(&tf_key, crypto_queue, mac_queue);
+            if(queueDone(mac_queue))
             {
                 uint64_t* mac = NULL;
                 mac_context.out_action = WRITE; 
-                if((mac = genMAC(&mac_context, macQueue, writeQueue)) != NULL)
+                if((mac = genMAC(&mac_context, mac_queue, write_queue)) != NULL)
                 {
                     chunk* mac_chunk = createChunk();
                     mac_chunk->data = mac;
                     mac_chunk->data_size = mac_context.digest_byte_size;
-                    while(enque(mac_chunk, writeQueue) != true); //this should be its own function
-                    queueDone(writeQueue);
-                    if(asyncWrite(temp_file_name, 0, writeQueue))
+                    while(enque(mac_chunk, write_queue) != true); //this should be its own function
+                    queueDone(write_queue);
+                    if(asyncWrite(temp_file_name, 0, write_queue))
                     { rename((const char*)temp_file_name, "encrypted.txt"); }
                 }
                 else { status = MAC_GENERATION_FAIL; }
@@ -222,30 +239,30 @@ int32_t runThreefizer(const arguments* args)
         //Files smaller then 4 blocks could not have been made by this program
         if(!isAtLeastFourBlocks(args)) 
         {
-            destroyQueue(cryptoQueue);
-            destroyQueue(macQueue);
-            destroyQueue(writeQueue);
+            destroyQueue(crypto_queue);
+            destroyQueue(mac_queue);
+            destroyQueue(write_queue);
             return SIZE_CHECK_FAIL; 
         }
-        if(true)//queueFile(args, macQueue)) //in decrypt mode the first chunk queued will be the header
+        if(true)//queueFile(args, mac_queue)) //in decrypt mode the first chunk queued will be the header
         {
-            chunk* header = front(macQueue);
+            chunk* header = front(mac_queue);
 
             if(headerIsValid(&tf_key, header, &file_size)) 
             {
                 pdebug("Header is valid\n");
-                uint64_t* generated_mac = genMAC(&mac_context, macQueue, cryptoQueue);
-                chunk* expected_mac = front(macQueue);
+                uint64_t* generated_mac = genMAC(&mac_context, mac_queue, crypto_queue);
+                chunk* expected_mac = front(mac_queue);
 
                 if(checkMAC(expected_mac, (uint8_t*)generated_mac, block_byte_size))
                 {
                     pdebug("MAC Check Passed\n");
-                    header = front(cryptoQueue);
+                    header = front(crypto_queue);
                     uint64_t* chain = getChainInPlace(header->data, 2, tf_key.stateSize);
-                    deque(cryptoQueue); //pop out the header because we no longer need it
-                    status = decryptBody(&tf_key, file_size, chain, cryptoQueue, writeQueue);
+                    deque(crypto_queue); //pop out the header because we no longer need it
+                    status = decryptBody(&tf_key, file_size, chain, crypto_queue, write_queue);
                     destroyChunk(header); //free its memory
-                    if(asyncWrite(temp_file_name, file_size, writeQueue))
+                    if(asyncWrite(temp_file_name, file_size, write_queue))
                     { rename((const char*)temp_file_name, "decrypted.txt"); }
                 }   
                 else 
@@ -260,14 +277,19 @@ int32_t runThreefizer(const arguments* args)
         }
         else { status = FILE_IO_FAIL; }*/
     }
-    //spin up the crypto thread and sick it on the cryptoQueue
-    //run hmac on each encrypted chunk when done queue it to the writeQueue
-    //spin up the write thread and sick it on the writeQueue
+
     //free all allocated resources
-    pthread_join(read_thread, NULL);
-    destroyQueue(cryptoQueue);
-    destroyQueue(macQueue);
-    destroyQueue(writeQueue);
+    if(threads_active) 
+    { 
+        pthread_join(read_thread, NULL);
+        pthread_join(crypto_thread, NULL);
+        pthread_join(mac_thread, NULL);
+        pthread_join(write_thread, NULL);
+    }
+    if(error != 0) { status = error; } //return the error if 1 occured
+    destroyQueue(crypto_queue);
+    destroyQueue(mac_queue);
+    destroyQueue(write_queue);
     if(temp_file_name != NULL) { free((void*) temp_file_name); }
 
     pdebug("Threefizer operation complete\n");

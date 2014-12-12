@@ -9,33 +9,24 @@
 #include "cbc.h" //getChainInPlace() and getChainInBuffer()
 #include "chunk.h" //chunk type
 #include "chunkQueue.h" //queue type and supporting functions
+#include "cryptoThread.h" //decryptQueue(), encryptQueue(), setUpCryptParams()
 #include "debug.h" //pdebug()
 #include "decrypt.h" //decryptInPlace() and decryptHeader()
 #include "encrypt.h" //encryptInPlace() and encryptHeader()
-#include "fileIO.h" //block read and write operations
+#include "error.h" //error codes
 #include "hash.h" //sf_hash()
 #include "key.h" //handleKeys()
 #include "mac.h" //checkHMAC() and genHMAC()
+#include "macThread.h" //setUpMacParams()
 #include "noHash.h" //set_key()
 #include "pad.h" //getNumBlocks()
-#include "readThread.h"
+#include "readThread.h" //setUpReadParams()
 #include "skeinApi.h" //SkeinCtx
 #include "threefishApi.h" //ThreefishKey_t
 #include "tfHeader.h" //checkHeader, genHeader() and stripIV()
+#include "writeThread.h" //asyncWrite()
 
 #define SUCCESS 1
-#define FILE_IO_FAIL 2
-#define HEADER_CHECK_FAIL 3
-#define MAC_CHECK_FAIL 4
-#define QUEUE_OPERATION_FAIL 5
-#define CIPHER_OPERATION_FAIL 6
-#define MEMORY_ALLOCATION_FAIL 7
-#define SIZE_CHECK_FAIL 8
-#define MAC_GENERATION_FAIL 9
-
-/******************
-* Data structures *
-*******************/
 
 /************
 * Functions *

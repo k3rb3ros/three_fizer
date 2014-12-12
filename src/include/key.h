@@ -1,8 +1,10 @@
 #ifndef KEY_H
 #define KEY_H
 
-#include "mac.h" //MacCtx_t
+#include "hash.h" //sf_hash()
+#include "mac.h" //MacCtx_t type
 #include "noHash.h" //noHash()
+#include "threefishApi.h" //ThreefishKey_t type
 #include "tweak.h" //cipher_tweak constant
 
 /* This takes the argument and hashed the user specified password into a key of block size
