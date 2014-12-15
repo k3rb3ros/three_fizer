@@ -3,6 +3,7 @@
 //pops the first queued element out of the queue
 bool deque(queue* q)
 {
+    pdebug("deque(%x)\n", q);
     if(q->size <= 0) { return false; }
     else
     {
@@ -16,6 +17,7 @@ bool deque(queue* q)
 //enqueue the chunk passed in
 bool enque(chunk* chunk, queue* q)
 {
+    pdebug("enque(%x)\n", q);
     if(q->size == q->capacity || chunk == NULL) { return false; }
     else
     {

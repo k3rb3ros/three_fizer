@@ -15,40 +15,40 @@ void* generateMAC(void* parameters)
     const uint64_t mac_size = (uint64_t)params->mac_context->digest_byte_size;
     
     //iterate through the queue until the DONE or MAC flag is received and SkeinMAC everything in it
-    while(front(params->in)->action != DONE && front(params->in)->action != MAC)
+    update_chunk = front(params->in); //get the first chunk
+    deque(params->in);
+
+    while(update_chunk == NULL || update_chunk->action == GEN_MAC)
     {
-        if(update_chunk == NULL)
+        if(update_chunk == NULL) //get a new chunk if the last one has been queued
         {
              update_chunk = front(params->in); //get the front chunk in the queue
-             deque(params->in); //pop it off the queue
+             pdebug("Update chunk 0x%x\n", update_chunk);
              
-             if(update_chunk->action != GEN_MAC)
+             if(update_chunk != NULL)
              {
-                 perror("Bad data in mac queue aborting operation\n");
-                 destroyChunk(update_chunk);
-                 *(params->error) = MAC_GENERATION_FAIL;
-                 break;
+                 deque(params->in); //pop the chunk off the queue
+                 //change the action to the out action
+                 update_chunk->action = params->mac_context->out_action; 
+                 //update the MAC with the current chunk
+                 skeinUpdate(params->mac_context->skein_context_ptr, (const uint8_t*)update_chunk->data, update_chunk->data_size);
              }
-
-             //change the action to the out action
-             update_chunk->action = params->mac_context->out_action; 
-             //update the MAC with the current chunk
-             skeinUpdate(params->mac_context->skein_context_ptr, (const uint8_t*)update_chunk->data, update_chunk->data_size);
 
         }
         
         //attempt to queue the chunk
-        if(update_chunk != NULL && enque(update_chunk, params->out) == true)
+        if(update_chunk != NULL)
         {
+            while(queueIsFull(params->out)); //spin until queue is empty
             pdebug("Queuing chunk to write que of size %lu\n", update_chunk->data_size);
+            enque(update_chunk, params->out);
             //on a successfull queue set mac chunk to NULL so the next chunk will be MACed
-            queueDone(params->out);
             update_chunk = NULL;
         }
         //otherwise spin and wait for the queue to empty
     }
 
-    if(params->in != NULL && front(params->in)->action == DONE) //TODO investigate if this is correct
+    if(front(params->in) != NULL && front(params->in)->action == DONE)//if we have reached the end of the in queue then get the MAC and que it to the out que 
     {
         uint64_t* mac = calloc(params->mac_context->digest_byte_size, sizeof(uint8_t));
         skeinFinal(params->mac_context->skein_context_ptr, (uint8_t*)mac);
@@ -57,7 +57,9 @@ void* generateMAC(void* parameters)
         mac_chunk->data = mac;
         mac_chunk->data_size = mac_size;
         while(queueIsFull(params->out)); //spin until the write queue is not full
-        enque(mac_chunk, params->out); 
+        enque(mac_chunk, params->out); //que the MAC chunk 
+        pdebug("Queuing MAC chunk to write que of size %lu\n", mac_size);
+        queueDone(params->out); //Queie the done flag
     }
     else //something went wrong
     {
