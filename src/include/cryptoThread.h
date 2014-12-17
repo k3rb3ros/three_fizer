@@ -1,9 +1,11 @@
 #ifndef CRYPTOTHREAD_H
 #define CRYPTOTHREAD_H
 
+#include <pthread.h> //pthread_mutex_t type
 #include "chunkQueue.h" //queue data type
 #include "debug.h" //pdebug()
 #include "encrypt.h" //encryptHeader(), encryptInPlace()
+#include "error.h" //error codes
 #include "pad.h" //getNumBlocks()
 #include "threefishApi.h" //ThreefishKey_t
 
@@ -12,6 +14,8 @@ typedef struct
     const arguments* args;
     bool* running;
     ThreefishKey_t* tf_key;
+    pthread_mutex_t* in_mutex;
+    pthread_mutex_t* out_mutex;
     queue* in;
     queue* out;
     uint32_t* error;
@@ -25,6 +29,8 @@ void setUpCryptoParams(cryptParams* params,
                       const arguments* args,
                       bool* running,
                       ThreefishKey_t* tf_key,
+                      pthread_mutex_t* in_mutex,
+                      pthread_mutex_t* out_mutex,
                       queue* in,
                       queue* out,
                       uint32_t* error);

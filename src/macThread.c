@@ -10,38 +10,43 @@ void* generateMAC(void* parameters)
 {
     pdebug("generateMAC()\n");
 
+    bool chunk_maced = false;
     chunk* update_chunk = NULL;
     macParams* params = parameters;
     const uint64_t mac_size = (uint64_t)params->mac_context->digest_byte_size;
     
     //iterate through the queue until the DONE or MAC flag is received and SkeinMAC everything in it
-    update_chunk = front(params->in); //get the first chunk
-    deque(params->in);
-
-    while(update_chunk == NULL || update_chunk->action == GEN_MAC)
+    while(front(params->in) == NULL || front(params->in)->action == GEN_MAC)
     {
-        if(update_chunk == NULL) //get a new chunk if the last one has been queued
+        //attempt to pop a chunk off the queue
+        if(update_chunk == NULL && front(params->in) != NULL) 
         {
+             chunk_maced = false;
+             pthread_mutex_lock(params->in_mutex);
              update_chunk = front(params->in); //get the front chunk in the queue
-             pdebug("Update chunk 0x%x\n", update_chunk);
-             
-             if(update_chunk != NULL)
-             {
-                 deque(params->in); //pop the chunk off the queue
-                 //change the action to the out action
-                 update_chunk->action = params->mac_context->out_action; 
-                 //update the MAC with the current chunk
-                 skeinUpdate(params->mac_context->skein_context_ptr, (const uint8_t*)update_chunk->data, update_chunk->data_size);
-             }
-
+             deque(params->in);
+             pthread_mutex_unlock(params->in_mutex);
+        }
+        
+        //generate the MAC from the chunk
+        if(update_chunk != NULL && !chunk_maced)
+        {
+             pdebug("Updating MAC on chunk of size %lu\n", update_chunk->data_size);
+             //change the action to the out action
+             update_chunk->action = params->mac_context->out_action; 
+             //update the MAC with the current chunk
+             skeinUpdate(params->mac_context->skein_context_ptr, (const uint8_t*)update_chunk->data, update_chunk->data_size);
+             chunk_maced = true;
         }
         
         //attempt to queue the chunk
         if(update_chunk != NULL)
         {
-            while(queueIsFull(params->out)); //spin until queue is empty
             pdebug("Queuing chunk to write que of size %lu\n", update_chunk->data_size);
+            while(queueIsFull(params->out)); //spin until queue is empty
+            pthread_mutex_lock(params->out_mutex);
             enque(update_chunk, params->out);
+            pthread_mutex_unlock(params->out_mutex);
             //on a successfull queue set mac chunk to NULL so the next chunk will be MACed
             update_chunk = NULL;
         }
@@ -56,10 +61,17 @@ void* generateMAC(void* parameters)
         mac_chunk->action = MAC;
         mac_chunk->data = mac;
         mac_chunk->data_size = mac_size;
-        while(queueIsFull(params->out)); //spin until the write queue is not full
+
+        pthread_mutex_lock(params->out_mutex);
         enque(mac_chunk, params->out); //que the MAC chunk 
-        pdebug("Queuing MAC chunk to write que of size %lu\n", mac_size);
-        queueDone(params->out); //Queie the done flag
+        pthread_mutex_unlock(params->out_mutex);
+        pdebug("$$$$Queuing MAC chunk to write que of size %lu$$$$\n", mac_size);
+        pdebug("$$$$Queuing Done from MAC que$$$$\n");
+
+        while(queueIsFull(params->out)); //spin until the queue is empty
+        pthread_mutex_lock(params->out);
+        queueDone(params->out); //Queue the done flag
+        pthread_mutex_unlock(params->out);
     }
     else //something went wrong
     {
@@ -72,7 +84,9 @@ void* generateMAC(void* parameters)
 inline void setUpMac(macParams* params, 
                      bool* mac_status,
                      bool* running, 
-                     MacCtx_t* mac_context, 
+                     MacCtx_t* mac_context,
+                     pthread_mutex_t* in_mutex,
+                     pthread_mutex_t* out_mutex,
                      queue* in,
                      queue* out,
                      uint32_t* error)
@@ -80,6 +94,8 @@ inline void setUpMac(macParams* params,
     params->mac_status = mac_status;
     params->running = running;
     params->mac_context = mac_context;
+    params->in_mutex = in_mutex;
+    params->out_mutex = out_mutex;
     params->in = in;
     params->out = out;
     params->error = error;

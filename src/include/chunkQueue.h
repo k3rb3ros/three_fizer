@@ -1,10 +1,12 @@
 #ifndef CHUNKQUEUE_H
 #define CHUNKQUEUE_H
 
+#include <pthread.h> //pthread_mutex_t type
 #include <stdbool.h> //bool types
 #include <stdint.h> //std uint types
 #include "arguments.h" //arguments structure
 #include "chunk.h" //chunk type
+#include "debug.h" //pdebug()
 #include "queueActions.h" //que actions
 #include "random.h" //getRand()
 
@@ -18,7 +20,8 @@
 //number of chunks in QUEUE
 #define QUE_SIZE 10
 //size of each queue chunk
-#define MAX_CHUNK_SIZE 524288
+//#define MAX_CHUNK_SIZE 524288
+#define MAX_CHUNK_SIZE 1024
 
 /******************
 * Data Structures *

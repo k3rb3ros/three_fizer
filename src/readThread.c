@@ -117,47 +117,60 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
             //Queue any read chunks in their prefered order
             if(header_chunk != NULL) //attempt to queue the header
             {
+                 pthread_mutex_lock(params->mutex);
                  if(enque(header_chunk, params->out))
                  {
-                      pdebug("Queueing header of size %lu\n", header_chunk->data_size);
+                      pdebug("#HHHQueueing header of size %luHHH#\n", header_chunk->data_size);
                       header = false;
                       header_chunk = NULL;
                  }
+                 pthread_mutex_unlock(params->mutex);
             }
             if(data_chunk != NULL) //attempt to enque the data
             {
+                 pthread_mutex_lock(params->mutex);
                  if(enque(data_chunk, params->out))
                  {
-                      pdebug("Queueing data of size %lu\n", data_chunk->data_size);
+                      pdebug("#DDD Queueing data of size %luDDD#\n", data_chunk->data_size);
                       data_chunk = NULL;
                  }
+                 pthread_mutex_unlock(params->mutex);
             }
             if(mac_chunk != NULL) //attempt to enque 
             {
+                 pthread_mutex_lock(params->mutex);
                  if(enque(mac_chunk, params->out))
                  {
-                      pdebug("Queueing mac of size %lu\n", mac_chunk->data_size);
+                      pdebug("#MMM Queueing mac of size %lu MMM#\n", mac_chunk->data_size);
                       mac_chunk = NULL;
                  }
+                 pthread_mutex_unlock(params->mutex);
              }
         } //end of queue full check
        //otherwise keep looping until the queue is not full
     } //end of while loop
 
+    while(queueIsFull(params->out)); //spin until queue has room for DONE flag
+    pthread_mutex_lock(params->mutex);
+    queueDone(params->out); //put the DONE flag in the queue spin until it succeeds
+    pthread_mutex_unlock(params->mutex);
+
     fclose(read); //close the file handle
-    queueDone(params->out); //put the DONE flag in the queue
     pdebug("readThread() success\n");
+
     return NULL;
 }
 
 inline void setUpReadParams(readParams* read_params, 
                      const arguments* args, 
-                     bool* running, 
+                     bool* running,
+                     pthread_mutex_t* mutex, 
                      queue* out,
                      uint32_t* error)
 {
     read_params->args = args;
     read_params->running = running;
+    read_params->mutex = mutex;
     read_params->out = out;
     read_params->error = error;
 }

@@ -162,7 +162,10 @@ int32_t runThreefizer(const arguments* args)
     pthread_t read_thread;
     pthread_t crypto_thread;
     pthread_t mac_thread;
-    pthread_t write_thread; 
+    pthread_t write_thread;
+    pthread_mutex_t crypto_mutex;
+    pthread_mutex_t mac_mutex;
+    pthread_mutex_t write_mutex;
     queue* crypto_queue = createQueue(QUE_SIZE);
     queue* mac_queue = createQueue(QUE_SIZE);
     queue* write_queue = createQueue(QUE_SIZE);
@@ -179,13 +182,18 @@ int32_t runThreefizer(const arguments* args)
     pdebug("Arguments { ");
     pdebug("free: %d, encrypt: %d, hash: %d, argz: [%s], argz_len: %zu, State Size: %u, password: [%s], pw_length %lu, file_length %lu }\n", args->free, args->encrypt, args->hash, args->argz, args->argz_len, args->state_size, args->password, args->pw_length, args->file_size);
 
+    //Init mutexes
+    pthread_mutex_init(&crypto_mutex, NULL);
+    pthread_mutex_init(&mac_mutex, NULL);
+    pthread_mutex_init(&write_mutex, NULL);
+
     handleKeys(args, &tf_key, &mac_context); //generate and initialize the keys
     if(args->encrypt == true && args->file_size > 0)
     {
-        setUpCryptoParams(&crypto_params, args, &running, &tf_key, crypto_queue, mac_queue, &error);
-        setUpMac(&mac_params, &mac_status, &running, &mac_context, mac_queue, write_queue, &error); 
-        setUpReadParams(&read_params, args, &running, crypto_queue, &error);
-        setUpWriteParams(&write_params, args, &running, write_queue, temp_file_name, &error, file_size);
+        setUpCryptoParams(&crypto_params, args, &running, &tf_key, &crypto_mutex, &mac_mutex, crypto_queue, mac_queue, &error);
+        setUpMac(&mac_params, &mac_status, &running, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, &error); 
+        setUpReadParams(&read_params, args, &running, &crypto_mutex, crypto_queue, &error);
+        setUpWriteParams(&write_params, args, &running, &write_mutex, write_queue, temp_file_name, &error, file_size);
         queueHeader(args, crypto_queue);
         threads_active = true;
         pthread_create(&read_thread, NULL, queueFile, &read_params);
@@ -200,7 +208,7 @@ int32_t runThreefizer(const arguments* args)
     }
     else
     {
-        setUpReadParams(&read_params, args, &running, mac_queue, &error);
+        setUpReadParams(&read_params, args, &running, &crypto_mutex, mac_queue, &error);
         threads_active = true;
         pthread_create(&read_thread, NULL, queueFile, &read_params);
         pthread_create(&crypto_thread, NULL, decryptQueue, &crypto_params);
@@ -287,6 +295,9 @@ int32_t runThreefizer(const arguments* args)
         pthread_join(write_thread, NULL);
     }
     if(error != 0) { status = error; } //return the error if 1 occured
+    pthread_mutex_destroy(&crypto_mutex);
+    pthread_mutex_destroy(&mac_mutex);
+    pthread_mutex_destroy(&write_mutex);
     destroyQueue(crypto_queue);
     destroyQueue(mac_queue);
     destroyQueue(write_queue);
