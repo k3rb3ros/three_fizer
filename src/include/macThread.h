@@ -25,7 +25,7 @@ void* authenticateMAC(void* parameters);
 
 void* generateMAC(void* parameters);
 
-void setUpMac(macParams* params,
+void setUpMacParams(macParams* params,
               bool* mac_status, 
               bool* running, 
               MacCtx_t* mac_context, 

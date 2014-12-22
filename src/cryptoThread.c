@@ -2,9 +2,25 @@
 
 void* decryptQueue(void* parameters)
 {
+    pdebug("decryptQueue()\n");
     cryptParams* params = parameters;
     return NULL;
 }
+
+/****************************************************************************** 
+* This encrypts all queued data passed to 'in' and puts it in the 'out' queue.
+* this function assumes a properly formatted header starting with an IV
+* is the first thing queued and an empty chunk with the action set to DONE is the
+* last thing queued. 
+*******************************************************************************/
+
+/***********************************************************
+* The encrypted file should be written like this           *
+* |HEADER|CIPHER_TEXT|MAC|                                 *
+* note the MAC operation must include the entire header    *
+* which in turn includes the IV                            *
+* The mac size is the same as the block size of the cipher *
+***********************************************************/
 
 void* encryptQueue(void* parameters)
 {

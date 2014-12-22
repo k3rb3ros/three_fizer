@@ -81,7 +81,7 @@ void* generateMAC(void* parameters)
     return NULL;
 }
 
-inline void setUpMac(macParams* params, 
+inline void setUpMacParams(macParams* params,
                      bool* mac_status,
                      bool* running, 
                      MacCtx_t* mac_context,

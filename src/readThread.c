@@ -14,7 +14,7 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
     uint64_t orig_file_size = getSize(params->args->argz); //get the file size in bytes
     FILE* read = openForBlockRead(params->args->argz); //open a handle to the file
 
-    if(!params->args->encrypt) { header = true; pdebug("Decrypt mode queuing header\n"); } //if we are decrypting then we need to look for a header
+    if(!params->args->encrypt) { header = true; } //if we are decrypting then we need to look for a header
 
     while(*(params->running) && *(params->error) == 0 && orig_file_size > 0)
     {
@@ -42,7 +42,7 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
                      header_chunk->data_size = header_byte_size;
                      orig_file_size -= header_byte_size;
                  }
-                 else //Normal Operation
+                 else //Data or MAC
                  {
                      //Files encrypted with this program have a MAC of 1 block appended
                      //to the end of the file. In decrypt mode we assume this MAC is 
@@ -75,10 +75,10 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
 
                           mac_chunk->data_size = orig_file_size;
                           orig_file_size = 0; //the MAC is always the last thing in the file
-                  }
-                  else if(orig_file_size <= MAX_CHUNK_SIZE) //the end of the file in encrypt mode
-                  {
-                      data_chunk = createChunk();
+                     }
+                     else if(orig_file_size <= MAX_CHUNK_SIZE) //the end of the file in encrypt mode
+                     {
+                          data_chunk = createChunk();
                       if(data_chunk == NULL)
                       {
                           perror("Error allocating memory for file read\n");
@@ -95,7 +95,7 @@ void* queueFile(void* parameters) //right now this is blocking until the entire 
                       data_chunk->data_size = getPadSize(orig_file_size, params->args->state_size);
                       orig_file_size -= orig_file_size;
                   }
-                  else //read a full chunk of the file
+                  else //read a full data chunk of the file
                   {
                       data_chunk = createChunk();
                       if(data_chunk == NULL)

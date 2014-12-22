@@ -20,8 +20,7 @@
 //number of chunks in QUEUE
 #define QUE_SIZE 10
 //size of each queue chunk
-//#define MAX_CHUNK_SIZE 524288
-#define MAX_CHUNK_SIZE 1024
+#define MAX_CHUNK_SIZE 524288
 
 /******************
 * Data Structures *
