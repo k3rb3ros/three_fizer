@@ -47,15 +47,9 @@ inline bool queueIsFull(queue* q)
 }
 
 //return the first queued element (if any)
-chunk* front(queue* q)
+inline chunk* front(queue* q)
 {
-    chunk* chunk = NULL;
-    if(q->size > 0)
-    {
-       chunk = q->elements[q->head];
-    }
-
-    return chunk;
+    return q->size > 0 ? q->elements[q->head] : NULL;
 }
 
 //allocate memory for the queue and set all its default values

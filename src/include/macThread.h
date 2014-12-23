@@ -8,6 +8,9 @@
 #include "debug.h" //pdebug()
 #include "error.h" //error codes
 #include "mac.h" //MacCtx_t type, checkMAC() and genMAC()
+#include "pthread.h" //pthread_mutex_lock() pthread_mutex_unlock()
+#include "threefishApi.h" //ThreefishKey_t type
+#include "tfHeader.h" //checkHeader()
 
 typedef struct
 {
@@ -18,7 +21,9 @@ typedef struct
     pthread_mutex_t* out_mutex;
     queue* in;
     queue* out;
+    ThreefishKey_t* tf_key;
     uint32_t* error;
+    uint64_t* file_size;
 } macParams;
 
 void* authenticateMAC(void* parameters);
@@ -33,6 +38,9 @@ void setUpMacParams(macParams* params,
               pthread_mutex_t* out_mutex,
               queue* in,
               queue* out, 
-              uint32_t* error);
+              ThreefishKey_t* tf_key,
+              uint32_t* error,
+              uint64_t* file_size);
 
 #endif
+

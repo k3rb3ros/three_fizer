@@ -2,7 +2,7 @@
 
 /*Checks if the header is valid which is a quick and easy way to tell if the encryption key and block size are correct, with out having to try and decrypt the entire file
 */
-static bool checkHeader(const uint64_t* header,
+bool checkHeader(const uint64_t* header,
                  uint64_t* file_size,
                  const SkeinSize_t state_size)
 {

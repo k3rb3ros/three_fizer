@@ -84,7 +84,7 @@ bool writeFile(const char* fname, uint8_t* data, uint64_t data_size)
         return status; 
     }
 
-    pdebug("(writeFile) fname:%s, data:%x, data_size:%lu\n", &fname, &data, data_size);
+    pdebug("(writeFile) fname:%s, data:%x, data_size:%lu\n", (char*)fname, (unsigned int)data, data_size);
     fwrite(data, sizeof(uint8_t), data_size, my_write);
    
     if(ferror(my_write)) { status = false; }

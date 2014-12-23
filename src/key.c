@@ -1,8 +1,8 @@
 #include "include/key.h"
 
 bool handleKeys(const arguments* args,
-                       ThreefishKey_t* cipher_context,
-                       MacCtx_t* mac_context)
+                      ThreefishKey_t* cipher_context,
+                      MacCtx_t* mac_context)
 {
     pdebug("handleKeys()\n");
     if(cipher_context == NULL && mac_context == NULL) { return false; } //sanity check

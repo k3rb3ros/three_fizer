@@ -1,17 +1,77 @@
 #include "include/cryptoThread.h"
 
+/*
+* This function assumes the header has been tested to be valid but is still encrypted 
+*/
 void* decryptQueue(void* parameters)
 {
     pdebug("decryptQueue()\n");
+    bool decrypted = false;
+    bool header = true;
+    chunk* decrypt_chunk = NULL;
     cryptParams* params = parameters;
+    uint64_t* chain = NULL;
+
+    chain = calloc((params->tf_key->stateSize/8), sizeof(uint64_t));
+    if(chain == NULL) //check that calloc succeeded
+    {
+        *(params->error) = MEMORY_ALLOCATION_FAIL;
+        return NULL;
+    }
+
+    while(*(params->running) && *(params->error) == 0 &&
+          (front(params->in) == NULL || front(params->in)->action != DONE))
+    {
+        if(decrypt_chunk == NULL && front(params->in) != NULL)
+        {
+             pthread_mutex_lock(params->in_mutex);
+             decrypt_chunk = front(params->in);
+             deque(params->in);
+             pthread_mutex_unlock(params->in_mutex);
+             decrypted = false;
+        }
+        /*
+        * Get the chain block from the encrypted header then strip it out
+        */
+        if(header && decrypt_chunk != NULL)
+        {
+             getChainInBuffer(decrypt_chunk->data, chain, 2, params->tf_key->stateSize);
+             destroyChunk(decrypt_chunk);
+             decrypt_chunk = NULL;
+        }
+        else if(decrypt_chunk != NULL && !decrypted) //decrypt the chunk
+        {
+            decryptInPlace(params->tf_key, chain, decrypt_chunk->data, decrypt_chunk->data_size);
+            getChainInBuffer(decrypt_chunk->data, chain, 2, params->tf_key->stateSize); 
+            decrypted = true;
+        }
+        
+        if(decrypt_chunk != NULL && !queueIsFull(params->out)) //attempt to queue the chunk
+        {
+            pthread_mutex_lock(params->out_mutex);
+            enque(decrypt_chunk, params->out);
+            pthread_mutex_unlock(params->out_mutex);
+            decrypt_chunk = NULL;
+            decrypted = false;
+        }
+    }
+
+    //queue done
+    while(queueIsFull(params->out)); 
+    pthread_mutex_lock(params->out_mutex);
+    queueDone(params->out);
+    pthread_mutex_unlock(params->out_mutex);
+
+    if(chain != NULL) { free(chain); } //free allocated resources
+
     return NULL;
 }
 
 /****************************************************************************** 
-* This encrypts all queued data passed to 'in' and puts it in the 'out' queue.
-* this function assumes a properly formatted header starting with an IV
-* is the first thing queued and an empty chunk with the action set to DONE is the
-* last thing queued. 
+* This encrypts all queued data passed to 'in' and puts it in the 'out' queue.*
+* this function assumes a properly formatted header starting with an IV       *
+* is the first thing queued and an empty chunk with the action set to DONE is *
+* the last thing queued.                                                      *
 *******************************************************************************/
 
 /***********************************************************
@@ -30,15 +90,15 @@ void* encryptQueue(void* parameters)
     chunk* encrypt_chunk = NULL;
     uint64_t* chain = NULL;
     
-    if(params->tf_key == NULL)
+    chain = calloc(params->tf_key->stateSize/8, sizeof(uint64_t));
+    if(chain == NULL) //check that calloc succeeded
     {
-        *(params->error) = MEMORY_ALLOCATION_FAIL; //set the error flag
+        *(params->error) = MEMORY_ALLOCATION_FAIL;
         return NULL;
     }
-    chain = calloc(params->tf_key->stateSize/8, sizeof(uint64_t));
 
     while(*(params->running) && *(params->error) == 0 && 
-          front(params->in) == NULL || front(params->in)->action != DONE) //the queue will return NULL if this thread runs faster then the read thread(very likely)
+          (front(params->in) == NULL || front(params->in)->action != DONE)) //the queue will return NULL if this thread runs faster then the read thread(very likely)
     {
          if(encrypt_chunk == NULL && front(params->in) != NULL)
          {

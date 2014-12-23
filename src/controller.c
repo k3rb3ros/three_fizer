@@ -1,6 +1,6 @@
 #include "include/controller.h"
 
-static int decryptBody(ThreefishKey_t* tf_key, 
+/*static int decryptBody(ThreefishKey_t* tf_key, 
                        const uint64_t body_size,
                        const uint64_t* chain,  
                        queue* in,
@@ -56,8 +56,9 @@ static int decryptBody(ThreefishKey_t* tf_key,
 
     if(even_chain != NULL) { free(even_chain); }
     if(odd_chain != NULL) { free(odd_chain); }
+
     return status;
-}
+}*/
 
 int32_t runThreefizer(const arguments* args)
 {
@@ -99,7 +100,7 @@ int32_t runThreefizer(const arguments* args)
     if(args->encrypt == true && args->file_size > 0)
     {
         setUpCryptoParams(&crypto_params, args, &running, &tf_key, &crypto_mutex, &mac_mutex, crypto_queue, mac_queue, &error);
-        setUpMacParams(&mac_params, &mac_status, &running, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, &error); 
+        setUpMacParams(&mac_params, &mac_status, &running, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, NULL, &error, NULL); 
         setUpReadParams(&read_params, args, &running, &crypto_mutex, crypto_queue, &error);
         setUpWriteParams(&write_params, args, &running, &write_mutex, write_queue, temp_file_name, &error, file_size);
         queueHeader(args, crypto_queue);
@@ -117,12 +118,13 @@ int32_t runThreefizer(const arguments* args)
     else //decrypt
     {
         setUpReadParams(&read_params, args, &running, &crypto_mutex, mac_queue, &error);
-        setUpMacParams(&mac_params, &mac_status, &running, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, &error); 
+        setUpMacParams(&mac_params, &mac_status, &running, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, &tf_key, &error, &file_size); 
+        setUpCryptoParams(&crypto_params, args, &running, &tf_key, &crypto_mutex, &mac_mutex, crypto_queue, mac_queue, &error);
         threads_active = true;
         pthread_create(&read_thread, NULL, queueFile, &read_params);
         pthread_create(&mac_thread, NULL, authenticateMAC, &mac_params);
         pthread_create(&crypto_thread, NULL, decryptQueue, &crypto_params);
-        pthread_create(&write_thread, NULL, asyncWrite, &write_params);
+        //pthread_create(&write_thread, NULL, asyncWrite, &write_params);
     }
 
     if(args->encrypt == true)
@@ -202,7 +204,7 @@ int32_t runThreefizer(const arguments* args)
         pthread_join(read_thread, NULL);
         pthread_join(crypto_thread, NULL);
         pthread_join(mac_thread, NULL);
-        pthread_join(write_thread, NULL);
+        //pthread_join(write_thread, NULL);
     }
     if(error != 0) { status = error; } //return the error if 1 occured
     pthread_mutex_destroy(&crypto_mutex);
