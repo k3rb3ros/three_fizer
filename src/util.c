@@ -1,9 +1,9 @@
 #include "util.h"
 
 //A sanity check for decrypting any files smaller then 4 blocks couldn't have been encrypted by this program
-inline bool isAtLeastFourBlocks(const arguments* args)
+inline bool isGreaterThanThreeBlocks(const arguments* args)
 {
-    return args != NULL && (args->file_size >= ((uint64_t)(args->state_size/8) * 4));
+    return args != NULL && (args->file_size >= (uint64_t)(((args->state_size/8) * 3) + 1));
 }
 
 static inline void getLine(uint8_t* buffer, const uint64_t buffer_size) //get a line without the \n character from enter press

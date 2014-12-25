@@ -16,6 +16,7 @@ typedef struct
 {
     bool* mac_status;
     bool* running;
+    bool* valid;
     MacCtx_t* mac_context;
     pthread_mutex_t* in_mutex;
     pthread_mutex_t* out_mutex;
@@ -32,7 +33,8 @@ void* generateMAC(void* parameters);
 
 void setUpMacParams(macParams* params,
               bool* mac_status, 
-              bool* running, 
+              bool* running,
+              bool* valid, 
               MacCtx_t* mac_context, 
               pthread_mutex_t* in_mutex,
               pthread_mutex_t* out_mutex,

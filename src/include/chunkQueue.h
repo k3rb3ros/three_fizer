@@ -18,9 +18,9 @@
 
 //Queue constants
 //number of chunks in QUEUE
-#define QUE_SIZE 10
+#define QUE_SIZE 10 //10*50MB*3Queues = 150MB max queue usage
 //size of each queue chunk
-#define MAX_CHUNK_SIZE 524288
+#define MAX_CHUNK_SIZE 51200000 //50MB
 
 /******************
 * Data Structures *

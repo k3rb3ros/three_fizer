@@ -11,12 +11,15 @@ void* authenticateMAC(void* parameters)
     while(*(params->running) && *(params->error) == 0)
     {
         //get the next chunk
-        if(mac_chunk == NULL && front(params->in))
+        if(mac_chunk == NULL)
         {
-             pdebug("*** attempting to deque chunk to mac ***\n");
              pthread_mutex_lock(params->in_mutex);
-             mac_chunk = front(params->in);
-             if(mac_chunk != NULL && mac_chunk->action != MAC) { deque(params->in); } //if the operation succeeded deque the chunk
+             if(front(params->in) != NULL)
+             {
+                 pdebug("*** attempting to deque chunk to mac ***\n");
+                 mac_chunk = front(params->in);
+                 if(mac_chunk != NULL && mac_chunk->action != MAC) { deque(params->in); } //if the operation succeeded deque the chunk
+             }
              pthread_mutex_unlock(params->in_mutex);
         }
 
@@ -42,14 +45,16 @@ void* authenticateMAC(void* parameters)
              if(!checkHeader(test_header, params->file_size, params->tf_key->stateSize))
              {
                   pdebug("*** Header check failed ***\n");
-                  pdebug("***Ran header check on chunk of size %lu ***\n", mac_chunk->data_size);
+                  pdebug("*** Ran header check on chunk of size %lu ***\n", mac_chunk->data_size);
                   *(params->error) = HEADER_CHECK_FAIL;
                   if(test_header != NULL) { free(test_header); }
                   return NULL;
              }
 
-             pdebug("Header check succeeded\n");
-             header = false; //header check succeaded
+             pdebug("*** Header check succeeded ***\n");
+             header = false;
+             *(params->valid) = true; //signal to other processes that the header is valid
+             
              if(test_header != NULL) { free(test_header); }
         }
 
@@ -74,7 +79,6 @@ void* authenticateMAC(void* parameters)
    } //end while loop
 
     pdebug("*** authenticateMAC() done with first loop ***\n");
-
     //allocates storage for the calculated mac
     uint64_t* calculated_mac = calloc(params->mac_context->digest_byte_size, sizeof(uint8_t));
 
@@ -119,7 +123,7 @@ void* authenticateMAC(void* parameters)
     {
         if(calculated_mac[i] != stored_mac[i])
         {
-            pdebug("MAC check failed. File has been tampered with or was not encrypted with this program\n");
+            pdebug("*** MAC check failed. File has been tampered with or was not encrypted with this program ***\n");
             *(params->error) = MAC_CHECK_FAIL;
             free(calculated_mac);
             destroyChunk(stored_mac_chunk);
@@ -127,15 +131,21 @@ void* authenticateMAC(void* parameters)
         } //if control falls through the MAC is valid
     }
 
-    pdebug("MAC check passed\n");
-    //queueDone to signal to asyncWrite that we are done
+    pdebug("*** MAC check passed ***\n");
+    //queue Done flag
     while(queueIsFull(params->out));
     pthread_mutex_lock(params->out_mutex);
-    queueDone(params->out);
+    if(!queueDone(params->out))
+    {
+        pdebug("Error queueing done\n");
+        *(params->error) = QUEUE_OPERATION_FAIL;
+        return NULL;
+    }
     pthread_mutex_unlock(params->out_mutex);
+    pdebug("*** Done queued *** \n");
 
     //free any remaining allocated resources
-    destroyChunk(stored_mac_chunk);
+    if(stored_mac_chunk != NULL) { destroyChunk(stored_mac_chunk); }
     if(calculated_mac != NULL) { free(calculated_mac); }
 
     return NULL;
@@ -180,13 +190,12 @@ void* generateMAC(void* parameters)
             pdebug("Queuing chunk to write que of size %lu\n", update_chunk->data_size);
             while(queueIsFull(params->out)); //spin until queue is empty
             pthread_mutex_lock(params->out_mutex);
-            enque(update_chunk, params->out);
+            if(enque(update_chunk, params->out)) { update_chunk = NULL; }
             pthread_mutex_unlock(params->out_mutex);
             //on a successfull queue set mac chunk to NULL so the next chunk will be MACed
-            update_chunk = NULL;
-        }
+        } //end queu operation
         //otherwise spin and wait for the queue to empty
-    }
+    } //end thread loop
 
     if(front(params->in) != NULL && front(params->in)->action == DONE)//if we have reached the end of the in queue then get the MAC and que it to the out que 
     {
@@ -197,20 +206,32 @@ void* generateMAC(void* parameters)
         mac_chunk->data = mac;
         mac_chunk->data_size = mac_size;
 
+        while(queueIsFull(params->out)); //spin until queue is empty
         pthread_mutex_lock(params->out_mutex);
-        enque(mac_chunk, params->out); //que the MAC chunk 
+        if(!enque(mac_chunk, params->out)) //que the mac chunk 
+        {
+            *(params->error) = MAC_GENERATION_FAIL; //mac failed to enque
+            if(mac != NULL) { free(mac); }
+        }
         pthread_mutex_unlock(params->out_mutex);
-        pdebug("$$$$Queuing MAC chunk to write que of size %lu$$$$\n", mac_size);
-        pdebug("$$$$Queuing Done from MAC que$$$$\n");
+        pdebug("*** Queuing MAC chunk to write que of size %lu ***\n", mac_size);
 
-        while(queueIsFull(params->out)); //spin until the queue is empty
+        //queue Done flag
+        while(queueIsFull(params->out));
         pthread_mutex_lock(params->out_mutex);
-        queueDone(params->out); //Queue the done flag
+        if(!queueDone(params->out))
+        {
+            pdebug("Error queueing done\n");
+            *(params->error) = QUEUE_OPERATION_FAIL;
+            return NULL;
+        }
         pthread_mutex_unlock(params->out_mutex);
+        pdebug("*** Done queued *** \n");
     }
     else //something went wrong
     {
         *(params->error) = MAC_GENERATION_FAIL;
+        return NULL;
     }
     
     return NULL;
@@ -218,7 +239,8 @@ void* generateMAC(void* parameters)
 
 inline void setUpMacParams(macParams* params,
                      bool* mac_status,
-                     bool* running, 
+                     bool* running,
+                     bool* valid, 
                      MacCtx_t* mac_context,
                      pthread_mutex_t* in_mutex,
                      pthread_mutex_t* out_mutex,
@@ -230,6 +252,7 @@ inline void setUpMacParams(macParams* params,
 {
     params->mac_status = mac_status;
     params->running = running;
+    params->valid = valid;
     params->mac_context = mac_context;
     params->in_mutex = in_mutex;
     params->out_mutex = out_mutex;

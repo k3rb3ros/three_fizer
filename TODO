@@ -1,6 +1,6 @@
 * Add the ability for the user to manually specify an IV
 * Add key derrivation function for all hashed keys 
-* Add threading to all blocking controller operaitons 
+* Add threading to all blocking controller operaitons #DONE# 
 * fix password files so files are no longer buffered
 * Add tests for cbc operations
 * Add tests for fileIO
@@ -8,3 +8,4 @@
 * Add tests for pad operations
 * Get code reviewed by a security expert
 * Add mutexes to shared data operations
+* Fix bug where threads spin infintely some times
