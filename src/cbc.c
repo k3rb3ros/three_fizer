@@ -1,7 +1,7 @@
 #include "include/cbc.h"
 
 bool getChainInBuffer(const uint64_t* cipher_text,
-                 const uint64_t* buffer, 
+                 uint64_t* buffer, 
                  const uint64_t num_blocks, 
                  const SkeinSize_t state_size)
 {
@@ -18,10 +18,10 @@ inline uint64_t* getChainInPlace(const uint64_t* cipher_text,
                    const SkeinSize_t state_size)
 {
     const uint64_t offset = ((uint64_t)state_size/64) * (num_blocks-1);
-    return (cipher_text + offset);
+    return ((uint64_t*)cipher_text + offset);
 }
 
-void cbc256Decrypt(const ThreefishKey_t* key, 
+void cbc256Decrypt(ThreefishKey_t* key, 
                    const uint64_t* iv, 
                    uint64_t* cipher_text, 
                    const uint64_t num_blocks)
@@ -63,7 +63,7 @@ void cbc256Decrypt(const ThreefishKey_t* key,
     }
 }
 
-void cbc512Decrypt(const ThreefishKey_t* key, 
+void cbc512Decrypt(ThreefishKey_t* key, 
                    const uint64_t* iv, 
                    uint64_t* cipher_text,
                    const uint64_t num_blocks)
@@ -113,7 +113,7 @@ void cbc512Decrypt(const ThreefishKey_t* key,
     }
 }
 
-void cbc1024Decrypt(const ThreefishKey_t* key, 
+void cbc1024Decrypt(ThreefishKey_t* key, 
                     const uint64_t* iv, 
                     uint64_t* cipher_text, 
                     const uint64_t num_blocks)
@@ -176,7 +176,7 @@ void cbc1024Decrypt(const ThreefishKey_t* key,
     }
 }
 
-void cbc256Encrypt(const ThreefishKey_t* key, 
+void cbc256Encrypt(ThreefishKey_t* key, 
                    const uint64_t* iv, 
                    uint64_t* plain_text,
                    const uint64_t num_blocks)
@@ -197,7 +197,7 @@ void cbc256Encrypt(const ThreefishKey_t* key,
     }
 }
 
-void cbc512Encrypt(const ThreefishKey_t* key, 
+void cbc512Encrypt(ThreefishKey_t* key, 
                    const uint64_t* iv, 
                    uint64_t* plain_text, 
                    const uint64_t num_blocks)
@@ -221,7 +221,7 @@ void cbc512Encrypt(const ThreefishKey_t* key,
     }
 }
 
-void cbc1024Encrypt(const ThreefishKey_t* key,
+void cbc1024Encrypt(ThreefishKey_t* key,
                     const uint64_t* iv,
                     uint64_t* plain_text,
                     const uint64_t num_blocks)

@@ -5,14 +5,14 @@
  * byte by byte returns true if the MAC's match
  */
 
-bool checkMAC(chunk* expected, uint8_t* generated, uint64_t mac_byte_size)
+bool checkMAC(chunk* expected, const uint8_t* generated, uint64_t mac_byte_size)
 {
      pdebug("checkMAC()\n");
      if(expected->data_size != mac_byte_size) { return false; } //size check
 
-     uint8_t* check = expected->data;
+     uint8_t* check = (uint8_t*)expected->data;
 
-     for(uint64_t i=0; i<mac_byte_size; i++)
+     for(uint64_t i=0; i<mac_byte_size; ++i)
      {
          if(generated[i] != check[i]) { return false; }
      }
@@ -62,7 +62,7 @@ uint64_t* genMAC(MacCtx_t* mac_context, queue* in, queue* out)
     if(in != NULL)
     {
          mac = calloc(mac_context->digest_byte_size, sizeof(uint8_t));
-         skeinFinal(mac_context->skein_context_ptr, mac);
+         skeinFinal(mac_context->skein_context_ptr, (uint8_t*)mac);
     } 
     
     return mac;

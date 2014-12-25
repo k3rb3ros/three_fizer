@@ -1,7 +1,14 @@
 #ifndef CHUNKQUEUE_H
 #define CHUNKQUEUE_H
 
-#include "chunk.h"
+#include <pthread.h> //pthread_mutex_t type
+#include <stdbool.h> //bool types
+#include <stdint.h> //std uint types
+#include "arguments.h" //arguments structure
+#include "chunk.h" //chunk type
+#include "debug.h" //pdebug()
+#include "queueActions.h" //que actions
+#include "random.h" //getRand()
 
 /*defines the queue data structure used to queue asymmetric IO and Crypto operation*/
 
@@ -9,13 +16,11 @@
 * Compile Time Numeric Constants *
 **********************************/
 
-#define ENCRYPT 1
-#define CHECK_HEADER 2
-#define DECRYPT 3
-#define GEN_MAC 4
-#define DONE 5
-#define MAC 6
-#define WRITE 7
+//Queue constants
+//number of chunks in QUEUE
+#define QUE_SIZE 10 //10*50MB*3Queues = 150MB max queue usage
+//size of each queue chunk
+#define MAX_CHUNK_SIZE 51200000 //50MB
 
 /******************
 * Data Structures *
@@ -33,6 +38,8 @@ typedef struct
 bool deque(queue* q);
 
 bool enque(chunk* chunk, queue* q);
+
+bool queueDone(queue* q);
 
 bool queueIsFull(queue* q);
 

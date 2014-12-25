@@ -3,6 +3,7 @@
 //pops the first queued element out of the queue
 bool deque(queue* q)
 {
+    pdebug("deque(%x)\n", q);
     if(q->size <= 0) { return false; }
     else
     {
@@ -16,6 +17,7 @@ bool deque(queue* q)
 //enqueue the chunk passed in
 bool enque(chunk* chunk, queue* q)
 {
+    pdebug("enque(%x)\n", q);
     if(q->size == q->capacity || chunk == NULL) { return false; }
     else
     {
@@ -26,21 +28,28 @@ bool enque(chunk* chunk, queue* q)
     return true;
 }
 
+//Put a done flag into the Queue telling all threads using it that there operation on queued data is complete
+inline bool queueDone(queue* q)
+{
+    pdebug("queueDone()\n");
+    chunk* done = createChunk();
+    done->action = DONE;
+
+    if(enque(done, q)) { return true; }
+  
+    pdebug("!!!!!queueDone Failed!!!!!");
+    return false;
+}
+
 inline bool queueIsFull(queue* q)
 {
    return q->size == q->capacity;
 }
 
 //return the first queued element (if any)
-chunk* front(queue* q)
+inline chunk* front(queue* q)
 {
-    chunk* chunk = NULL;
-    if(q->size > 0)
-    {
-       chunk = q->elements[q->head];
-    }
-
-    return chunk;
+    return q->size > 0 ? q->elements[q->head] : NULL;
 }
 
 //allocate memory for the queue and set all its default values

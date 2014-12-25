@@ -1,7 +1,6 @@
 INCLUDES=-Iinclude
 CFLAGS= $(STDFLAG) $(INCLUDES) $(DBGFLAGS) $(DEFINITIONS)
 DEPS=$(wildcard include/*.h)
-LDFLAGS=
 OBJ=$(patsubst %.c,obj/%.o,$(SRC))
 SRC=$(wildcard *.c)
 
@@ -13,8 +12,8 @@ obj:
 	@mkdir -p $@
 
 obj/%.o:%.c $(SRC) $(DEPS)
-	@echo $(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS)
-	@$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS)
+	@echo $(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
 

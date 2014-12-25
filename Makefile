@@ -14,7 +14,6 @@ export CC
 export DBGFLAGS
 export STDFLAG
 export DEFINITIONS
-export LDFLAGS
 export OPTFLAGS
 export PRGRAM_OBJECTS
 
@@ -23,11 +22,11 @@ export PRGRAM_OBJECTS
 all: program tests
 
 program: threefizer
-	$(CC) $(CFLAGS) $(PRGRAM_OBJECTS) -o $(PROGRAM)
+	$(CC) $(CFLAGS) $(PRGRAM_OBJECTS) $(LDFLAGS) -o $(PROGRAM)
 
 tests: threefizer test
 	$(eval TF_OBJECTS=$(filter-out src/obj/threefizer.o, $(PRGRAM_OBJECTS)))
-	$(CC) $(CFLAGS) $(TEST_OBJECTS) $(TF_OBJECTS) -o $(TEST)
+	$(CC) $(CFLAGS) $(TEST_OBJECTS) $(TF_OBJECTS) $(LDFLAGS) -o $(TEST)
 	
 clean:
 	cd src; make clean

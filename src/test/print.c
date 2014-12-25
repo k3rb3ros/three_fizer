@@ -10,4 +10,3 @@ void ShowBuff(uint64_t cnt, const uint8_t* b)
         if (i %16 == 15 || i==cnt-1) printf("\n");
     }
 }
-

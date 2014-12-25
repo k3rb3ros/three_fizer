@@ -30,10 +30,10 @@ uint64_t* pad(const uint8_t* input, const uint64_t input_length, const SkeinSize
          if(memcpy(pad, input, input_length) == NULL)//memcpy(pad, input, input_length) == NULL) //Copy input over into our padded buffer
          {
              perror("Error: Unable to allocate enough memory to pad input\n");
-             free(input); //free the old buffer
+             free((void*)input); //free the old buffer
              return NULL; //return
          }
-         free(input); //free the old buffer
+         free((void*)input); //free the old buffer
          return pad; //return the padded buffer
      }
      return (uint64_t*)input;

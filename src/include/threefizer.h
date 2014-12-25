@@ -43,6 +43,6 @@ extern struct argp_option options[]; //Argp options
 ************************
 */
 
-static error_t parse_opt (const int key, const char *arg, struct argp_state* state);
+static error_t parse_opt (int key, char *arg, struct argp_state* state);
 
 #endif 
