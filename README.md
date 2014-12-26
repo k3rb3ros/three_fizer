@@ -17,7 +17,7 @@ Features
 
 * Header and MAC checking on decrypt
 * Multi threading
-* Only Overites files on success
+* Only ovewrites files on success
 
 Intended Use
 ------------
