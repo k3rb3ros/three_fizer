@@ -28,6 +28,8 @@
 
 #define SUCCESS 1
 
+#define TEMP_FILE_NAME_SIZE 10
+
 /************
 * Functions *
 *************/

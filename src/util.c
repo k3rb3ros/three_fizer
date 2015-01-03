@@ -34,10 +34,45 @@ SkeinSize_t getSkeinSize(const char* key)
 {
     for(unsigned long i=0; i<N_BLOCK_LOOKUP; ++i)
     {
-        keyBlock_t* sym = &block_lookup[i];
+        key_t* sym = &block_lookup[i];
         if(strcmp(sym->key, key) ==0) { return sym->skein_size; }
     }
     return Skein512; //Should not happen
+}
+
+static inline uint8_t hexLookupNibble(uint8_t nibble)
+{
+    //this shouldn't happen
+    if(nibble > N_HEX_LOOKUP) return 0;
+    //lookup the hex value from the table
+    pdebug("=^  Looking up table for nibble %d ^=\n", nibble);
+    return hex_lookup[nibble].hex;
+}
+
+uint8_t* binToHex(uint8_t* src, uint64_t size)
+{
+    //sanity checks
+    if(src == NULL) { return NULL; }
+    if(size == 0) 
+    { 
+        free(src);
+	return NULL;
+    }
+
+    //allocate storage for the hex buffer
+    const uint64_t hex_size = 2*size;
+    uint8_t* hex = calloc(hex_size, sizeof(uint8_t));
+
+    for(uint64_t i=0; i<size; ++i)
+    {
+	//split the byte into two nibble halves and look up their hex representation
+        hex[(2*i)+0] = hexLookupNibble((src[i] & 0xf0) >> 4);
+        hex[(2*i)+1] = hexLookupNibble(src[i] & 0x0f);
+    }      
+
+    //free the original buffer and return the hex
+    free(src); 
+    return hex;
 }
 
 void askPassword(arguments* args)

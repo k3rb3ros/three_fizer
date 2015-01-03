@@ -7,8 +7,8 @@ int32_t runThreefizer(const arguments* args)
     bool threads_active = false;
     bool valid = false;
     uint32_t error = 0;
-    const uint8_t* temp_file_name = hash((uint8_t*)args->argz, 10, args->state_size); 
-    const uint64_t block_byte_size = (args->state_size/8);
+    //the temp file name is a partial skein hash of the original file name
+    const uint8_t* temp_file_name = binToHex(hash((uint8_t*)args->argz, TEMP_FILE_NAME_SIZE, args->state_size), TEMP_FILE_NAME_SIZE);
     pthread_t read_thread;
     pthread_t crypto_thread;
     pthread_t mac_thread;

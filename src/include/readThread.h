@@ -7,6 +7,7 @@
 #include "chunkQueue.h" //queue type and enque()
 #include "error.h" //error codes
 #include "pad.h" //pad()
+#include "util.h" //isGreaterThanThreeBlocks()
 
 typedef struct
 {
