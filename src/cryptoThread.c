@@ -58,10 +58,10 @@ void* decryptQueue(void* parameters)
         {
             uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
                                               (uint32_t)params->tf_key->stateSize);
-            decryptInPlace(params->tf_key, chain, decrypt_chunk->data, num_blocks);
+	    decryptInPlace(params->tf_key, chain, decrypt_chunk->data, num_blocks);
             getChainInBuffer(decrypt_chunk->data, chain, 2, params->tf_key->stateSize); 
             decrypted = true;
-            pdebug("$$$ Decrypting chunk of size %lu $$$\n");
+            pdebug("$$$ Decrypting chunk of size %lu $$$\n", decrypt_chunk->data_size);
         }
         
         if(decrypt_chunk != NULL && decrypted) //attempt to queue the chunk

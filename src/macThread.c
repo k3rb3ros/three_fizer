@@ -70,11 +70,14 @@ void* authenticateMAC(void* parameters)
         if(mac_chunk != NULL && maced && !queueIsFull(params->out))
         {
              pdebug("*** Queuing chunk of size %lu ***\n", mac_chunk->data_size);
+	     while(queueIsFull(params->out)); //spin until the queue has at least one free spot
              pthread_mutex_lock(params->out_mutex);
-             enque(mac_chunk, params->out); 
+             if(enque(mac_chunk, params->out))
+             {
+                 maced = false;
+                 mac_chunk = NULL;
+             }
              pthread_mutex_unlock(params->out_mutex);
-             maced = false;
-             mac_chunk = NULL;
         }
    } //end while loop
 
@@ -160,40 +163,41 @@ void* generateMAC(void* parameters)
     macParams* params = parameters;
     const uint64_t mac_size = (uint64_t)params->mac_context->digest_byte_size;
     
-    //iterate through the queue until the DONE or MAC flag is received and SkeinMAC everything in it
-    while(front(params->in) == NULL || front(params->in)->action == GEN_MAC)
+    //iterate through the queue until the DONE flag is received and update the SkeinMAC with everything in it
+    while(front(params->in) == NULL || front(params->in)->action != DONE)
     {
-        //attempt to pop a chunk off the queue
+        //attempt to get the front chunk in the queue
         if(update_chunk == NULL && front(params->in) != NULL) 
         {
-             chunk_maced = false;
              pthread_mutex_lock(params->in_mutex);
-             update_chunk = front(params->in); //get the front chunk in the queue
-             deque(params->in);
+             update_chunk = front(params->in);
+             if(update_chunk != NULL) { deque(params->in); }
              pthread_mutex_unlock(params->in_mutex);
+             chunk_maced = false;
         }
         
         //generate the MAC from the chunk
-        if(update_chunk != NULL && !chunk_maced)
+        if(update_chunk != NULL && update_chunk->action == GEN_MAC && !chunk_maced)
         {
-             pdebug("Updating MAC on chunk of size %lu\n", update_chunk->data_size);
-             //change the action to the out action
-             update_chunk->action = params->mac_context->out_action; 
+             pdebug("*** Updating MAC on chunk of size %lu ***\n", update_chunk->data_size);
              //update the MAC with the current chunk
              skeinUpdate(params->mac_context->skein_context_ptr, (const uint8_t*)update_chunk->data, update_chunk->data_size);
+             //change the action and status
+             update_chunk->action = params->mac_context->out_action; 
              chunk_maced = true;
         }
         
         //attempt to queue the chunk
-        if(update_chunk != NULL)
+        if(update_chunk != NULL && chunk_maced)
         {
-            pdebug("Queuing chunk to write que of size %lu\n", update_chunk->data_size);
+            pdebug("*** Queuing data chunk to write que of size %lu ***\n", update_chunk->data_size);
             while(queueIsFull(params->out)); //spin until queue is empty
             pthread_mutex_lock(params->out_mutex);
             if(enque(update_chunk, params->out)) { update_chunk = NULL; }
             pthread_mutex_unlock(params->out_mutex);
             //on a successfull queue set mac chunk to NULL so the next chunk will be MACed
-        } //end queu operation
+        } //end queue operation
+
         //otherwise spin and wait for the queue to empty
     } //end thread loop
 

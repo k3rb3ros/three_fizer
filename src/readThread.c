@@ -1,188 +1,166 @@
 #include "include/readThread.h"
 
-//Queues the file into out if threefizer is running in decrypt mode the header is queud as a seperate chunk and the MAC is queued as a seperate chunk 
-void* queueFile(void* parameters) //right now this is blocking until the entire file is queued TODO put me on my own thread so MAC and ENCRYPTION can take place as the file is buffered not just after it
+void* queueFileForDecrypt(void* parameters)
 {
-    pdebug("queueFile()\n");
-    bool header = false;
-    chunk* header_chunk = NULL;
+   pdebug("queueFileForDecrypt()\n");
+   bool header = true;
+   bool mac = false;
+   chunk* data_chunk = NULL;
+   const readParams* params = parameters;
+   const uint64_t block_byte_size = ((uint64_t)params->args->state_size/8); //get threefish block size
+   const uint64_t header_byte_size = 2*(block_byte_size);
+   const uint64_t orig_file_size = getSize(params->args->argz); //get the file size in bytes
+
+   FILE* read = openForBlockRead(params->args->argz); //open a handle to the file
+
+   if(!isGreaterThanThreeBlocks(params->args))
+   {
+       *(params->error) = FILE_TOO_SMALL;
+       return NULL;
+   }
+
+   uint64_t bytes_read = 0;
+
+   while(*(params->running) && *(params->error) == 0 && bytes_read < orig_file_size)
+   {
+       //attempt to read a new chunk from the file
+       if(data_chunk == NULL)
+       {
+           uint64_t chunk_size = 0;
+           if(header) { chunk_size = header_byte_size; } //2block header prepended to file
+           else if(!header && (orig_file_size - (bytes_read + block_byte_size)) >= MAX_CHUNK_SIZE) { chunk_size = MAX_CHUNK_SIZE; } //A full chunk of data
+           else if(!header && 
+	           (orig_file_size - (bytes_read + block_byte_size)) < MAX_CHUNK_SIZE &&
+		   (orig_file_size - (bytes_read + block_byte_size)) > 0)
+           { chunk_size = (orig_file_size - (bytes_read + block_byte_size)); }
+           else //MAC appended to the end of file
+           {
+               chunk_size = block_byte_size;
+	       mac = true;
+           }
+
+           uint64_t* data = (uint64_t*)pad(readBlock(chunk_size, read), chunk_size, params->args->state_size);
+           pdebug("### Reading chunk of size %lu ### \n", chunk_size);
+           if(data != NULL)
+           {
+               bytes_read += chunk_size;
+	       data_chunk = createChunk();
+	       if(header)
+	       { 
+	           data_chunk->action = CHECK_HEADER;
+		   header = false; 
+	       }
+	       else if(mac) { data_chunk->action = MAC; }
+	       else { data_chunk->action = GEN_MAC; }
+	       data_chunk->data = data;
+	       data_chunk->data_size = getPadSize(chunk_size, params->args->state_size);   
+           }
+       }
+
+       //attepmt to queue the chunk
+       if(data_chunk!= NULL)
+       {
+           while(queueIsFull(params->out)); //spin until queue is empty
+	   pthread_mutex_lock(params->mutex);
+	   if(enque(data_chunk, params->out))
+           {
+               pdebug("### Queuing data of size %lu ### \n", data_chunk->data_size);
+	       data_chunk = NULL;
+	   }
+	   pthread_mutex_unlock(params->mutex);
+       }
+   }
+
+   //queue done
+   while(queueIsFull(params->out));
+   pthread_mutex_lock(params->mutex);
+   if(!queueDone(params->out))
+   {
+       pdebug("Error queing done\n");
+       if(read != NULL) { fclose(read); }
+       *(params->error) = QUEUE_OPERATION_FAIL;
+       return NULL;
+   }
+   pthread_mutex_unlock(params->mutex);
+   //free allocated resorces
+   if(read != NULL) { free(read); }
+
+   return NULL;
+}
+
+//Queing a file for Encrypt is easy all we have to do is read it into chunks and que them until 
+//we reach the end of the file.
+void* queueFileForEncrypt(void* parameters)
+{
+    pdebug("queueFileForEncrypt()\n");
     chunk* data_chunk = NULL;
-    chunk* mac_chunk = NULL;
     const readParams* params = parameters;
-    const uint64_t block_byte_size = ((uint64_t)params->args->state_size/8); //get the threefish block size
-    const uint64_t header_byte_size = 2*(block_byte_size);
-    uint64_t orig_file_size = getSize(params->args->argz); //get the file size in bytes
-    //ensure file size is big enough to continue
-    if((params->args->encrypt && orig_file_size == 0) || 
-       (!(params->args->encrypt) && !isGreaterThanThreeBlocks(params->args)))
+    const uint64_t orig_file_size = getSize(params->args->argz); //get the file size in bytes
+
+    if(orig_file_size == 0) //check that we are actually encrypting something
     {
-        if(!params->args->encrypt) { pdebug("File size of %lu is too small could not have been encrypted by this program\n", orig_file_size); }
-        else { pdebug("File is empty cannot encrypt\n"); }
-
         *(params->error) = FILE_TOO_SMALL;
-
-        return NULL;
+	return NULL;
     }
 
-    FILE* read = openForBlockRead(params->args->argz); //open a handle to the file
+    FILE* read = (openForBlockRead(params->args->argz)); //attempt to open a handle to the file
 
-    if(!params->args->encrypt) { header = true; } //if we are decrypting then we need to look for a header
-
-    while(*(params->running) && *(params->error) == 0 && orig_file_size > 0)
+    if(read == NULL)
     {
-        //only read if we aren't waiting for something else to get queued
-        if(header_chunk == NULL && data_chunk == NULL && mac_chunk == NULL)
-        {
-            //All files encrypted with this program are prepended by a header.
-            //We know how big the header will be based on the state size of the
-            //block cipher so we put the header in its own chunk to test it.   
-            if(header)
-            {
-                header_chunk = createChunk();
-                if(header_chunk == NULL)
-                {
-                    perror("Error allocating memory for file read\n");
-                    fclose(read);
-                    destroyChunk(header_chunk);
-                    *(params->error) = MEMORY_ALLOCATION_FAIL;
-                    break;
-                }
-                header_chunk->action = CHECK_HEADER;
-                header_chunk->data = (uint64_t*)readBlock(header_byte_size, read);
-                header_chunk->data_size = header_byte_size;
-                pdebug("### Reading header of size %lu ###\n", header_chunk->data_size);
-                orig_file_size -= header_byte_size;
-                header = false;
-            }
-            //Files encrypted with this program have a MAC of 1 block appended
-            //to the end of the file. In decrypt mode we assume this MAC is 
-            //present and break it into its own chunk so it can be compared
-            // to the MAC generated by the cipher text.
-            if(!params->args->encrypt && orig_file_size <= MAX_CHUNK_SIZE) //end of the file in decrypt mode
+        *(params->error) = FILE_IO_FAIL;
+	return NULL;
+    }
+
+    //Read the File into chunks and queue them while the end hasn't been reached and there is no error
+
+    uint64_t bytes_read = 0;
+
+    while(*(params->running) && *(params->error) == 0 && bytes_read < orig_file_size)
+    {
+	//attepmt to read a new chunk from the file
+        if(data_chunk == NULL)
+	{
+	    //get the largest possible size for the next chunk
+	    const uint64_t chunk_size = ((orig_file_size - bytes_read) >= MAX_CHUNK_SIZE) ? MAX_CHUNK_SIZE : (orig_file_size - bytes_read); 
+            uint64_t* data = (uint64_t*)pad(readBlock(chunk_size, read), chunk_size, params->args->state_size);
+	    bytes_read += chunk_size;
+	    pdebug("### Reading chunk of size %lu ### \n", chunk_size);
+	    if(data != NULL)
             {
                 data_chunk = createChunk();
-                mac_chunk = createChunk();
-
-                if(data_chunk == NULL || mac_chunk == NULL)
-                {
-                    perror("Error allocating memory for file read\n");
-                    fclose(read);
-                    destroyChunk(data_chunk);
-                    destroyChunk(mac_chunk);
-                    *(params->error) = MEMORY_ALLOCATION_FAIL;
-                    break;
-                }
-                //Read the remaining file into a chunk
-                data_chunk->action = GEN_MAC;
-                data_chunk->data = (uint64_t*)readBlock(orig_file_size-block_byte_size, read);
-                data_chunk->data_size = (orig_file_size-block_byte_size);
-                pdebug("### Reading data of size %lu ###\n", data_chunk->data_size);
-
-                //update the file size counter
-                orig_file_size -= (orig_file_size-block_byte_size);
-                //Read the appended MAC into its own chunk
-                mac_chunk->action = MAC;
-                mac_chunk->data = (uint64_t*)readBlock(orig_file_size, read);
-                mac_chunk->data_size = orig_file_size;
-                pdebug("### Reading mac of size %lu ###\n", mac_chunk->data_size);
-                orig_file_size = 0; //the MAC is always the last thing in the file
-            }
-            else if(orig_file_size <= MAX_CHUNK_SIZE) //end of the file in encrypt mode
-            {
-                data_chunk = createChunk();
-                if(data_chunk == NULL)
-                {  
-                    perror("Error allocating memory for file read\n");
-                    fclose(read);
-                    destroyChunk(data_chunk);
-                    *(params->error) = MEMORY_ALLOCATION_FAIL;
-                    break;
-                }
-                data_chunk->action = ENCRYPT;
-                data_chunk->data = pad(readBlock(orig_file_size, read),
-                                                 orig_file_size,
-                                                 params->args->state_size);
-                data_chunk->data_size = getPadSize(orig_file_size, params->args->state_size);
-                pdebug("### Reading data of size %lu ###\n", data_chunk->data_size);
-                orig_file_size -= orig_file_size; 
-            }
-            else //read a full data chunk of the file
-            {
-                data_chunk = createChunk();
-                if(data_chunk == NULL)
-                {
-                    perror("Error allocating memory for file read\n");
-                    fclose(read);
-                    destroyChunk(header_chunk);
-                    *(params->error) = MEMORY_ALLOCATION_FAIL;
-                    break;
-                }
-                data_chunk->action = params->args->encrypt ? ENCRYPT : GEN_MAC;
-                data_chunk->data = (uint64_t*)readBlock(MAX_CHUNK_SIZE, read);
-                data_chunk->data_size = MAX_CHUNK_SIZE;
-                pdebug("### Reading data of size %lu ###\n", data_chunk->data_size);
-                orig_file_size -= MAX_CHUNK_SIZE; //subtract the chunk size from the counter
-            } //end queue operation
-        } //end nullcheck
-
-        //Queue any read chunks in their prefered order
-        if(header_chunk != NULL) //attempt to queue the header
-        {
-            pthread_mutex_lock(params->mutex);
-            if(!queueIsFull(params->out))
-            {
-                if(enque(header_chunk, params->out))
-                {
-                    pdebug("### Queueing header of size %lu ###\n", header_chunk->data_size);
-                    header_chunk = NULL;
-                }
-            }
-            pthread_mutex_unlock(params->mutex);
+		data_chunk->action = ENCRYPT;
+		data_chunk->data = data;
+	        data_chunk->data_size = getPadSize(chunk_size, params->args->state_size);   
+	    }
         }
-        if(data_chunk != NULL) //attempt to queue any data (this will be done the most)
-        {
-            pthread_mutex_lock(params->mutex);
-            if(!queueIsFull(params->out))
-            {
-                if(enque(data_chunk, params->out))
-                {
-                    pdebug("### Queueing data of size %lu ###\n", data_chunk->data_size);
-                    data_chunk = NULL;
-                }
-            }
-            pthread_mutex_unlock(params->mutex);
-        }
-        if(mac_chunk != NULL) //attempt to queue the crypto text MAC
-        {
-            pthread_mutex_lock(params->mutex);
-            if(!queueIsFull(params->out))
-            {
-                if(enque(mac_chunk, params->out))
-                {
-                    pdebug("### Queueing mac of size %lu ###\n", mac_chunk->data_size);
-                    mac_chunk = NULL;
-                }
-            }
-            pthread_mutex_unlock(params->mutex);
-        }
-        //otherwise keep looping until the queue is not full
-    } //end of while loop
 
-    //queue Done flag
+	//attempt to queue the chunk
+	if(data_chunk != NULL)
+	{
+	    while(queueIsFull(params->out)); //spin until queue is empty
+	    pthread_mutex_lock(params->mutex);
+            if(enque(data_chunk, params->out))
+	    {
+		pdebug("### Queing data of size %lu ### \n", data_chunk->data_size);
+                data_chunk = NULL;
+	    }
+	    pthread_mutex_unlock(params->mutex);
+	}
+    }
+
+    //queue done
     while(queueIsFull(params->out));
     pthread_mutex_lock(params->mutex);
-    if(!queueDone(params->out))
-    {
-        pdebug("Error queueing done\n");
-        *(params->error) = QUEUE_OPERATION_FAIL;
-        return NULL;
+    if(!queueDone(params->out)) 
+    {   //abort if this fails as it will cause a deadlock
+        pdebug("Error queuing done\n");
+	if(read != NULL) { fclose(read); }
+	*(params->error) = QUEUE_OPERATION_FAIL;
+	return NULL;
     }
     pthread_mutex_unlock(params->mutex);
-    pdebug("### Done queued ### \n");
 
-
-    fclose(read); //close the file handle
-    pdebug("readThread() success\n");
+    if(read != NULL) { fclose(read); }
 
     return NULL;
 }

@@ -1,13 +1,14 @@
 * Add the ability for the user to manually specify an IV
 * Add key derrivation function for all hashed keys 
 * Add threading to all blocking controller operaitons #DONE# 
-* fix password files so files are no longer buffered
+* Fix password files so files are no longer fully buffered
 * Add tests for cbc operations
 * Add tests for fileIO
 * Add tests for util 
 * Add tests for pad operations
-* Get code reviewed by a security expert
-* Add mutexes to shared data operations
-* Fix bug where threads spin infintely some times
-* Add a standard way to display error and success messages
+* Add mutexes to shared data operations #DONE#
+* Fix bug where threads spin infintely some times #DONE# *I THINK*
+* Add a standard way to display error #DONE# and success messages
 * Add a progress bar
+* Get code reviewed by a security expert
+* Change fread() and write() calls to read() and write()

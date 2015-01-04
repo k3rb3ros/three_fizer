@@ -25,6 +25,10 @@ void setUpReadParams(readParams* params,
                      queue* out,
                      uint32_t* error);
 
+void* queueFileForDecrypt(void* parameters);
+
+void* queueFileForEncrypt(void* parameters);
+
 void* queueFile(void* parameters);
 
 #endif

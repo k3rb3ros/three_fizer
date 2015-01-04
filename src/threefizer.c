@@ -117,6 +117,7 @@ int main(int argc, char*argv[])
            }
            //perform the requested action on each file entered into the command line
            status = runThreefizer(&arguments);
+	   if(status != 0) { printError(status); }
        }
        else
        {

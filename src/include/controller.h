@@ -26,7 +26,7 @@
 #include "tfHeader.h" //checkHeader, genHeader() and stripIV()
 #include "writeThread.h" //asyncWrite()
 
-#define SUCCESS 1
+#define THREEFIZER_SUCCESS 0
 
 #define TEMP_FILE_NAME_SIZE 10
 

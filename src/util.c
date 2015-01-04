@@ -45,7 +45,6 @@ static inline uint8_t hexLookupNibble(uint8_t nibble)
     //this shouldn't happen
     if(nibble > N_HEX_LOOKUP) return 0;
     //lookup the hex value from the table
-    pdebug("=^  Looking up table for nibble %d ^=\n", nibble);
     return hex_lookup[nibble].hex;
 }
 
@@ -61,7 +60,7 @@ uint8_t* binToHex(uint8_t* src, uint64_t size)
 
     //allocate storage for the hex buffer
     const uint64_t hex_size = 2*size;
-    uint8_t* hex = calloc(hex_size, sizeof(uint8_t));
+    uint8_t* hex = calloc(hex_size+1, sizeof(uint8_t));
 
     for(uint64_t i=0; i<size; ++i)
     {
