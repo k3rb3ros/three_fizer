@@ -8,6 +8,7 @@ int main()
         runThreefishTests();
         runSkeinTests();
         runChunkTests();
+	runFileIOTests();
         printf("All tests passed :)\n");
     #endif
     return 0;

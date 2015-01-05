@@ -74,10 +74,10 @@ static void testThreefish256NullEncrypt()
     threefishEncryptBlockWords(&tf_key, (uint64_t*)three_256_00_plain_text, (uint64_t*)test_block_256); 
 
     pdebug("threefish256NullEncrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish256/8, (uint8_t *)three_256_00_expected_result);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish256/8, (uint8_t *)three_256_00_expected_result);
 
     assert(test_block_256[0] == three_256_00_expected_result[0]);
     assert(test_block_256[1] == three_256_00_expected_result[1]);
@@ -98,10 +98,10 @@ static void testThreefish256TVEncrypt()
     for (uint64_t i = 0; i < SAFE_SIZE; i++) { test_block_256[i] ^= three_256_01_plain_text[i]; }
 
     pdebug("threefish256TestVectorEncrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish256/8, (uint8_t *)three_256_01_expected_result);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish256/8, (uint8_t *)three_256_01_expected_result);
 
     assert(test_block_256[0] == three_256_01_expected_result[0]);
     assert(test_block_256[1] == three_256_01_expected_result[1]);
@@ -139,10 +139,10 @@ static void testThreefish512TVEncrypt()
     for (uint64_t i = 0; i < SECURE_SIZE; i++) { test_block_512[i] ^= three_512_01_plain_text[i]; }
 
     pdebug("threefish512TestVectorEncrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish512/8, (uint8_t *)three_512_01_expected_result);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish512/8, (uint8_t *)three_512_01_expected_result);
 
     assert(test_block_512[0] == three_512_01_expected_result[0]);
     assert(test_block_512[1] == three_512_01_expected_result[1]);
@@ -164,10 +164,10 @@ static void testThreefish1024NullEncrypt()
     threefishEncryptBlockWords(&tf_key, (uint64_t*)three_1024_00_plain_text, (uint64_t*)test_block_1024); 
 
     pdebug("threefish1024NullEncrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_expected_result);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_expected_result);
 
     assert(test_block_1024[0] == three_1024_00_expected_result[0]);
     assert(test_block_1024[1] == three_1024_00_expected_result[1]);
@@ -200,10 +200,10 @@ static void testThreefish1024TVEncrypt()
     for (uint64_t i = 0; i < FP_SIZE; i++) { test_block_1024[i] ^= three_1024_01_plain_text[i]; }
 
     pdebug("threefish1024TestVectorEncrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_expected_result);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_expected_result);
 
     assert(test_block_1024[0] == three_1024_01_expected_result[0]);
     assert(test_block_1024[1] == three_1024_01_expected_result[1]);
@@ -233,10 +233,10 @@ static void testThreefish256NullDecrypt()
     threefishDecryptBlockWords(&tf_key, (uint64_t*)three_256_00_expected_result, (uint64_t*)test_block_256);
 
     pdebug("threefish256NullDecrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish256/8, (uint8_t *)three_256_00_plain_text);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish256/8, (uint8_t *)three_256_00_plain_text);
 
     assert(test_block_256[0] == 0);
     assert(test_block_256[1] == 0);
@@ -258,10 +258,10 @@ static void testThreefish256TVDecrypt()
     threefishDecryptBlockWords(&tf_key, test_block_256, test_block_256);
 
     pdebug("threefish256TVDecrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish256/8, (uint8_t *)three_256_01_plain_text);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish256/8, (uint8_t *)three_256_01_plain_text);
 
     assert(test_block_256[0] == three_256_01_plain_text[0]);
     assert(test_block_256[1] == three_256_01_plain_text[1]);
@@ -278,10 +278,10 @@ static void testThreefish512NullDecrypt()
     threefishDecryptBlockWords(&tf_key, (uint64_t*)three_512_00_expected_result, (uint64_t*)test_block_512);
 
     pdebug("threefish512NullDecrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish512/8, (uint8_t *)three_512_00_plain_text);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish512/8, (uint8_t *)three_512_00_plain_text);
 
     assert(test_block_512[0] == 0);
     assert(test_block_512[1] == 0);
@@ -305,10 +305,10 @@ static void testThreefish512TVDecrypt()
     threefishDecryptBlockWords(&tf_key, (uint64_t*)test_block_512, (uint64_t*)test_block_512);
     
     pdebug("threefish512TVDecrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish512/8, (uint8_t *)three_512_01_plain_text);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish512/8, (uint8_t *)three_512_01_plain_text);
 
     assert(test_block_512[0] == three_512_01_plain_text[0]);
     assert(test_block_512[1] == three_512_01_plain_text[1]);
@@ -330,10 +330,10 @@ static void testThreefish1024NullDecrypt()
     threefishDecryptBlockWords(&tf_key, (uint64_t*)three_1024_00_expected_result, (uint64_t*)test_block_1024);
 
     pdebug("threefish1024NullDecrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish1024/8, (uint8_t *)three_1024_00_plain_text);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish1024/8, (uint8_t *)three_1024_00_plain_text);
 
     assert(test_block_1024[0] == 0);
     assert(test_block_1024[1] == 0);
@@ -365,10 +365,10 @@ static void testThreefish1024TVDecrypt()
     threefishDecryptBlockWords(&tf_key, test_block_1024, test_block_1024);
     
     pdebug("threefish1024TVDecrypt()\n");
-    pdebug("Actual: \n");
-    ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
-    pdebug("\n Expected: \n");
-    ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_plain_text);
+    //pdebug("Actual: \n");
+    //ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
+    //pdebug("\n Expected: \n");
+    //ShowBuff(Threefish1024/8, (uint8_t *)three_1024_01_plain_text);
 
     assert(test_block_1024[0] == three_1024_01_plain_text[0]);
     assert(test_block_1024[1] == three_1024_01_plain_text[1]);

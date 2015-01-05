@@ -40,15 +40,17 @@ int32_t runThreefizer(const arguments* args)
     handleKeys(args, &tf_key, &mac_context); //generate and initialize the keys
     if(args->encrypt == true && args->file_size > 0) //encrypt
     {
-        setUpCryptoParams(&crypto_params, args, &running, &tf_key, &crypto_mutex, &mac_mutex, crypto_queue, mac_queue, &error);
-        setUpMacParams(&mac_params, &mac_status, &running, NULL, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, NULL, &error, NULL); 
-        setUpReadParams(&read_params, args, &running, &crypto_mutex, crypto_queue, &error);
+        //passthrough queues with no encryption
+        setUpReadParams(&read_params, args, &running, &write_mutex, write_queue, &error);
+        //setUpReadParams(&read_params, args, &running, &crypto_mutex, crypto_queue, &error);
+        //setUpCryptoParams(&crypto_params, args, &running, &tf_key, &crypto_mutex, &mac_mutex, crypto_queue, mac_queue, &error);
+        //setUpMacParams(&mac_params, &mac_status, &running, NULL, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, NULL, &error, NULL); 
         setUpWriteParams(&write_params, args, &running, NULL, &write_mutex, write_queue, temp_file_name, &error, NULL);
         queueHeader(args, crypto_queue);
         threads_active = true;
         pthread_create(&read_thread, NULL, queueFileForEncrypt, &read_params);
-        pthread_create(&crypto_thread, NULL, encryptQueue, &crypto_params);
-        pthread_create(&mac_thread, NULL, generateMAC, &mac_params);
+        //pthread_create(&crypto_thread, NULL, encryptQueue, &crypto_params);
+        //pthread_create(&mac_thread, NULL, generateMAC, &mac_params);
         pthread_create(&write_thread, NULL, asyncWrite, &write_params);
     }
     else if(args->file_size == 0)
@@ -73,8 +75,8 @@ int32_t runThreefizer(const arguments* args)
     if(threads_active) 
     { 
         pthread_join(read_thread, NULL);
-        pthread_join(crypto_thread, NULL);
-        pthread_join(mac_thread, NULL);
+        //pthread_join(crypto_thread, NULL);
+        //pthread_join(mac_thread, NULL);
         pthread_join(write_thread, NULL);
     }
     if(error != 0) { status = error; } //return the error if 1 occured

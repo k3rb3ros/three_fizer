@@ -1,9 +1,10 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-#include "fileIO.h" //exists(), openForBlockRead()
 #include <stdint.h> //uint types
 #include <stdio.h> //frpintf
+#include <unistd.h> //close()
+#include "fileIO.h" //exists(), openForRead(), readBytes
 
 #define HWRNG "/dev/hw_random"
 #define PSRNG "/dev/urandom"

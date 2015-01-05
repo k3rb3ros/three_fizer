@@ -3,12 +3,12 @@
 uint8_t* getRand(const uint64_t size)
 {
     //pdebug("(getRand)\n");
-    FILE* randFile = NULL;
+    int randFile_fd = 0;
     uint8_t* randomData = NULL;
     if(exists(HWRNG)) //try hardware random number generator first
     {
-        randFile = openForBlockRead(HWRNG);
-        if(randFile == NULL)
+        randFile_fd = openForRead(HWRNG);
+        if(randFile_fd < 0)
         {
             fprintf(stderr, "Unable to open %s cannot continue\n", HWRNG);
             return NULL; 
@@ -16,16 +16,16 @@ uint8_t* getRand(const uint64_t size)
     }
     else if(exists(PSRNG)) //use /dev/urandom since /dev/random blocks
     {
-        randFile = openForBlockRead(PSRNG);
-        if(randFile == NULL)
+        randFile_fd = openForRead(PSRNG);
+        if(randFile_fd < 0)
         {
             fprintf(stderr, "Unable to open %s cannot continue\n", PSRNG);
-            return NULL; //consider exiting the program from here
+            return NULL;
         }
     }
 
-    randomData = readBlock(size, randFile);
-    fclose(randFile);
+    randomData = readBytes(size, randFile_fd);
+    close(randFile_fd);
 
     return randomData;
 }

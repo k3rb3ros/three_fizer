@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "chunkTests.h"
+#include "fileIOtests.h"
 #include "skeinTests.h"
 #include "threefishTests.h"
 

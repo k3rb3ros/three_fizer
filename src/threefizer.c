@@ -16,7 +16,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             if(exists(arg))
             {
                 argz_add(&a->argz, &a->argz_len, arg);
-                a->file_size = getSize(a->argz);
+                a->file_size = getFileSize(a->argz);
 	    }
             else
             {
@@ -70,7 +70,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             {
                 a->free = true;
 		a->password = readFile(arg);
-                a->pw_length = getSize(arg);
+                a->pw_length = getFileSize(arg);
             }
             else
             {

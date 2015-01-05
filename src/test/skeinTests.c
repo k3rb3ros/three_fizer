@@ -70,18 +70,18 @@ static void testSkeinNullHash256()
     skeinFinal(&skein_state, (uint8_t*)byte_hash);
  
     pdebug("testSkeinNullHash256()\n");
-    pdebug("Template Null hash:\n");
-    ShowBuff(Skein256/8, (uint8_t*)Skein256NullHash);
-    pdebug("Byte \n");
-    ShowBuff(Skein256/8, (uint8_t*)byte_hash);
+    //pdebug("Template Null hash:\n");
+    //ShowBuff(Skein256/8, (uint8_t*)Skein256NullHash);
+    //pdebug("Byte \n");
+    //ShowBuff(Skein256/8, (uint8_t*)byte_hash);
 
     assert(byte_hash[0] == Skein256NullHash[0]);
     assert(byte_hash[1] == Skein256NullHash[1]);
     assert(byte_hash[2] == Skein256NullHash[2]);
     assert(byte_hash[3] == Skein256NullHash[3]);
 
-    pdebug("Bit \n");
-    ShowBuff(Skein256/8, (uint8_t*)bit_hash);
+    //pdebug("Bit \n");
+    //ShowBuff(Skein256/8, (uint8_t*)bit_hash);
     skeinCtxPrepare(&skein_state, Skein256);
     skeinInit(&skein_state, Skein256);
     skeinUpdateBits(&skein_state, (const uint8_t*)bit_hash, 256);
@@ -106,10 +106,10 @@ static void testSkeinNullHash512()
     skeinFinal(&skein_state, (uint8_t*)byte_hash);
 
     pdebug("testSkeinNullHash512()\n");
-    pdebug("Template Null hash:\n");
-    ShowBuff(Skein512/8, (uint8_t*)Skein512NullHash);
-    pdebug("Byte hash:\n");
-    ShowBuff(Skein512/8, (uint8_t*)byte_hash);
+    //pdebug("Template Null hash:\n");
+    //ShowBuff(Skein512/8, (uint8_t*)Skein512NullHash);
+    //pdebug("Byte hash:\n");
+    //ShowBuff(Skein512/8, (uint8_t*)byte_hash);
 
     assert(byte_hash[0] == Skein512NullHash[0]);
     assert(byte_hash[1] == Skein512NullHash[1]);
@@ -120,8 +120,8 @@ static void testSkeinNullHash512()
     assert(byte_hash[6] == Skein512NullHash[6]);
     assert(byte_hash[7] == Skein512NullHash[7]);
 
-    pdebug("Bit hash:\n");
-    ShowBuff(Skein512/8, (uint8_t*)bit_hash);
+    //pdebug("Bit hash:\n");
+    //ShowBuff(Skein512/8, (uint8_t*)bit_hash);
     skeinCtxPrepare(&skein_state, Skein512);
     skeinInit(&skein_state, Skein512);
     skeinUpdateBits(&skein_state, (const uint8_t*)bit_hash, 512);
@@ -149,10 +149,10 @@ static void testSkeinNullHash1024()
     skeinFinal(&skein_state, (uint8_t*)byte_hash);
 
     pdebug("testSkeinNullHash1024()\n");
-    pdebug("Template Null hash:\n");
-    ShowBuff(Skein1024/8, (uint8_t*)Skein1024NullHash);
-    pdebug("Byte hash:\n");
-    ShowBuff(Skein1024/8, (uint8_t*)byte_hash);
+    //pdebug("Template Null hash:\n");
+    //ShowBuff(Skein1024/8, (uint8_t*)Skein1024NullHash);
+    //pdebug("Byte hash:\n");
+    //ShowBuff(Skein1024/8, (uint8_t*)byte_hash);
 
     assert(byte_hash[0] == Skein1024NullHash[0]);
     assert(byte_hash[1] == Skein1024NullHash[1]);
@@ -171,8 +171,8 @@ static void testSkeinNullHash1024()
     assert(byte_hash[14] == Skein1024NullHash[14]);
     assert(byte_hash[15] == Skein1024NullHash[15]);
 
-    pdebug("Bit hash:\n");
-    ShowBuff(Skein1024/8, (uint8_t*)bit_hash);
+    //pdebug("Bit hash:\n");
+    //ShowBuff(Skein1024/8, (uint8_t*)bit_hash);
 
     skeinCtxPrepare(&skein_state, Skein1024);
     skeinInit(&skein_state, Skein1024);
@@ -208,10 +208,10 @@ static void testSkeinWordHash256()
     skeinFinal(&skein_state, (uint8_t*)test_digest);
 
     pdebug("testSkeinWordHash256()\n");
-    pdebug("Actual\n");
-    ShowBuff(Skein256/8, (uint8_t*)test_digest);
-    pdebug("Expected\n");
-    ShowBuff(Skein256/8, (uint8_t*)ExpectedDigest256);
+    //pdebug("Actual\n");
+    //ShowBuff(Skein256/8, (uint8_t*)test_digest);
+    //pdebug("Expected\n");
+    //ShowBuff(Skein256/8, (uint8_t*)ExpectedDigest256);
 
     assert(test_digest[0] == ExpectedDigest256[0]);
     assert(test_digest[1] == ExpectedDigest256[1]);
@@ -230,10 +230,10 @@ static void testSkeinWordHash512()
     skeinFinal(&skein_state, (uint8_t*)test_digest);
 
     pdebug("testSkeinWordHash512()\n");
-    pdebug("Actual\n");
-    ShowBuff(Skein512/8, (uint8_t*)test_digest);
-    pdebug("Expected\n");
-    ShowBuff(Skein512/8, (uint8_t*)ExpectedDigest512);
+    //pdebug("Actual\n");
+    //ShowBuff(Skein512/8, (uint8_t*)test_digest);
+    //pdebug("Expected\n");
+    //ShowBuff(Skein512/8, (uint8_t*)ExpectedDigest512);
 
     assert(test_digest[0] == ExpectedDigest512[0]);
     assert(test_digest[1] == ExpectedDigest512[1]);
@@ -257,10 +257,10 @@ static void testSkeinWordHash1024()
     skeinFinal(&skein_state, (uint8_t*)test_digest);
 
     pdebug("testSkeinWordHash1024()\n");
-    pdebug("Actual\n");
-    ShowBuff(Skein1024/8, (uint8_t*)test_digest);
-    pdebug("Expected\n");
-    ShowBuff(Skein1024/8, (uint8_t*)ExpectedDigest1024);
+    //pdebug("Actual\n");
+    //ShowBuff(Skein1024/8, (uint8_t*)test_digest);
+    //pdebug("Expected\n");
+    //ShowBuff(Skein1024/8, (uint8_t*)ExpectedDigest1024);
 
     assert(test_digest[0] == ExpectedDigest1024[0]);
     assert(test_digest[1] == ExpectedDigest1024[1]);
