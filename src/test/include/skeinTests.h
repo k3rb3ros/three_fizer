@@ -1,11 +1,12 @@
 #ifndef SKEINTESTS_H
 #define SKEINTESTS_H
 
-#include <assert.h>
-#include <stdint.h>
-#include "debug.h"
-#include "print.h"
-#include "threefizer/skeinApi.h"
+#include <assert.h> //assert()
+#include <stdint.h> //uintxx_t types
+#include <stdio.h> //printf()
+#include "debug.h" //pdebug()
+#include "print.h" //showBuff()
+#include "threefizer/skeinApi.h" //skeinCtx type, all skein hash functions and init functions
 
 /*
 * K3rb3ros 10.12.2014

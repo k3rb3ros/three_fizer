@@ -3,13 +3,12 @@
 //pops the first queued element out of the queue
 bool deque(queue* q)
 {
-    pdebug("deque(%x)\n", q);
     if(q->size <= 0) { return false; }
     else
     {
-        q->size --;
+        q->size--;
         q->elements[q->head] = NULL; //remove the ptr to the element
-        q->head = (q->head + 1) % q->capacity;
+        q->head = (++q->head) % q->capacity;
     }
     return true;
 }
@@ -17,12 +16,11 @@ bool deque(queue* q)
 //enqueue the chunk passed in
 bool enque(chunk* chunk, queue* q)
 {
-    pdebug("enque(%x)\n", q);
     if(q->size == q->capacity || chunk == NULL) { return false; }
     else
     {
-        q->size ++;
-        q->tail = (q->tail + 1) % q->capacity;
+        q->size++;
+        q->tail = (++q->tail) % q->capacity;
         q->elements[q->tail] = chunk;
     }
     return true;
@@ -31,7 +29,6 @@ bool enque(chunk* chunk, queue* q)
 //Put a done flag into the Queue telling all threads using it that there operation on queued data is complete
 inline bool queueDone(queue* q)
 {
-    pdebug("queueDone()\n");
     chunk* done = createChunk();
     done->action = DONE;
 
@@ -53,17 +50,17 @@ inline chunk* front(queue* q)
 }
 
 //allocate memory for the queue and set all its default values
-queue* createQueue(const int max_elements)
+queue* createQueue(const unsigned int max_elements)
 {
     queue* q = NULL;
     q = calloc(1, sizeof(queue));
     q->capacity = max_elements;
     q->size = 0;
-    q->head = 0;
-    q->tail = -1;
+    q->head = 1;
+    q->tail = 0;
     q->elements = calloc(max_elements, sizeof(chunk*));
 
-    for (int i=0; i<max_elements; ++i)
+    for (unsigned int i=0; i<max_elements; ++i)
     {
         q->elements[i] = NULL;
     }

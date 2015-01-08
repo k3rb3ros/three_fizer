@@ -3,19 +3,19 @@
 void* asyncWrite(void* parameters)
 {
     pdebug("asyncWrite()\n");
-    chunk* write_chunk = NULL;
     writeParams* params = parameters;
-    FILE* write = openForBlockWrite((const char*)params->temp_file_name);
-    uint64_t bytes_written = 0;
-    uint64_t bytes_to_write = 0;
-    
+    int64_t write = openForWrite((const char*)params->temp_file_name);
 
-    if(write == NULL)
+    if(write < 0)
     {
         pdebug("Error opening file for write\n");
         *(params->error) = FILE_IO_FAIL;
         return NULL;
     }
+
+    chunk* write_chunk = NULL;
+    uint64_t bytes_written = 0;
+    uint64_t bytes_to_write = 0;
 
     while(*(params->running) && *(params->error) == 0)
     {
@@ -49,14 +49,15 @@ void* asyncWrite(void* parameters)
             { bytes_to_write = *(params->file_size) - bytes_written; }
             else { bytes_to_write = write_chunk->data_size; }
 
-            if(!writeBlock((uint8_t*)write_chunk->data, bytes_to_write, write))
+            if(!writeBytes((uint8_t*)write_chunk->data, bytes_to_write, write))
             {
                 pdebug("^^^^ File I/O Error ^^^^\n");
                 *(params->error) = FILE_IO_FAIL;
+		close(write);
                 break;
             }
             
-            //write it to the file
+            ///write it to the file
             pdebug("^^^^ Writing a chunk of size %lu ^^^^\n", bytes_to_write);
             bytes_written += bytes_to_write;
             destroyChunk(write_chunk); //free the chunk
@@ -64,7 +65,7 @@ void* asyncWrite(void* parameters)
         }        
     }
     
-    fclose(write);
+    close(write);
     if(*(params->error) == 0)
     {
         pdebug("^^^^ renaming %s to %s ^^^^\n", params->temp_file_name, params->args->argz);

@@ -4,6 +4,7 @@
 #include <assert.h> //assert()
 #include <stdbool.h> //bool type
 #include <stdint.h> //uint64_t type
+#include <stdio.h> //printf()
 #include <string.h> //strcmp()
 #include "threefizer/fileIO.h" //all fileIO operations
 

@@ -17,7 +17,7 @@ inline uint64_t getNumBlocks(const uint64_t input_length, const SkeinSize_t stat
 //returns the size in bytes the padded data will be
 inline uint64_t getPadSize(const uint64_t input_length, const SkeinSize_t state_size)
 {
-    return (getNumBlocks(input_length, state_size)*(uint64_t)state_size)/8; 
+    return (getNumBlocks(input_length, state_size)*(uint64_t)(state_size)/8); 
 }
 
 uint64_t* pad(const uint8_t* input, const uint64_t input_length, const SkeinSize_t state_size)

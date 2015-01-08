@@ -60,6 +60,7 @@ void* queueFileForDecrypt(void* parameters)
 	       else { data_chunk->action = GEN_MAC; }
 	       data_chunk->data = data;
 	       data_chunk->data_size = getPadSize(chunk_size, params->args->state_size);   
+	       data_chunk->data_size = chunk_size;   
            }
        }
 

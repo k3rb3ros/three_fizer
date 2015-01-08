@@ -1,12 +1,12 @@
 #ifndef THREEFISHTESTS_H
 #define THREEFISHTESTS_H
 
-#include "print.h"
-#include "threefizer/threefishApi.h"
-#include "threefizer/debug.h"
-#include <assert.h>
-#include <stdint.h>
-#include <stdio.h>
+#include <assert.h> //assert()
+#include <stdint.h> //uintxx_t types
+#include <stdio.h> //printf()
+#include "print.h" //showBuff()
+#include "threefizer/threefishApi.h" //all threefish cipher and init functions
+#include "threefizer/debug.h" //pdebug
 
 #define SAFE_SIZE Threefish256/64
 #define SECURE_SIZE Threefish512/64

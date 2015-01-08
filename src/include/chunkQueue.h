@@ -18,9 +18,10 @@
 
 //Queue constants
 //number of chunks in QUEUE
-#define QUE_SIZE 10 //10*50MB*3Queues = 150MB max queue usage
+#define QUE_SIZE 10 //10*50MB*3Queues = 1.5GB max queue usage
 //size of each queue chunk
-#define MAX_CHUNK_SIZE 51200000 //50MB
+//#define MAX_CHUNK_SIZE 51200000 //50MB (whatever this is it must be a multiple of 64)
+#define MAX_CHUNK_SIZE 1024 //until we figure out why data is being corrupted when the queues are filled
 
 /******************
 * Data Structures *
@@ -28,10 +29,10 @@
 
 typedef struct
 {
-    int capacity;
-    int size;
-    int head;
-    int tail;
+    unsigned int capacity;
+    unsigned int size;
+    unsigned int head;
+    unsigned int tail;
     chunk** elements;
 } queue;
 
@@ -45,7 +46,7 @@ bool queueIsFull(queue* q);
 
 chunk* front(queue* q);
 
-queue* createQueue(const int max_elements);
+queue* createQueue(const unsigned int max_elements);
 
 void destroyQueue(queue* q);
 

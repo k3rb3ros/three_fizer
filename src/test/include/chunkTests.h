@@ -5,6 +5,7 @@
 #include "threefizer/debug.h" //pdebug()
 #include <assert.h> //assert()
 #include <stdlib.h> //malloc()
+#include <stdio.h> //printf()
 #include <string.h> //memcpy()
 
 #define DATA1 "Data 1"

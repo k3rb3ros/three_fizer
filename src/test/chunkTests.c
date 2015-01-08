@@ -1,21 +1,21 @@
-#include <stdio.h>
 #include "include/chunkTests.h"
 
 static void testCreateChunkQueue()
 {
-    pdebug("testCreateChunkQueue()\n");
+    printf("testCreateChunkQueue()");
     queue* q = createQueue(TEST_QUE_SIZE);
     assert(q->capacity == TEST_QUE_SIZE);
     assert(q->size == 0);
-    assert(q->head == 0);
-    assert(q->tail == -1);
+    assert(q->head == 1);
+    assert(q->tail == 0);
+    printf(" passed\n");
 
     destroyQueue(q);
 }
 
 static void testChunkEnque()
 {
-    pdebug("testChunkEnque()\n");
+    printf("testChunkEnque()");
 
     chunk* chunk1 = createChunk();
     chunk1->action = WRITE;
@@ -26,13 +26,15 @@ static void testChunkEnque()
     queue* q = createQueue(TEST_QUE_SIZE);
     enque(chunk1, q);    
 
-    assert(strcmp((const char*)q->elements[0]->data, DATA1) == 0);
+    assert(strcmp((const char*)q->elements[1]->data, DATA1) == 0);
+    printf(" passed\n");
+
     destroyQueue(q);
 }
 
 static void testChunkDeque()
 {
-    pdebug("testChunkDeque()\n");
+    printf("testChunkDeque()");
 
     chunk* chunk1 = createChunk();
     chunk1->action = WRITE;
@@ -45,6 +47,7 @@ static void testChunkDeque()
     assert(deque(q) == true);
     assert(q->size == 0);
     assert(q->elements[0] == NULL);
+    printf(" passed\n");
 
     destroyChunk(chunk1);
     destroyQueue(q);
@@ -52,7 +55,7 @@ static void testChunkDeque()
 
 static void testChunkFront()
 {
-    pdebug("testFront()\n");
+    printf("testFront()");
 
     chunk* chunk1 = createChunk();
     chunk1->action = WRITE;
@@ -66,13 +69,14 @@ static void testChunkFront()
     assert(test1->action == WRITE); 
     assert(strcmp((const char*)test1->data, DATA1) == 0);
     assert(test1->data_size == strlen((const char*)DATA1));
+    printf(" passed\n");
 
     destroyQueue(q);
 }
 
 static void testChunkLimit()
 {
-    pdebug("testChunkLimit()\n");
+    printf("testChunkLimit()");
 
     chunk* chunk1 = createChunk();
     chunk1->action = WRITE;
@@ -107,7 +111,7 @@ static void testChunkLimit()
     chunk* one_too_many = createChunk();
     one_too_many->action = ENCRYPT;
     one_too_many->data = NULL;
-    one_too_many->data_size = -1;
+    one_too_many->data_size = 0;
 
     queue* q = createQueue(TEST_QUE_SIZE);
     
@@ -117,6 +121,7 @@ static void testChunkLimit()
     enque(chunk4, q);
     enque(chunk5, q);
     assert(enque(one_too_many, q) == false);
+    printf(" passed\n");
 
     destroyQueue(q);
     destroyChunk(one_too_many);
@@ -124,7 +129,7 @@ static void testChunkLimit()
 
 static void testChunkQueueBuffer()
 {
-    pdebug("testChunkQueueBuffer()\n");
+    printf("testChunkQueueBuffer()");
    
     chunk* chunk1 = createChunk();
     chunk1->action = WRITE;
@@ -198,6 +203,7 @@ static void testChunkQueueBuffer()
     assert(strcmp((const char*)front(q)->data, DATA5) == 0);
     deque(q);
     destroyChunk(chunk5);
+    printf(" passed\n");
    
     destroyQueue(q);
 }
