@@ -27,13 +27,12 @@
 #include "writeThread.h" //asyncWrite()
 
 #define THREEFIZER_SUCCESS 0
-
-#define TEMP_FILE_NAME_SIZE 10
+#define TEMP_FILE_NAME_SIZE 10 //size in bytes of the temp file
 
 /************
 * Functions *
 *************/
 
-int32_t runThreefizer(const arguments* args);
+int runThreefizer(const arguments* args);
 
 #endif

@@ -20,7 +20,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
 	    }
             else
             {
-                 char msg[MAX_FILE_LENGTH] = { 0 }; 
+                 char msg[FNAME_BUFFER_SIZE] = { 0 }; 
                  sprintf(msg, "unable to open file: %s", arg);
                  argp_failure(state, 1, 0, msg);
             }
@@ -30,10 +30,12 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
         {
             a->free = false;
             a->encrypt = true;
+	    a->hash_from_file = false;
             a->hash = true;
             a->argz= NULL;
             a->argz_len = 0;
             a->state_size = Skein512;
+	    a->key_file = NULL;
             a->password = NULL;
             a->pw_length = 0;
             a->file_size = 0;
@@ -69,7 +71,8 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             if(exists(arg))
             {
                 a->free = true;
-		a->password = readFile(arg);
+		a->hash_from_file = true;
+		a->key_file = (uint8_t*)arg;
                 a->pw_length = getFileSize(arg);
             }
             else
@@ -111,7 +114,7 @@ int main(int argc, char*argv[])
        prev = arg;
        if(exists(arg))
        {
-           if (arguments.password == NULL)
+           if (arguments.password == NULL && arguments.key_file == NULL)
            { 
                askPassword(&arguments); 
            }

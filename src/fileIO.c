@@ -57,13 +57,3 @@ inline uint64_t getFileSize(const char* fname)
     struct stat st;
     return stat(fname, &st) == 0 ? st.st_size : 0;
 }
-
-inline void terminateFile(FILE* write) //write the terminating \n and close the File
-{
-    const static uint8_t eol[1] = { '\n' };
-    if(!ferror(write)) 
-    {
-        fwrite(eol, sizeof(uint8_t), 1, write);
-        fclose(write);
-    }
-}

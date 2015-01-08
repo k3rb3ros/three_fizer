@@ -70,7 +70,8 @@ void* authenticateMAC(void* parameters)
         if(mac_chunk != NULL && maced && !queueIsFull(params->out))
         {
              pdebug("*** Queuing chunk of size %lu ***\n", mac_chunk->data_size);
-	     while(queueIsFull(params->out)); //spin until the queue has at least one free spot
+	     while(queueIsFull(params->out))
+             { ; } //spin until the queue has at least one free spot
              pthread_mutex_lock(params->out_mutex);
              if(enque(mac_chunk, params->out))
              {

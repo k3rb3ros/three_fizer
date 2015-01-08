@@ -1,6 +1,6 @@
 #include "include/controller.h"
 
-int32_t runThreefizer(const arguments* args)
+int runThreefizer(const arguments* args)
 {
     bool mac_status = true;
     bool running = true;

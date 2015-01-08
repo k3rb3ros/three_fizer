@@ -14,7 +14,7 @@
 #include "util.h" //getSkeinSize()
 
 //Numerical constants
-#define MAX_FILE_LENGTH 256
+#define FNAME_BUFFER_SIZE 256
 
 /*
 ***********************************
