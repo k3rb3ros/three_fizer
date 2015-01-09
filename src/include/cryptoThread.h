@@ -2,8 +2,10 @@
 #define CRYPTOTHREAD_H
 
 #include <pthread.h> //pthread_mutex_t type
+#include "cbc.h" //getChainInBuffer()
 #include "chunkQueue.h" //queue data type
 #include "debug.h" //pdebug()
+#include "decrypt.h" //decryptHeader(), decryptInPlace()
 #include "encrypt.h" //encryptHeader(), encryptInPlace()
 #include "error.h" //error codes
 #include "pad.h" //getNumBlocks()

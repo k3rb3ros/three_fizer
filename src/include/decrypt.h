@@ -3,7 +3,7 @@
 
 #include <stdbool.h> //bool types
 #include <stdint.h> //uint types
-#include "cbc.h" //cbcXXXXEncrypt() functions
+#include "cbcDecrypt.h" //cbcXXXXDecrypt() functions
 #include "threefishApi.h" //ThreefishKey_t type
 #include "tfHeader.h" //stripIV()
 

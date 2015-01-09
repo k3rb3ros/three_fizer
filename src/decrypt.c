@@ -26,7 +26,7 @@ void decryptInPlace(ThreefishKey_t* key,
                     uint64_t* plain_text,
                     const uint64_t num_blocks)
 {
-    pd2("hecryptInPlace(key:%lu, chain:%lu, plain_text:%lx, num_blocks:%lu)\n", key->key[0], chain[0], plain_text, num_blocks);
+    pd2("decryptInPlace(key:%lu, chain:%lu, plain_text:%lu, num_blocks:%lu)\n", key->key[0], chain[0], plain_text[0], num_blocks);
     switch(key->stateSize) //call the corresponding cbc Encrypt function
     {
         case 256: cbc256Decrypt(key, chain, plain_text, num_blocks);

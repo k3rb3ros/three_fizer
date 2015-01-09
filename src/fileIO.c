@@ -5,15 +5,6 @@ inline bool exists(const char* fname)
     return access(fname, R_OK) != -1;
 }
 
-bool writeBlock(const uint8_t* data, const uint64_t data_size, FILE* write)
-{
-    if(ferror(write)) { return false; }
-    fwrite(data, sizeof(uint8_t), data_size, write);
-    if(ferror(write)) { return false; }
-
-    return true;
-}
-
 bool writeBytes(const uint8_t* data, const uint64_t data_size, int64_t write_fd)
 {
     int64_t status = write(write_fd, data, data_size);

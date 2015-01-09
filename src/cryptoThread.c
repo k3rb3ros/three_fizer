@@ -48,7 +48,7 @@ void* decryptQueue(void* parameters)
         */
         if(header && decrypt_chunk != NULL)
         {
-            getChainInBuffer(decrypt_chunk->data, chain, 2, params->tf_key->stateSize);
+            //getChainInBuffer(decrypt_chunk->data, chain, 2, params->tf_key->stateSize);
             destroyChunk(decrypt_chunk);
             decrypt_chunk = NULL;
             header = false;
@@ -58,8 +58,8 @@ void* decryptQueue(void* parameters)
         {
             uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
                                               (uint32_t)params->tf_key->stateSize);
+            //getChainInBuffer(decrypt_chunk->data, chain, num_blocks, params->tf_key->stateSize); 
 	    decryptInPlace(params->tf_key, chain, decrypt_chunk->data, num_blocks);
-            getChainInBuffer(decrypt_chunk->data, chain, num_blocks, params->tf_key->stateSize); 
             decrypted = true;
             pdebug("$$$ Decrypting chunk of size %lu $$$\n", decrypt_chunk->data_size);
         }
@@ -81,7 +81,7 @@ void* decryptQueue(void* parameters)
     } //end while loop
 
     //queue Done flag
-    while(queueIsFull(params->out));
+    while(queueIsFull(params->out)) { ; } //spin until queue is not full
     pthread_mutex_lock(params->out_mutex);
     if(!queueDone(params->out))
     {
