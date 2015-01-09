@@ -11,7 +11,7 @@ void* decryptQueue(void* parameters)
     cryptParams* params = parameters;
     uint64_t* chain = NULL;
 
-    chain = calloc((params->tf_key->stateSize/8), sizeof(uint64_t));
+    chain = calloc((params->tf_key->stateSize/64), sizeof(uint64_t));
     if(chain == NULL) //check that calloc succeeded
     {
         pdebug("$$$ Error allocating memory for chain buffer $$$\n");
@@ -59,7 +59,7 @@ void* decryptQueue(void* parameters)
             uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
                                               (uint32_t)params->tf_key->stateSize);
 	    decryptInPlace(params->tf_key, chain, decrypt_chunk->data, num_blocks);
-            getChainInBuffer(decrypt_chunk->data, chain, 2, params->tf_key->stateSize); 
+            getChainInBuffer(decrypt_chunk->data, chain, num_blocks, params->tf_key->stateSize); 
             decrypted = true;
             pdebug("$$$ Decrypting chunk of size %lu $$$\n", decrypt_chunk->data_size);
         }
@@ -116,11 +116,12 @@ void* encryptQueue(void* parameters)
 {
     pdebug("encryptQueue()\n");
     bool first_chunk = true;
+    bool encrypted = false; //a flag to protect a chunk from getting encrpted multiple times
     cryptParams* params = parameters;
     chunk* encrypt_chunk = NULL;
     uint64_t* chain = NULL;
     
-    chain = calloc(params->tf_key->stateSize/8, sizeof(uint64_t));
+    chain = calloc(params->tf_key->stateSize/64, sizeof(uint64_t));
     if(chain == NULL) //check that calloc succeeded
     {
         *(params->error) = MEMORY_ALLOCATION_FAIL;
@@ -135,7 +136,11 @@ void* encryptQueue(void* parameters)
             if(front(params->in) != NULL)
             {
                 encrypt_chunk = front(params->in);
-                if(encrypt_chunk != NULL) { deque(params->in); }
+                if(encrypt_chunk != NULL) 
+		{ 
+		    encrypted = false; //set the encrypted flag
+		    deque(params->in); 
+		}
             }
             pthread_mutex_unlock(params->in_mutex);
         }
@@ -161,12 +166,13 @@ void* encryptQueue(void* parameters)
             getChainInBuffer(encrypt_chunk->data, chain, 2, params->tf_key->stateSize);
             first_chunk = false;
         }
-        else if(!first_chunk && encrypt_chunk != NULL)
+        else if(!first_chunk && encrypt_chunk != NULL && !encrypted)
         {
             uint64_t num_blocks = getNumBlocks(encrypt_chunk->data_size,
                                               (uint32_t)params->tf_key->stateSize);
             encryptInPlace(params->tf_key, chain, encrypt_chunk->data, num_blocks);
             getChainInBuffer(encrypt_chunk->data, chain, num_blocks, params->tf_key->stateSize);
+	    encrypted = true;
         }
          
         if(encrypt_chunk != NULL && !queueIsFull(params->out)) //attempt to queue the last encrypted chunk

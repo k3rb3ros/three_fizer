@@ -46,7 +46,7 @@ int runThreefizer(const arguments* args)
         setUpCryptoParams(&crypto_params, args, &running, &tf_key, &crypto_mutex, &mac_mutex, crypto_queue, mac_queue, &error);
         setUpMacParams(&mac_params, &mac_status, &running, NULL, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, NULL, &error, NULL); 
         setUpWriteParams(&write_params, args, &running, NULL, &write_mutex, write_queue, temp_file_name, &error, NULL);
-        queueHeader(args, crypto_queue);
+        queueHeader(args, crypto_queue); //generate and queue the Header before we start reading the flie so it is the first thing in the queue
         threads_active = true;
         pthread_create(&read_thread, NULL, queueFileForEncrypt, &read_params);
         pthread_create(&crypto_thread, NULL, encryptQueue, &crypto_params);
@@ -75,8 +75,8 @@ int runThreefizer(const arguments* args)
     if(threads_active) 
     { 
         pthread_join(read_thread, NULL);
-        //pthread_join(crypto_thread, NULL);
-        //pthread_join(mac_thread, NULL);
+        pthread_join(crypto_thread, NULL);
+        pthread_join(mac_thread, NULL);
         pthread_join(write_thread, NULL);
     }
     if(error != 0) { status = error; } //return the error if 1 occured

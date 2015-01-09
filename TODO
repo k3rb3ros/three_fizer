@@ -11,4 +11,5 @@
 * Add a standard way to display error #DONE# and success messages
 * Add a progress bar
 * Get code reviewed by a security expert
-* Change fread() and write() calls to read() and write()
+* Change fread() and write() calls to read() and write() #DONE#
+* Add all errors as defined MACROS to error.h

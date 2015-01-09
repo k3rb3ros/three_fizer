@@ -73,7 +73,6 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
                 a->free = true;
 		a->hash_from_file = true;
 		a->key_file = (uint8_t*)arg;
-                a->pw_length = getFileSize(arg);
             }
             else
             {

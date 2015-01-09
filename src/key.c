@@ -16,7 +16,7 @@ bool handleKeys(const arguments* args,
         //hash the user entered password so the key matches state size
         cipher_key = (uint64_t*)sf_hash(args->password, args->pw_length, args->state_size);
     }
-    if(args->hash == true && args->hash_from_file == true)
+    else if(args->hash == true && args->hash_from_file == true)
     {
         //hash the key file to a key of state size
         cipher_key = hash_key_from_file((char*)args->key_file, args->state_size);
