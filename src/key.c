@@ -26,6 +26,8 @@ bool handleKeys(const arguments* args,
         //use the user entered password as the key directly
         cipher_key = noHashKey(args->password, args->pw_length, args->state_size);
     }
+    
+    if(cipher_key == NULL) { return false; }
 
     //generate the mac key from the cipher_key
     mac_key = (uint64_t*)sf_hash((uint8_t*)cipher_key, block_byte_size, args->state_size);

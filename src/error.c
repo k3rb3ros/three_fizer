@@ -3,32 +3,38 @@
 void printError(int error)
 {
     if(error == 0) { return; }
+
+    fprintf(stderr, "Error\n");
+
     switch(error)
     {
 	case CIPHER_OPERATION_FAIL:
-	     perror("Cipher operation failure\n");
+	     fprintf(stderr, "Cipher operation failure\n");
 	break;
 	case FILE_IO_FAIL:
-	      perror("File I/O failure ensure disk is not full and you have write access to the file you are trying to encrypt\n");
+	     fprintf(stderr, "File I/O failure ensure disk is not full and you have write access to the file you are trying to encrypt\n");
 	break;
         case HEADER_CHECK_FAIL:
-             perror("Header check failure. Ensure that the file you are trying to decrypt was created with this program, the password is correct and that the block size is the same as what it was when encrypting. If you are still getting this error then the file has been corrupted or modifiend since encryption.\n" );
+             fprintf(stderr, "Header check failure. Ensure that the file you are trying to decrypt was created with this program, the password is correct and that the block size is the same as what it was when encrypting. If you are still getting this error then the file has been corrupted or modifiend since encryption.\n", stderr );
+	break;
+	case KEY_GENERATION_FAIL:
+	     fprintf(stderr, "Key generation failed\n");
 	break;
 	case MAC_CHECK_FAIL:
-	      perror("MAC check failure the encrypted file has been modified or corrupted\n");
+	     fprintf(stderr, "MAC check failure the encrypted file has been modified or corrupted\n");
 	break;
 	case MAC_GENERATION_FAIL:
-	      perror("Error generating MAC\n");
+	     fprintf(stderr, "Error generating MAC\n");
 	break;
 	case MEMORY_ALLOCATION_FAIL:
-	      perror("Error allocating memory\n");
+	     fprintf(stderr, "Error allocating memory\n");
 	break;
 	case QUEUE_OPERATION_FAIL:
-	      perror("Error queing resources operation stopped to prevent deadlock.\n");
+	     fprintf(stderr, "Error queing resources operation stopped to prevent deadlock.\n");
 	break;
 	
         default: break;	
     }
 
-    perror("Cannot continue\n");
+    fprintf(stderr, "Cannot continue\n");
 }

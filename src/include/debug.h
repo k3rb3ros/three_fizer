@@ -13,7 +13,7 @@
         #define pd2(format, ...) printf(format, ##__VA_ARGS__)
     #endif
     #ifndef LV2_DEBUG
-        #define pdebug(...) do {} while(0)
+        #define pd2(...) do {} while(0)
     #endif
     
 

@@ -11,10 +11,11 @@
 #define FILE_IO_FAIL -2
 #define FILE_TOO_SMALL -3
 #define HEADER_CHECK_FAIL -4
-#define MAC_CHECK_FAIL -5
-#define MAC_GENERATION_FAIL -6
-#define MEMORY_ALLOCATION_FAIL -7
-#define QUEUE_OPERATION_FAIL -8
+#define KEY_GENERATION_FAIL -5
+#define MAC_CHECK_FAIL -6
+#define MAC_GENERATION_FAIL -7
+#define MEMORY_ALLOCATION_FAIL -8
+#define QUEUE_OPERATION_FAIL -9
 
 /************
 * Functions *

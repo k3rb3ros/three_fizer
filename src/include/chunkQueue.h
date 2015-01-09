@@ -20,8 +20,7 @@
 //number of chunks in QUEUE
 #define QUE_SIZE 10 //10*50MB*3Queues = 1.5GB max queue usage
 //size of each queue chunk
-//#define MAX_CHUNK_SIZE 51200000 //50MB (whatever this is it must be a multiple of 64)
-#define MAX_CHUNK_SIZE 1024 //until we figure out why data is being corrupted when the queues are filled
+#define MAX_CHUNK_SIZE 51200000 //50MB (whatever this is it must be a multiple of 64)
 
 /******************
 * Data Structures *

@@ -24,19 +24,17 @@ uint64_t* hash_key_from_file(const char* fname, const SkeinSize_t state_size) //
    int64_t fd = openForRead(fname);
    if(fd < 0) { return NULL; }
    
-   const uint64_t file_size = getFileSize(fname);
-   if(file_size == 0) { return NULL; }
+   uint64_t bytes_to_hash = getFileSize(fname);
+   if(bytes_to_hash == 0) { return NULL; }
 
    struct SkeinCtx skein_state;
    uint64_t* hash_chunk = NULL;
-   uint64_t bytes_hashed = 0;
-   uint64_t bytes_to_hash = file_size;
 
    uint64_t* key = calloc(state_size/64 , sizeof(uint64_t));
    skeinCtxPrepare(&skein_state, state_size); //Set up the context
    skeinInit(&skein_state, state_size); //Init Skein and tell it how big the digest will be
 
-   while(bytes_hashed < file_size) //iterate through the file and run it through Skein
+   while(bytes_to_hash > 0) //iterate through the file and run its contents through Skein
    {
        uint64_t chunk_size = 0;
        if(bytes_to_hash < HASH_BUFFER_SIZE)
@@ -44,7 +42,7 @@ uint64_t* hash_key_from_file(const char* fname, const SkeinSize_t state_size) //
 	   chunk_size = bytes_to_hash; 
            hash_chunk = (uint64_t*)readBytes(bytes_to_hash, fd);
        }
-       else if(bytes_to_hash >= HASH_BUFFER_SIZE);
+       else if(bytes_to_hash >= HASH_BUFFER_SIZE)
        {
 	   chunk_size = HASH_BUFFER_SIZE; 
            hash_chunk = (uint64_t*)readBytes(HASH_BUFFER_SIZE, fd); 
@@ -56,8 +54,8 @@ uint64_t* hash_key_from_file(const char* fname, const SkeinSize_t state_size) //
            return NULL;
        }
        skeinUpdate(&skein_state, (uint8_t*)hash_chunk, chunk_size);
-       bytes_hashed += bytes_to_hash;
        free(hash_chunk); 
+       bytes_to_hash -= chunk_size; //decriment the counter
    }
    
    skeinFinal(&skein_state, (uint8_t*)key); //get the digest and return it
