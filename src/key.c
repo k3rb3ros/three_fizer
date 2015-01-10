@@ -33,7 +33,7 @@ bool handleKeys(const arguments* args,
     mac_key = (uint64_t*)sf_hash((uint8_t*)cipher_key, block_byte_size, args->state_size);
 
     //initialize the key structure for the cipher key
-    threefishSetKey(cipher_context, (ThreefishSize_t)args->state_size, cipher_key, cipher_tweak);
+    threefishSetKey(cipher_context, (ThreefishSize_t)args->state_size, cipher_key, threefizer_tweak);
     //initialize the mac context and undelying skein structures
     InitMacCtx(args, mac_context, mac_key);
 

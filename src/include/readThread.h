@@ -14,9 +14,9 @@ typedef struct
 {
     const arguments* args;
     bool* running;
+    int32_t* error;
     pthread_mutex_t* mutex;
     queue* out;
-    uint32_t* error;
 } readParams;
 
 void setUpReadParams(readParams* params, 
@@ -24,7 +24,7 @@ void setUpReadParams(readParams* params,
                      bool* running,
                      pthread_mutex_t* mutex,
                      queue* out,
-                     uint32_t* error);
+                     int32_t* error);
 
 void* queueFileForDecrypt(void* parameters);
 

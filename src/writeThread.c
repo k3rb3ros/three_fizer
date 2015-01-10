@@ -62,7 +62,8 @@ void* asyncWrite(void* parameters)
             bytes_written += bytes_to_write;
             destroyChunk(write_chunk); //free the chunk
             write_chunk = NULL; 
-        }        
+        }
+        pd2("asyncWrite() tick\n");	
     }
     
     close(write);
@@ -84,7 +85,7 @@ void setUpWriteParams(writeParams* params,
                       pthread_mutex_t* mutex, 
                       queue* in, 
                       const uint8_t* temp_file_name, 
-                      uint32_t* error, 
+                      int32_t* error, 
                       uint64_t* file_size)
 {
     params->args = args;

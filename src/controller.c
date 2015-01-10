@@ -6,7 +6,7 @@ int runThreefizer(const arguments* args)
     bool running = true;
     bool threads_active = false;
     bool valid = false;
-    uint32_t error = 0;
+    int32_t error = 0;
     //the temp file name is a partial skein hash of the original file name
     pthread_t read_thread;
     pthread_t crypto_thread;
@@ -42,7 +42,6 @@ int runThreefizer(const arguments* args)
         if(args->encrypt == true && args->file_size > 0) //encrypt
         {
             //passthrough queues with no encryption
-            setUpReadParams(&read_params, args, &running, &write_mutex, write_queue, &error);
             setUpReadParams(&read_params, args, &running, &crypto_mutex, crypto_queue, &error);
             setUpCryptoParams(&crypto_params, args, &running, &tf_key, &crypto_mutex, &mac_mutex, crypto_queue, mac_queue, &error);
             setUpMacParams(&mac_params, &mac_status, &running, NULL, &mac_context, &mac_mutex, &write_mutex, mac_queue, write_queue, NULL, &error, NULL); 
@@ -61,7 +60,7 @@ int runThreefizer(const arguments* args)
        }
        else //decrypt
        {
-            setUpReadParams(&read_params, args, &running, &crypto_mutex, mac_queue, &error);
+            setUpReadParams(&read_params, args, &running, &mac_mutex, mac_queue, &error);
             setUpMacParams(&mac_params, &mac_status, &running, &valid, &mac_context, &mac_mutex, &crypto_mutex, mac_queue, crypto_queue, &tf_key, &error, &file_size); 
             setUpCryptoParams(&crypto_params, args, &running, &tf_key, &crypto_mutex, &write_mutex, crypto_queue, write_queue, &error);
             setUpWriteParams(&write_params, args, &running, &valid, &write_mutex, write_queue, temp_file_name, &error, &file_size);
@@ -79,16 +78,21 @@ int runThreefizer(const arguments* args)
             pthread_join(crypto_thread, NULL);
             pthread_join(mac_thread, NULL);
             pthread_join(write_thread, NULL);
+	    pdebug("All threads joined\n");
         }
         if(error != 0) { status = error; } //return the error if 1 occured
+
+
         //free alloated resources
+	pdebug("Controller freeing resources\n");
         pthread_mutex_destroy(&crypto_mutex);
         pthread_mutex_destroy(&mac_mutex);
         pthread_mutex_destroy(&write_mutex);
         destroyQueue(crypto_queue);
         destroyQueue(mac_queue);
         destroyQueue(write_queue);
-        if(temp_file_name != NULL) { free((void*) temp_file_name); }
+        if(temp_file_name != NULL) { free((void*)temp_file_name); }
+        pdebug("Resources freed\n");
     }
     else { status = KEY_GENERATION_FAIL; }
 

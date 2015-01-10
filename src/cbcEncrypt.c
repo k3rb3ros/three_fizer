@@ -66,9 +66,8 @@ void cbc1024Encrypt(ThreefishKey_t* key,
            plain_text[block+2] ^= plain_text[offset+2]; plain_text[block+3] ^= plain_text[offset+3];
            plain_text[block+4] ^= plain_text[offset+4]; plain_text[block+5] ^= plain_text[offset+5];
            plain_text[block+6] ^= plain_text[offset+6]; plain_text[block+7] ^= plain_text[offset+7];
-           plain_text[block+7] ^= plain_text[offset+7]; plain_text[block+8] ^= plain_text[offset+8];
-           plain_text[block+9] ^= plain_text[offset+9]; plain_text[block+10] ^= plain_text[offset+10];
-           plain_text[block+11] ^= plain_text[offset+11]; plain_text[block+12] ^= plain_text[offset+12];
+           plain_text[block+8] ^= plain_text[offset+8]; plain_text[block+9] ^= plain_text[offset+9];
+           plain_text[block+10] ^= plain_text[offset+10]; plain_text[block+11] ^= plain_text[offset+11];
            plain_text[block+12] ^= plain_text[offset+12]; plain_text[block+13] ^= plain_text[offset+13];
            plain_text[block+14] ^= plain_text[offset+14]; plain_text[block+15] ^= plain_text[offset+15];
        }

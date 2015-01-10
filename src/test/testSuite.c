@@ -7,6 +7,7 @@ int main()
     #else
         runThreefishTests();
         runSkeinTests();
+	runCBCTests();
         runChunkTests();
 	runFileIOTests();
         printf("All tests passed :)\n");

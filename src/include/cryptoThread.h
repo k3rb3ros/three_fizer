@@ -15,12 +15,12 @@ typedef struct
 {
     const arguments* args;
     bool* running;
-    ThreefishKey_t* tf_key;
+    int32_t* error;
     pthread_mutex_t* in_mutex;
     pthread_mutex_t* out_mutex;
     queue* in;
     queue* out;
-    uint32_t* error;
+    ThreefishKey_t* tf_key;
 } cryptParams;
 
 void* decryptQueue(void* parameters);
@@ -35,6 +35,6 @@ void setUpCryptoParams(cryptParams* params,
                       pthread_mutex_t* out_mutex,
                       queue* in,
                       queue* out,
-                      uint32_t* error);
+                      int32_t* error);
 
 #endif

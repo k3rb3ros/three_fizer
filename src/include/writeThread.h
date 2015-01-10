@@ -12,10 +12,10 @@ typedef struct
     const arguments* args;
     bool* running;
     bool* valid;
+    int32_t* error;
     pthread_mutex_t* mutex;
     queue* in;
     const uint8_t* temp_file_name;
-    uint32_t* error;
     uint64_t* file_size;
 } writeParams;
 
@@ -28,7 +28,7 @@ void setUpWriteParams(writeParams* params,
                       pthread_mutex_t* mutex,
                       queue* in,
                       const uint8_t* temp_file_name,
-                      uint32_t* error,
+                      int32_t* error,
                       uint64_t* file_size);
 
 #endif

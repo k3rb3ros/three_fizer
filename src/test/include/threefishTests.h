@@ -6,8 +6,10 @@
 #include <stdio.h> //printf()
 #include "print.h" //showBuff()
 #include "threefizer/threefishApi.h" //all threefish cipher and init functions
-#include "threefizer/debug.h" //pdebug
 
+/*********************************
+* Block sizes as 64 bit integers *
+*********************************/
 #define SAFE_SIZE Threefish256/64
 #define SECURE_SIZE Threefish512/64
 #define FP_SIZE Threefish1024/64

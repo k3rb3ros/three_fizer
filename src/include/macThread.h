@@ -17,13 +17,13 @@ typedef struct
     bool* mac_status;
     bool* running;
     bool* valid;
+    int32_t* error;
     MacCtx_t* mac_context;
     pthread_mutex_t* in_mutex;
     pthread_mutex_t* out_mutex;
     queue* in;
     queue* out;
     ThreefishKey_t* tf_key;
-    uint32_t* error;
     uint64_t* file_size;
 } macParams;
 
@@ -41,7 +41,7 @@ void setUpMacParams(macParams* params,
               queue* in,
               queue* out, 
               ThreefishKey_t* tf_key,
-              uint32_t* error,
+              int32_t* error,
               uint64_t* file_size);
 
 #endif

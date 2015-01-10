@@ -79,7 +79,7 @@ static void testThreefish256NullEncrypt()
     threefishSetKey(&tf_key, Threefish256, (uint64_t*)three_256_00_key, (uint64_t*)three_256_00_tweak);
     threefishEncryptBlockWords(&tf_key, (uint64_t*)three_256_00_plain_text, (uint64_t*)test_block_256); 
 
-    printf("threefish256NullEncrypt()");
+    printf("testThreefish256NullEncrypt()");
     //pdebug("Actual: \n");
     //ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
     //pdebug("\n Expected: \n");
@@ -101,7 +101,7 @@ static void testThreefish256TVEncrypt()
     threefishSetKey(&tf_key, Threefish256, (uint64_t*)three_256_01_key, (uint64_t*)three_256_01_tweak);
     threefishEncryptBlockWords(&tf_key, (uint64_t*)three_256_01_plain_text, (uint64_t*)test_block_256);
 
-    printf("threefish256TestVectorEncrypt()");
+    printf("testThreefish256TestVectorEncrypt()");
     /* plaintext feed forward */
     for (uint64_t i = 0; i < SAFE_SIZE; i++) { test_block_256[i] ^= three_256_01_plain_text[i]; }
 
@@ -146,7 +146,7 @@ static void testThreefish512TVEncrypt()
     threefishSetKey(&tf_key, Threefish512, (uint64_t*)three_512_01_key, (uint64_t*)three_512_01_tweak);
     threefishEncryptBlockWords(&tf_key, (uint64_t*)three_512_01_plain_text, (uint64_t*)test_block_512);
     
-    printf("threefish512TestVectorEncrypt()");
+    printf("testThreefish512TestVectorEncrypt()");
     /* plaintext feed forward */
     for (uint64_t i = 0; i < SECURE_SIZE; i++) { test_block_512[i] ^= three_512_01_plain_text[i]; }
 
@@ -174,7 +174,7 @@ static void testThreefish1024NullEncrypt()
 
     threefishSetKey(&tf_key, Threefish1024, (uint64_t*)three_1024_00_key, (uint64_t*)three_1024_00_tweak);
     threefishEncryptBlockWords(&tf_key, (uint64_t*)three_1024_00_plain_text, (uint64_t*)test_block_1024); 
-    printf("threefish1024NullEncrypt()");
+    printf("testThreefish1024NullEncrypt()");
 
     //pdebug("Actual: \n");
     //ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
@@ -209,7 +209,7 @@ static void testThreefish1024TVEncrypt()
     threefishSetKey(&tf_key, Threefish1024, (uint64_t*)three_1024_01_key, (uint64_t*)three_1024_01_tweak);
     threefishEncryptBlockWords(&tf_key, (uint64_t*)three_1024_01_plain_text, (uint64_t*)test_block_1024);
 
-    printf("threefish1024TestVectorEncrypt()");
+    printf("testThreefish1024TestVectorEncrypt()");
     /* plaintext feed forward */
     for (uint64_t i = 0; i < FP_SIZE; i++) { test_block_1024[i] ^= three_1024_01_plain_text[i]; }
 
@@ -246,7 +246,7 @@ static void testThreefish256NullDecrypt()
     threefishSetKey(&tf_key, Threefish256, (uint64_t*)three_256_00_key, (uint64_t*)three_256_00_tweak);
     threefishDecryptBlockWords(&tf_key, (uint64_t*)three_256_00_expected_result, (uint64_t*)test_block_256);
 
-    printf("threefish256NullDecrypt()");
+    printf("testThreefish256NullDecrypt()");
     //pdebug("Actual: \n");
     //ShowBuff(Threefish256/8, (uint8_t *)test_block_256);
     //pdebug("\n Expected: \n");
@@ -267,7 +267,7 @@ static void testThreefish256TVDecrypt()
 
     threefishSetKey(&tf_key, Threefish256, (uint64_t*)three_256_01_key, (uint64_t*)three_256_01_tweak);
 
-    printf("threefish256TVDecrypt()");
+    printf("testThreefish256TVDecrypt()");
     // xor with simulated IV
     for (uint64_t i = 0; i < SAFE_SIZE; i++) { test_block_256[i] ^= three_256_01_plain_text[i]; }
     threefishDecryptBlockWords(&tf_key, test_block_256, test_block_256);
@@ -292,7 +292,7 @@ static void testThreefish512NullDecrypt()
     threefishSetKey(&tf_key, Threefish512, (uint64_t*)three_512_00_key, (uint64_t*)three_512_00_tweak);
     threefishDecryptBlockWords(&tf_key, (uint64_t*)three_512_00_expected_result, (uint64_t*)test_block_512);
 
-    printf("threefish512NullDecrypt()");
+    printf("testThreefish512NullDecrypt()");
     //pdebug("Actual: \n");
     //ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
     //pdebug("\n Expected: \n");
@@ -320,7 +320,7 @@ static void testThreefish512TVDecrypt()
     threefishSetKey(&tf_key, Threefish512, (uint64_t*)three_512_01_key, (uint64_t*)three_512_01_tweak);
     threefishDecryptBlockWords(&tf_key, (uint64_t*)test_block_512, (uint64_t*)test_block_512);
     
-    printf("threefish512TVDecrypt()");
+    printf("testThreefish512TVDecrypt()");
     //pdebug("Actual: \n");
     //ShowBuff(Threefish512/8, (uint8_t *)test_block_512);
     //pdebug("\n Expected: \n");
@@ -346,7 +346,7 @@ static void testThreefish1024NullDecrypt()
     threefishSetKey(&tf_key, Threefish1024, (uint64_t*)three_1024_00_key, (uint64_t*)three_1024_00_tweak);
     threefishDecryptBlockWords(&tf_key, (uint64_t*)three_1024_00_expected_result, (uint64_t*)test_block_1024);
 
-    printf("threefish1024NullDecrypt()");
+    printf("testThreefish1024NullDecrypt()");
     //pdebug("Actual: \n");
     //ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
     //pdebug("\n Expected: \n");
@@ -382,7 +382,7 @@ static void testThreefish1024TVDecrypt()
     threefishSetKey(&tf_key, Threefish1024, (uint64_t*)three_1024_01_key, (uint64_t*)three_1024_01_tweak);
     threefishDecryptBlockWords(&tf_key, test_block_1024, test_block_1024);
     
-    printf("threefish1024TVDecrypt()");
+    printf("testThreefish1024TVDecrypt()");
     //pdebug("Actual: \n");
     //ShowBuff(Threefish1024/8, (uint8_t *)test_block_1024);
     //pdebug("\n Expected: \n");

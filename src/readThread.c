@@ -59,7 +59,6 @@ void* queueFileForDecrypt(void* parameters)
 	       else if(mac) { data_chunk->action = MAC; }
 	       else { data_chunk->action = GEN_MAC; }
 	       data_chunk->data = data;
-	       data_chunk->data_size = getPadSize(chunk_size, params->args->state_size);   
 	       data_chunk->data_size = chunk_size;   
            }
        }
@@ -67,19 +66,19 @@ void* queueFileForDecrypt(void* parameters)
        //attepmt to queue the chunk
        if(data_chunk!= NULL)
        {
-           while(queueIsFull(params->out)); //spin until queue is empty
 	   pthread_mutex_lock(params->mutex);
-	   if(enque(data_chunk, params->out))
+	   if(!queueIsFull(params->out) && enque(data_chunk, params->out))
            {
                pdebug("### Queuing data of size %lu ### \n", data_chunk->data_size);
 	       data_chunk = NULL;
 	   }
 	   pthread_mutex_unlock(params->mutex);
        }
-   }
+       pd2("QueueFileFerDecrypt() Tick\n");
+   } //end of thread loop
 
    //queue done
-   while(queueIsFull(params->out));
+   while(*(params->running) && *(params->error) == 0 && queueIsFull(params->out)) { ; } //spin unit queue is free
    pthread_mutex_lock(params->mutex);
    if(!queueDone(params->out))
    {
@@ -143,19 +142,19 @@ void* queueFileForEncrypt(void* parameters)
 	//attempt to queue the chunk
 	if(data_chunk != NULL)
 	{
-	    while(queueIsFull(params->out)); //spin until queue is empty
 	    pthread_mutex_lock(params->mutex);
-            if(enque(data_chunk, params->out))
+            if(!queueIsFull(params->out) && enque(data_chunk, params->out))
 	    {
 		pdebug("### Queing data of size %lu ### \n", data_chunk->data_size);
                 data_chunk = NULL;
 	    }
 	    pthread_mutex_unlock(params->mutex);
-	}
-    }
+	} //end queue operation
+       pd2("QueueFileFerDecrypt() Tick\n");
+    } //end thread loop
 
     //queue done
-    while(queueIsFull(params->out));
+    while(*(params->running) && *(params->error) == 0 && queueIsFull(params->out)) { ; } //spin unit queue is free
     pthread_mutex_lock(params->mutex);
     if(!queueDone(params->out)) 
     {   //abort if this fails as it will cause a deadlock
@@ -176,7 +175,7 @@ inline void setUpReadParams(readParams* read_params,
                      bool* running,
                      pthread_mutex_t* mutex, 
                      queue* out,
-                     uint32_t* error)
+                     int32_t* error)
 {
     read_params->args = args;
     read_params->running = running;

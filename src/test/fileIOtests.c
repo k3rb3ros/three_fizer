@@ -36,8 +36,9 @@ static void testReadBytes()
 
 static void testWriteBytes()
 {
+    printf("testWriteBytes()");
     const static uint64_t a_size = 27;
-    const static uint8_t alphabet[a_size] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 'q', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '\n' };
+    const static uint8_t alphabet[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 'q', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '\n' };
 
     int wr_fd = openForWrite("writeTest.dat");
     int re_fd = openForRead("writeTest.dat");
@@ -58,6 +59,7 @@ static void testWriteBytes()
     }
 
     assert(getFileSize("writeTest.dat") == 702); //check that the file size is correct
+    printf(" passed\n");
 
     //close files
     close(wr_fd);

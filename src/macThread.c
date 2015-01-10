@@ -10,6 +10,10 @@ void* authenticateMAC(void* parameters)
  
     while(*(params->running) && *(params->error) == 0)
     {
+        //check for loop termination conditions
+        if(mac_chunk != NULL && (mac_chunk->action == MAC || mac_chunk->action == DONE))
+        {    break; }
+
         //get the next chunk
         if(mac_chunk == NULL)
         {
@@ -18,34 +22,32 @@ void* authenticateMAC(void* parameters)
              {
                  pdebug("*** attempting to deque chunk to mac ***\n");
                  mac_chunk = front(params->in);
-                 if(mac_chunk != NULL && mac_chunk->action != MAC) { deque(params->in); } //if the operation succeeded deque the chunk
+                 if(mac_chunk != NULL && mac_chunk->action != MAC) 
+		 {
+                     deque(params->in);
+		     maced = false;
+		 } //if the operation succeeded deque the chunk
              }
              pthread_mutex_unlock(params->in_mutex);
         }
-
-        //check for loop termination conditions
-        if(mac_chunk != NULL && (mac_chunk->action == MAC || mac_chunk->action == DONE))
-        {    break; }
 
         //check the header
         if(mac_chunk != NULL && header)
         {
              pdebug("*** checking header ***\n");
+
              const uint64_t block_byte_size = (params->tf_key->stateSize)/8;
              uint64_t* test_header = calloc(2, block_byte_size);
-
              if(test_header == NULL) //Sanity check 
              {
                   *(params->error) = MEMORY_ALLOCATION_FAIL;
                   return NULL;
              }
-             //test the header in a buffer so we can keep the original header encrypted in memory
+
              memcpy(test_header, mac_chunk->data, 2*block_byte_size);
              decryptHeader(params->tf_key, test_header);
              if(!checkHeader(test_header, params->file_size, params->tf_key->stateSize))
              {
-                  pdebug("*** Header check failed ***\n");
-                  pdebug("*** Ran header check on chunk of size %lu ***\n", mac_chunk->data_size);
                   *(params->error) = HEADER_CHECK_FAIL;
                   if(test_header != NULL) { free(test_header); }
                   return NULL;
@@ -67,19 +69,14 @@ void* authenticateMAC(void* parameters)
         }
 
         //attempt to queue the chunk
-        if(mac_chunk != NULL && maced && !queueIsFull(params->out))
+        if(mac_chunk != NULL && !queueIsFull(params->out) && maced)
         {
              pdebug("*** Queuing chunk of size %lu ***\n", mac_chunk->data_size);
-	     while(queueIsFull(params->out))
-             { ; } //spin until the queue has at least one free spot
              pthread_mutex_lock(params->out_mutex);
-             if(enque(mac_chunk, params->out))
-             {
-                 maced = false;
-                 mac_chunk = NULL;
-             }
+             if(!queueIsFull(params->out) && enque(mac_chunk, params->out)) { mac_chunk = NULL; } //queue the chunk
              pthread_mutex_unlock(params->out_mutex);
         }
+        pd2("authenticateMAC tick \n");
    } //end while loop
 
     pdebug("*** authenticateMAC() done with first loop ***\n");
@@ -97,22 +94,19 @@ void* authenticateMAC(void* parameters)
     chunk* stored_mac_chunk = NULL;
 
     //attempt to get the MAC appended to the end of the file
-    while(*(params->running) && *(params->error) == 0)
+    while(*(params->running) && *(params->error) == 0 && stored_mac_chunk == NULL)
     {
-        //dequeue the mac chunk
-        if(stored_mac_chunk == NULL && front(params->in) != NULL)
-        {
+        pthread_mutex_lock(params->in_mutex);
+	if(front(params->in) != NULL)
+	{
             pdebug("*** Reading stored MAC ***\n");
-            pthread_mutex_lock(params->in_mutex);
             stored_mac_chunk = front(params->in);
             if(stored_mac_chunk != NULL) { deque(params->in); }
-            pthread_mutex_unlock(params->in_mutex);
-        }
-
-        if(stored_mac_chunk != NULL) { break; } //check for the termination condition
+	}
+        pthread_mutex_unlock(params->in_mutex);
     }
 
-    if(stored_mac_chunk == NULL || stored_mac_chunk->action != MAC)
+    if(stored_mac_chunk->action != MAC) //check that this chunk is in fact marked as being the MAC
     {
         pdebug("*** Unable to queue stored mac chunk ***\n");
         *(params->error) = MAC_CHECK_FAIL;
@@ -123,7 +117,7 @@ void* authenticateMAC(void* parameters)
     uint64_t* stored_mac = stored_mac_chunk->data; 
 
     //compare the calculated and stored mac return an error if they don't match
-    for(uint32_t i=0; i<(params->mac_context->digest_byte_size/8); ++i)
+    for(uint8_t i=0; i<(params->mac_context->digest_byte_size/8); ++i)
     {
         if(calculated_mac[i] != stored_mac[i])
         {
@@ -137,7 +131,7 @@ void* authenticateMAC(void* parameters)
 
     pdebug("*** MAC check passed ***\n");
     //queue Done flag
-    while(queueIsFull(params->out));
+    while(*(params->running) && *(params->error) == 0 && queueIsFull(params->out)) { ; }
     pthread_mutex_lock(params->out_mutex);
     if(!queueDone(params->out))
     {
@@ -192,14 +186,13 @@ void* generateMAC(void* parameters)
         if(update_chunk != NULL && chunk_maced)
         {
             pdebug("*** Queuing data chunk to write que of size %lu ***\n", update_chunk->data_size);
-            while(queueIsFull(params->out)); //spin until queue is empty
             pthread_mutex_lock(params->out_mutex);
-            if(enque(update_chunk, params->out)) { update_chunk = NULL; }
+            if(!queueIsFull(params->out) && enque(update_chunk, params->out)) { update_chunk = NULL; }
             pthread_mutex_unlock(params->out_mutex);
             //on a successfull queue set mac chunk to NULL so the next chunk will be MACed
         } //end queue operation
-
         //otherwise spin and wait for the queue to empty
+	pd2("GenerateMAC() Tick\n");
     } //end thread loop
 
     if(front(params->in) != NULL && front(params->in)->action == DONE)//if we have reached the end of the in queue then get the MAC and que it to the out que 
@@ -211,7 +204,7 @@ void* generateMAC(void* parameters)
         mac_chunk->data = mac;
         mac_chunk->data_size = mac_size;
 
-        while(queueIsFull(params->out)); //spin until queue is empty
+        while(*(params->running) && *(params->error) == 0 && queueIsFull(params->out)) { ; } //spin until queue is free
         pthread_mutex_lock(params->out_mutex);
         if(!enque(mac_chunk, params->out)) //que the mac chunk 
         {
@@ -222,7 +215,7 @@ void* generateMAC(void* parameters)
         pdebug("*** Queuing MAC chunk to write que of size %lu ***\n", mac_size);
 
         //queue Done flag
-        while(queueIsFull(params->out));
+        while(*(params->running) && *(params->error) == 0 && queueIsFull(params->out)) { ; } //spin until queue is free
         pthread_mutex_lock(params->out_mutex);
         if(!queueDone(params->out))
         {
@@ -252,7 +245,7 @@ inline void setUpMacParams(macParams* params,
                      queue* in,
                      queue* out,
                      ThreefishKey_t* tf_key,
-                     uint32_t* error,
+                     int32_t* error,
                      uint64_t* file_size)
 {
     params->mac_status = mac_status;

@@ -12,6 +12,7 @@ void* decryptQueue(void* parameters)
     uint64_t* chain = NULL;
 
     chain = calloc((params->tf_key->stateSize/64), sizeof(uint64_t));
+
     if(chain == NULL) //check that calloc succeeded
     {
         pdebug("$$$ Error allocating memory for chain buffer $$$\n");
@@ -21,6 +22,14 @@ void* decryptQueue(void* parameters)
 
     while(*(params->running) && *(params->error) == 0)
     {
+        //check for termination conditions 
+        if(decrypt_chunk != NULL && decrypt_chunk->action == DONE)
+        {
+            pdebug("$$$ decryptQueue() loop terminating $$$\n");
+            destroyChunk(decrypt_chunk);
+            break;
+        }
+
         //get the next chunk
         if(decrypt_chunk == NULL)
         {
@@ -33,14 +42,6 @@ void* decryptQueue(void* parameters)
                  pdebug("$$$ Dequing chunk of size %lu $$$\n", decrypt_chunk->data_size);
             }
             pthread_mutex_unlock(params->in_mutex);
-        }
-        
-        //check for termination conditions 
-        if(decrypt_chunk != NULL && decrypt_chunk->action == DONE)
-        {
-            pdebug("$$$ decryptQueue() loop terminating $$$\n");
-            destroyChunk(decrypt_chunk);
-            break;
         }
 
         /*
@@ -78,10 +79,11 @@ void* decryptQueue(void* parameters)
             }
             pthread_mutex_unlock(params->out_mutex);
         } //end queue operation
+	pd2("DecryptQueue() Tick\n");
     } //end while loop
 
     //queue Done flag
-    while(queueIsFull(params->out)) { ; } //spin until queue is not full
+    while(*(params->running) && *(params->error) == 0 && queueIsFull(params->out)) { ; } //spin unitl queue is free
     pthread_mutex_lock(params->out_mutex);
     if(!queueDone(params->out))
     {
@@ -90,8 +92,10 @@ void* decryptQueue(void* parameters)
         return NULL;
     }
     pthread_mutex_unlock(params->out_mutex);
+
     pdebug("$$$ Done queued $$$ \n");
     pdebug("$$$ Decryption complete $$$\n");
+
     if(chain != NULL) { free(chain); } //free allocated resources
 
     return NULL;
@@ -187,6 +191,7 @@ void* encryptQueue(void* parameters)
             }
             pthread_mutex_unlock(params->out_mutex);
         } //end queue operation
+	pd2("EncryptQueue() Tick\n");
     } //end while loop
     
     //queue Done flag
@@ -216,7 +221,7 @@ inline void setUpCryptoParams(cryptParams* params,
                               pthread_mutex_t* out_mutex,
                               queue* in,
                               queue* out,
-                              uint32_t* error)
+                              int32_t* error)
 {
     params->args = args;
     params->running = running;
