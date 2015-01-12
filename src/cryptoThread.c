@@ -9,11 +9,14 @@ void* decryptQueue(void* parameters)
     bool header = true;
     chunk* decrypt_chunk = NULL;
     cryptParams* params = parameters;
-    uint64_t* chain = NULL;
+    uint64_t* chain_even = NULL;
+    uint64_t* chain_odd = NULL;
+    uint64_t decrypt_count = 0;
 
-    chain = calloc((params->tf_key->stateSize/64), sizeof(uint64_t));
+    chain_even = calloc((params->tf_key->stateSize/8), sizeof(uint64_t));
+    chain_odd = calloc((params->tf_key->stateSize/8), sizeof(uint64_t));
 
-    if(chain == NULL) //check that calloc succeeded
+    if(chain_even == NULL || chain_odd == NULL) //check that calloc succeeded
     {
         pdebug("$$$ Error allocating memory for chain buffer $$$\n");
         *(params->error) = MEMORY_ALLOCATION_FAIL;
@@ -22,13 +25,7 @@ void* decryptQueue(void* parameters)
 
     while(*(params->running) && *(params->error) == 0)
     {
-        //check for termination conditions 
-        if(decrypt_chunk != NULL && decrypt_chunk->action == DONE)
-        {
-            pdebug("$$$ decryptQueue() loop terminating $$$\n");
-            destroyChunk(decrypt_chunk);
-            break;
-        }
+	bool even = decrypt_count % 2 == 0 ? true : false; //in keep track if this is an even or odd loop
 
         //get the next chunk
         if(decrypt_chunk == NULL)
@@ -43,26 +40,44 @@ void* decryptQueue(void* parameters)
             }
             pthread_mutex_unlock(params->in_mutex);
         }
+        
+        //check for termination conditions 
+        if(decrypt_chunk != NULL && decrypt_chunk->action == DONE)
+        {
+            pdebug("$$$ decryptQueue() loop terminating $$$\n");
+            destroyChunk(decrypt_chunk);
+            break;
+        }
 
         /*
         * Get the chain block from the encrypted header then strip it out
         */
         if(header && decrypt_chunk != NULL)
         {
-            //getChainInBuffer(decrypt_chunk->data, chain, 2, params->tf_key->stateSize);
+            getChainInBuffer(decrypt_chunk->data, chain_even, 2, params->tf_key->stateSize);
             destroyChunk(decrypt_chunk);
             decrypt_chunk = NULL;
             header = false;
             pdebug("$$$ Stripping out header $$$\n");
         }
+	    //in order to save the last block of cipher text and not overrite the previous one before it is needed we need to store chains for even and odd blocks separately
         else if(decrypt_chunk != NULL && !decrypted) //decrypt the chunk
         {
-            uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
+            const uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
                                               (uint32_t)params->tf_key->stateSize);
-            //getChainInBuffer(decrypt_chunk->data, chain, num_blocks, params->tf_key->stateSize); 
-	    decryptInPlace(params->tf_key, chain, decrypt_chunk->data, num_blocks);
+	    if(even)
+	    {
+                getChainInBuffer(decrypt_chunk->data, chain_odd, num_blocks, params->tf_key->stateSize);
+	        decryptInPlace(params->tf_key, chain_even, decrypt_chunk->data, num_blocks);
+	    }
+	    else
+	    {
+                getChainInBuffer(decrypt_chunk->data, chain_even, num_blocks, params->tf_key->stateSize);
+	        decryptInPlace(params->tf_key, chain_odd, decrypt_chunk->data, num_blocks);
+	    }
             decrypted = true;
             pdebug("$$$ Decrypting chunk of size %lu $$$\n", decrypt_chunk->data_size);
+            ++decrypt_count;
         }
         
         if(decrypt_chunk != NULL && decrypted) //attempt to queue the chunk
@@ -79,11 +94,10 @@ void* decryptQueue(void* parameters)
             }
             pthread_mutex_unlock(params->out_mutex);
         } //end queue operation
-	pd2("DecryptQueue() Tick\n");
     } //end while loop
 
     //queue Done flag
-    while(*(params->running) && *(params->error) == 0 && queueIsFull(params->out)) { ; } //spin unitl queue is free
+    while(queueIsFull(params->out));
     pthread_mutex_lock(params->out_mutex);
     if(!queueDone(params->out))
     {
@@ -92,29 +106,28 @@ void* decryptQueue(void* parameters)
         return NULL;
     }
     pthread_mutex_unlock(params->out_mutex);
-
     pdebug("$$$ Done queued $$$ \n");
     pdebug("$$$ Decryption complete $$$\n");
-
-    if(chain != NULL) { free(chain); } //free allocated resources
+    if(chain_even != NULL) { free(chain_even); } //free allocated resources
+    if(chain_odd != NULL) { free(chain_odd); } //free allocated resources
 
     return NULL;
-}
+} //end decryptQueue
 
-/****************************************************************************** 
-* This encrypts all queued data passed to 'in' and puts it in the 'out' queue.*
-* this function assumes a properly formatted header starting with an IV       *
-* is the first thing queued and an empty chunk with the action set to DONE is *
-* the last thing queued.                                                      *
-*******************************************************************************/
+/*********************************************************************************
+* This encrypts all queued data passed to 'in' and puts it in the 'out' queue.   *
+* this function assumes a properly formatted header starting with an IV          *
+* is the first thing queued and an empty chunk with the action set to DONE is    *
+* the last thing queued.                                                         *
+**********************************************************************************/
 
-/***********************************************************
-* The encrypted file should be written like this           *
-* |HEADER|CIPHER_TEXT|MAC|                                 *
-* note the MAC operation must include the entire header    *
-* which in turn includes the IV                            *
-* The mac size is the same as the block size of the cipher *
-***********************************************************/
+/***********************************************************************
+* The encrypted file should be written like this                       *
+* |HEADER|CIPHER_TEXT|MAC|                                             *
+* note the MAC operation must include the entire header                *
+* which in turn includes the IV                                        *
+* The mac size is the same as the block size of the cipher             *
+************************************************************************/
 
 void* encryptQueue(void* parameters)
 {

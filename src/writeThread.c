@@ -62,8 +62,7 @@ void* asyncWrite(void* parameters)
             bytes_written += bytes_to_write;
             destroyChunk(write_chunk); //free the chunk
             write_chunk = NULL; 
-        }
-        pd2("asyncWrite() tick\n");	
+        }        
     }
     
     close(write);

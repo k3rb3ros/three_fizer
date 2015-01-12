@@ -114,8 +114,7 @@ bool queueHeader(const arguments* args, queue* out)
     pdebug("queueHeader()\n");
     bool success = false;
     const uint64_t block_byte_size = ((uint64_t)args->state_size/8);
-    uint64_t* iv = (uint64_t*)getRand((uint64_t) args->state_size);
-    //uint64_t* iv = calloc(args->state_size/64, sizeof(uint64_t));
+    uint64_t* iv = (uint64_t*)getRand((uint64_t)args->state_size);
 
     chunk* header = createChunk();
     header->action = ENCRYPT;
