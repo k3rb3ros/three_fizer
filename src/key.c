@@ -14,12 +14,12 @@ bool handleKeys(const arguments* args,
     if(args->hash == true && args->hash_from_file == false)
     {
         //hash the user entered password so the key matches state size
-        cipher_key = (uint64_t*)sf_hash(args->password, args->pw_length, args->state_size);
+        cipher_key = (uint64_t*)keyHash(args->password, args->pw_length, args->state_size);
     }
     else if(args->hash == true && args->hash_from_file == true)
     {
         //hash the key file to a key of state size
-        cipher_key = hash_key_from_file((char*)args->key_file, args->state_size);
+        cipher_key = hashKeyFromFile((char*)args->key_file, args->state_size);
     }
     else
     {
@@ -30,7 +30,7 @@ bool handleKeys(const arguments* args,
     if(cipher_key == NULL) { return false; }
 
     //generate the mac key from the cipher_key
-    mac_key = (uint64_t*)sf_hash((uint8_t*)cipher_key, block_byte_size, args->state_size);
+    mac_key = (uint64_t*)keyHash((uint8_t*)cipher_key, block_byte_size, args->state_size);
 
     //initialize the key structure for the cipher key
     threefishSetKey(cipher_context, (ThreefishSize_t)args->state_size, cipher_key, threefizer_tweak);
