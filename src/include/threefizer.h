@@ -17,16 +17,15 @@
 //Numerical constants
 #define FNAME_BUFFER_SIZE 256
 
-/*
-***********************************
+/**********************************
 *  Constants and data structures  *
-***********************************
-*/
+**********************************/
 
 //program version
-const char* argp_program_version = "Threefizer 0.3.0";
+const char* argp_program_version = "Threefizer 0.4.0";
 
-const char* argp_program_bug_address = "<M.or.riser.ryan@gmail.com>"; //support email
+//support email
+const char* argp_program_bug_address = "<M.or.riser.ryan+threefizer@gmail.com>";
 
 //program documentation
 const static char doc[] = "A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentiall insecure cloud backup services\n";
@@ -38,11 +37,9 @@ extern struct argp argp;
 
 extern struct argp_option options[]; //Argp options
 
-/*
-************************
-* Function prototypes
-************************
-*/
+/**********************
+* Function prototypes *
+**********************/
 
 static error_t parse_opt (int key, char *arg, struct argp_state* state);
 

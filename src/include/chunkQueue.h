@@ -16,7 +16,6 @@
 * Compile Time Numeric Constants *
 **********************************/
 
-//Queue constants
 //number of chunks in QUEUE
 #define QUE_SIZE 10 //10*50MB*3Queues = 1.5GB max queue usage
 //size of each queue chunk
