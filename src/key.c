@@ -21,10 +21,16 @@ bool handleKeys(const arguments* args,
         //hash the key file to a key of state size
         cipher_key = hashKeyFromFile((char*)args->key_file, args->state_size);
     }
-    else
+    else if(args->hash == false && args->hash_from_file == false)
     {
         //use the user entered password as the key directly
         cipher_key = noHashKey(args->password, args->pw_length, args->state_size);
+    }
+    else if(args->hash == false && args->hash_from_file == true)
+    {
+        //Use first block of bytes directly from file
+	printf("***Warning*** You have turned off password hashing and specified a password file. If the file you have specified is shorter then the key size it will be rejected. If it is greater then the keysize then all bits greater then the key size will be truncated. This poses a security risk (do not do this unless you know exactly what you are doing)\n");
+	cipher_key = noHashBlockFromFile(args->key_file, args->state_size);
     }
     
     if(cipher_key == NULL) { return false; }

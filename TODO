@@ -5,5 +5,5 @@
 * Add a progress bar
 * Add all errors as defined MACROS to error.h #DONE#
 * Modify header and cbc to use explicit initialization vector
-* Fix bugs in error handleing
+* Fix bugs in error handling #DONE#
 * Get code reviewed by a security expert

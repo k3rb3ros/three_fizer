@@ -7,7 +7,7 @@
 
 static error_t parse_opt(int key, char* arg, struct argp_state* state)
 {
-    arguments *a = state->input;
+    arguments* a = state->input;
     switch(key)
     {
         pdebug("Parse_opt %c\n" , key);
@@ -59,7 +59,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
         {
             if(strlen(arg) > 6)
             {
-                a->password = (uint8_t *)arg;
+                a->password = (uint8_t*)arg;
                 a->pw_length = strlen(arg);
             }
             else { argp_failure(state, 1, PASSWORD_TOO_SHORT, "password is too short, try something less whimpy"); }
