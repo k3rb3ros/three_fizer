@@ -10,6 +10,7 @@
 #include "arguments.h" //argument structure
 #include "cbc.h" //cbc_decrypt, cbc_encrypt(
 #include "controller.h" //runThreefizer()
+#include "error.h" //error codes
 #include "fileIO.h" //exists()
 #include "util.h" //getSkeinSize()
 

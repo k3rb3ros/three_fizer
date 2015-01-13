@@ -1,7 +1,7 @@
 CC=clang
 DBGFLAGS=-ggdb -Wall -Wextra -pedantic
 STDFLAG=-std=c11
-DEFINITIONS=-DDEBUG
+#DEFINITIONS=-DDEBUG
 #DEFINITIONS=-DDEBUG2
 #DEFINITIONS=-DDEBUG3
 INCLUDES=-Isrc/include
@@ -9,7 +9,7 @@ CFLAGS= $(STDFLAG) $(INCLUDES) $(DBGFLAGS) $(DEFINITIONS)
 LDFLAGS=-lpthread
 PRGRAM_OBJECTS=$(patsubst src/%.c, src/obj/%.o, $(wildcard src/*.c))
 TEST_OBJECTS=$(patsubst src/test/%.c, src/test/obj/%.o, $(wildcard src/test/*.c)) 
-OPTFLAGS=-O0
+OPTFLAGS=-O2
 PROGRAM=threefizer
 TEST=tests
 export CC

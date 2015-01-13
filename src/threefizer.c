@@ -44,7 +44,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
         case ARGP_KEY_END:
         {
             const size_t count = argz_count(a->argz, a->argz_len);
-            if (count < 1) { argp_failure (state, 1, 1, "too few arguments"); }
+            if (count < 1) { argp_failure (state, 1, TOO_FEW_ARGUMENTS, "too few arguments"); }
         }
         break;
         case 'b': a->state_size = getSkeinSize(arg);
@@ -62,8 +62,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
                 a->password = (uint8_t *)arg;
                 a->pw_length = strlen(arg);
             }
-            else { 
-                     argp_failure(state, 1, 2, "password is too short, try something less whimpy"); }
+            else { argp_failure(state, 1, PASSWORD_TOO_SHORT, "password is too short, try something less whimpy"); }
         }
         break;
         case 'P':
@@ -76,7 +75,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
             }
             else
             {
-                argp_failure(state, 1, 3, "Unable to read password file");
+                argp_failure(state, 1, PASSWORD_FILE_READ_FAIL, "Unable to read password file");
             }
         }
         break;

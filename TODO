@@ -1,10 +1,9 @@
 * Add the ability for the user to manually specify an IV
 * Add key derrivation function for all hashed keys 
-* Add tests for cbc operations #DONE#
-* Add tests for fileIO #DONE#
 * Add tests for util 
 * Add tests for pad operations
 * Add a progress bar
-* Add all errors as defined MACROS to error.h
+* Add all errors as defined MACROS to error.h #DONE#
 * Modify header and cbc to use explicit initialization vector
+* Fix bugs in error handleing
 * Get code reviewed by a security expert

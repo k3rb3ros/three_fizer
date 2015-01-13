@@ -15,7 +15,7 @@ void printError(int error)
 	     fprintf(stderr, "File I/O failure ensure disk is not full and you have write access to the file you are trying to encrypt\n");
 	break;
         case HEADER_CHECK_FAIL:
-             fprintf(stderr, "Header check failure. Ensure that the file you are trying to decrypt was created with this program, the password is correct and that the block size is the same as what it was when encrypting. If you are still getting this error then the file has been corrupted or modifiend since encryption.\n", stderr );
+             fprintf(stderr, "Header check failure. Ensure that the file you are trying to decrypt was created with this program, the password is correct and that the block size is the same as what it was when encrypting. If you are still getting this error then the file has been corrupted or modified since encryption.\n", stderr );
 	break;
 	case KEY_GENERATION_FAIL:
 	     fprintf(stderr, "Key generation failed\n");
@@ -33,7 +33,9 @@ void printError(int error)
 	     fprintf(stderr, "Error queing resources operation stopped to prevent deadlock.\n");
 	break;
 	
-        default: break;	
+        default:
+	     fprintf(stderr, "Error something went wrong but the programmer was too lazy to write a detailed error message for this case. Sorry you are SOL.\n");
+	break;	
     }
 
     fprintf(stderr, "Cannot continue\n");

@@ -15,7 +15,10 @@
 #define MAC_CHECK_FAIL -6
 #define MAC_GENERATION_FAIL -7
 #define MEMORY_ALLOCATION_FAIL -8
-#define QUEUE_OPERATION_FAIL -9
+#define PASSWORD_FILE_READ_FAIL -9
+#define PASSWORD_TOO_SHORT -10
+#define QUEUE_OPERATION_FAIL -11
+#define TOO_FEW_ARGUMENTS -12
 
 /************
 * Functions *

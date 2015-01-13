@@ -46,7 +46,8 @@ void* authenticateMAC(void* parameters)
              {
                   pdebug("*** Header check failed ***\n");
                   pdebug("*** Ran header check on chunk of size %lu ***\n", mac_chunk->data_size);
-                  *(params->error) = HEADER_CHECK_FAIL;
+                  *(params->error) = HEADER_CHECK_FAIL; //set the error flag
+		  destroyChunk(mac_chunk); //free any resources that are not in the queue
                   if(test_header != NULL) { free(test_header); }
                   return NULL;
              }
@@ -70,7 +71,7 @@ void* authenticateMAC(void* parameters)
         if(mac_chunk != NULL && maced && !queueIsFull(params->out))
         {
              pdebug("*** Queuing chunk of size %lu ***\n", mac_chunk->data_size);
-	     while(queueIsFull(params->out)); //spin until the queue has at least one free spot
+	     while(queueIsFull(params->out)) { ; } //spin until the queue has at least one free spot
              pthread_mutex_lock(params->out_mutex);
              if(enque(mac_chunk, params->out))
              {
