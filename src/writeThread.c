@@ -16,6 +16,7 @@ void* asyncWrite(void* parameters)
     chunk* write_chunk = NULL;
     uint64_t bytes_written = 0;
     uint64_t bytes_to_write = 0;
+    uint64_t write_progress = 0;
 
     while(*(params->running) && *(params->error) == 0)
     {
@@ -49,6 +50,8 @@ void* asyncWrite(void* parameters)
             { bytes_to_write = *(params->file_size) - bytes_written; }
             else { bytes_to_write = write_chunk->data_size; }
 
+            write_progress += write_chunk->data_size;
+
             if(!writeBytes((uint8_t*)write_chunk->data, bytes_to_write, write))
             {
                 pdebug("^^^^ File I/O Error ^^^^\n");
@@ -62,7 +65,17 @@ void* asyncWrite(void* parameters)
             bytes_written += bytes_to_write;
             destroyChunk(write_chunk); //free the chunk
             write_chunk = NULL; 
-        }        
+        }
+        
+        if(write_progress > 0)
+	{
+	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+	    {
+	        params->progress->progress += write_progress;
+		write_progress = 0;
+		pthread_mutex_unlock(params->progress->progress_mutex);
+	    }
+	}	
     }
     
     close(write);
@@ -83,7 +96,8 @@ void setUpWriteParams(writeParams* params,
                       bool* valid,
                       pthread_mutex_t* mutex, 
                       queue* in, 
-                      const uint8_t* temp_file_name, 
+                      const uint8_t* temp_file_name,
+		      progress_t* progress, 
                       int32_t* error, 
                       uint64_t* file_size)
 {
@@ -95,4 +109,5 @@ void setUpWriteParams(writeParams* params,
     params->temp_file_name = temp_file_name;
     params->error = error;
     params->file_size = file_size;
+    params->progress = progress;
 }

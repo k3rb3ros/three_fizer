@@ -12,6 +12,7 @@ void* decryptQueue(void* parameters)
     uint64_t* chain_even = NULL;
     uint64_t* chain_odd = NULL;
     uint64_t decrypt_count = 0;
+    uint64_t crypto_progress = 0;
 
     chain_even = calloc((params->tf_key->stateSize/8), sizeof(uint64_t));
     chain_odd = calloc((params->tf_key->stateSize/8), sizeof(uint64_t));
@@ -76,6 +77,7 @@ void* decryptQueue(void* parameters)
 	        decryptInPlace(params->tf_key, chain_odd, decrypt_chunk->data, num_blocks);
 	    }
             decrypted = true;
+	    crypto_progress += decrypt_chunk->data_size;
             pdebug("$$$ Decrypting chunk of size %lu $$$\n", decrypt_chunk->data_size);
             ++decrypt_count;
         }
@@ -94,6 +96,17 @@ void* decryptQueue(void* parameters)
             }
             pthread_mutex_unlock(params->out_mutex);
         } //end queue operation
+
+        if(crypto_progress > 0) //update the progress bar
+	{
+	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+	    {
+	        params->progress->progress += crypto_progress;
+		crypto_progress = 0;
+		pthread_mutex_unlock(params->progress->progress_mutex);
+	    }  
+	}
+
     } //end while loop
 
     //queue Done flag
@@ -145,6 +158,8 @@ void* encryptQueue(void* parameters)
         return NULL;
     }
 
+    uint64_t crypto_progress = 0;
+
     while(*(params->running) && *(params->error) == 0) 
     {
         if(encrypt_chunk == NULL)
@@ -181,6 +196,7 @@ void* encryptQueue(void* parameters)
             }
             //save the chain of cipher text in the next chunk
             getChainInBuffer(encrypt_chunk->data, chain, 2, params->tf_key->stateSize);
+	    crypto_progress += encrypt_chunk->data_size;
             first_chunk = false;
         }
         else if(!first_chunk && encrypt_chunk != NULL && !encrypted)
@@ -189,6 +205,7 @@ void* encryptQueue(void* parameters)
                                               (uint32_t)params->tf_key->stateSize);
             encryptInPlace(params->tf_key, chain, encrypt_chunk->data, num_blocks);
             getChainInBuffer(encrypt_chunk->data, chain, num_blocks, params->tf_key->stateSize);
+	    crypto_progress += encrypt_chunk->data_size;
 	    encrypted = true;
         }
          
@@ -204,7 +221,16 @@ void* encryptQueue(void* parameters)
             }
             pthread_mutex_unlock(params->out_mutex);
         } //end queue operation
-	pd2("EncryptQueue() Tick\n");
+
+        if(crypto_progress > 0) //update the progress bar
+	{
+	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+	    {
+	        params->progress->progress += crypto_progress;
+		crypto_progress = 0;
+		pthread_mutex_unlock(params->progress->progress_mutex);
+	    }  
+	}
     } //end while loop
     
     //queue Done flag
@@ -234,6 +260,7 @@ inline void setUpCryptoParams(cryptParams* params,
                               pthread_mutex_t* out_mutex,
                               queue* in,
                               queue* out,
+			      progress_t* progress,
                               int32_t* error)
 {
     params->args = args;
@@ -243,5 +270,6 @@ inline void setUpCryptoParams(cryptParams* params,
     params->out_mutex = out_mutex;
     params->in = in;
     params->out = out;
+    params->progress = progress;
     params->error = error;
 }

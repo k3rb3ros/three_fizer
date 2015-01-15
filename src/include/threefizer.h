@@ -12,6 +12,7 @@
 #include "controller.h" //runThreefizer()
 #include "error.h" //error codes
 #include "fileIO.h" //exists()
+#include "progressBar.h" //calcOperations()
 #include "util.h" //getSkeinSize()
 
 //Numerical constants

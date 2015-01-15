@@ -19,6 +19,7 @@ void* queueFileForDecrypt(void* parameters)
    const uint64_t orig_file_size = getFileSize(params->args->argz); //get the file size in bytes
 
    uint64_t bytes_read = 0;
+   uint64_t read_progress = 0;
 
    const int64_t read = openForRead(params->args->argz); //open a handle to the file
    if(read < 0)
@@ -59,11 +60,12 @@ void* queueFileForDecrypt(void* parameters)
 	       else if(mac) { data_chunk->action = MAC; }
 	       else { data_chunk->action = GEN_MAC; }
 	       data_chunk->data = data;
-	       data_chunk->data_size = getPadSize(chunk_size, params->args->state_size);   
+	       data_chunk->data_size = getPadSize(chunk_size, params->args->state_size);
+	       read_progress += data_chunk->data_size; //update progress for the progess bar
            }
        }
 
-       //attepmt to queue the chunk
+       //attempt to queue the chunk
        if(data_chunk!= NULL)
        {
            while(queueIsFull(params->out)); //spin until queue is empty
@@ -74,6 +76,16 @@ void* queueFileForDecrypt(void* parameters)
 	       data_chunk = NULL;
 	   }
 	   pthread_mutex_unlock(params->mutex);
+       }
+
+       if(read_progress > 0) //update the progress bar
+       {
+           if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+           {
+	       params->progress->progress += read_progress;
+	       read_progress = 0;
+	       pthread_mutex_unlock(params->progress->progress_mutex);
+           } 
        }
    }
 
@@ -118,6 +130,7 @@ void* queueFileForEncrypt(void* parameters)
     }
 
     uint64_t bytes_read = 0;
+    uint64_t read_progress = 0;
 
     //Read the File into chunks and queue them while the end hasn't been reached and there is no error
     while(*(params->running) && *(params->error) == 0 && bytes_read < orig_file_size)
@@ -135,7 +148,8 @@ void* queueFileForEncrypt(void* parameters)
                 data_chunk = createChunk();
 		data_chunk->action = ENCRYPT;
 		data_chunk->data = data;
-	        data_chunk->data_size = getPadSize(chunk_size, params->args->state_size);   
+	        data_chunk->data_size = getPadSize(chunk_size, params->args->state_size);
+	        read_progress += chunk_size;	
 	    }
         }
 
@@ -151,6 +165,16 @@ void* queueFileForEncrypt(void* parameters)
 	    }
 	    pthread_mutex_unlock(params->mutex);
 	}
+
+        if(read_progress > 0) //update the progress bar
+        {
+            if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+            {
+	        params->progress->progress += read_progress;
+	        read_progress = 0;
+	        pthread_mutex_unlock(params->progress->progress_mutex);
+            } 
+        }
     }
 
     //queue done
@@ -175,11 +199,13 @@ inline void setUpReadParams(readParams* read_params,
                      bool* running,
                      pthread_mutex_t* mutex, 
                      queue* out,
+		     progress_t* progress,
                      int32_t* error)
 {
     read_params->args = args;
     read_params->running = running;
     read_params->mutex = mutex;
     read_params->out = out;
+    read_params->progress = progress;
     read_params->error = error;
 }

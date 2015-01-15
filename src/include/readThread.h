@@ -8,6 +8,7 @@
 #include "chunkQueue.h" //queue type and enque()
 #include "error.h" //error codes
 #include "pad.h" //pad()
+#include "progressBar.h" //progress_t type
 #include "util.h" //isGreaterThanThreeBlocks()
 
 typedef struct
@@ -16,6 +17,7 @@ typedef struct
     bool* running;
     int32_t* error;
     pthread_mutex_t* mutex;
+    progress_t* progress;
     queue* out;
 } readParams;
 
@@ -24,6 +26,7 @@ void setUpReadParams(readParams* params,
                      bool* running,
                      pthread_mutex_t* mutex,
                      queue* out,
+		     progress_t* progress,
                      int32_t* error);
 
 void* queueFileForDecrypt(void* parameters);
