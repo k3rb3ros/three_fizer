@@ -1,4 +1,4 @@
-Threefizer 0.4.0
+Threefizer 0.4.1
 ================
 
 A simple unix command line utitily to encrypt and decrypt files with threefish
@@ -15,9 +15,11 @@ Specifications
 Features
 --------
 
+* Very fast encryption/decryption
 * Header and MAC checking on decrypt
 * Multi threading
 * Only ovewrites files on success
+* Progress bar for large files
 
 Notes
 -----
