@@ -21,7 +21,6 @@ src/test/obj
 
 # Executables
 tests
-threefizer
 *.exe
 *.out
 *.app
