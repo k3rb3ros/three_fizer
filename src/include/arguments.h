@@ -20,4 +20,6 @@ typedef struct //arguments passed to argp containing argz (all non optional args
      uint64_t pw_length;
 } arguments;
 
+void initArguments(arguments* arg);
+
 #endif

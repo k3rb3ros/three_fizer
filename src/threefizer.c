@@ -1,11 +1,11 @@
 /*
-* By Ryan Morris Jul 2014
+* By Ryan Morris
 * threefizer command line file encryption/decryption utilitiy
 */
 
 #include "include/threefizer.h"
 
-static error_t parse_opt(int key, char* arg, struct argp_state* state)
+/*static error_t parse_opt(int key, char* arg, struct argp_state* state)
 {
     arguments* a = state->input;
     switch(key)
@@ -83,52 +83,141 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
         break;
     }
     return 0;
+}*/
+
+void printOptions()
+{
+    printf("OPTIONS\n");
+    for(int i=0; i< LONG_OPTS_SIZE; ++i)
+    {
+        printf("-%c, --%s", long_options[i].val, long_options[i].name);
+        if(long_options[i].has_arg == required_argument)
+        { 
+            printf("="); 
+            int c = long_options[i].val;
+            switch(c)
+            {
+                case 'b':
+                    printf("BlockSize");
+                break;
+                case 'p':
+                    printf("Password");
+                break;
+                case 'P':
+                    printf("Passwordfile");
+                break;
+                default:
+                break;
+            }
+        }
+        printf("\n");
+    }
 }
 
 int main(int argc, char*argv[])
 {
+    bool parsing = true;
     arguments arguments;
+    int arg = 0;
+    int option_index = 0; 
     int status = 0;
-    struct argp_option options[] = 
+
+    initArguments(&arguments);
+
+    while ((arg = getopt_long(argc, argv, "b:dehnp:P:uV", long_options, &option_index)) != -1
+           && parsing
+          )
     {
-        { 0, 0, 0, 0, "Functional Options (encrypt is default)", 1 },
-        { "decrypt", 'd', 0, 0, "Decrypt the specified file(s)" , 0 },
-        { "encrypt", 'e', 0, 0, "Encrypt the specified file(s)" , 0 },
-        { "no-hash", 'n', 0, 0, "Don't hash the password (may weeken cryptographic strength)", 0 },
-        { 0, 0, 0, 0, "Property Options", 2 },
-        { "blocksize", 'b', "BlockSize", 0, "Specify the block size of the cipher and hash", 0},
-        { "password", 'p', "Password", 0, "Specify a password without being asked to confirm it", 0 },
-        { "passwordfile", 'P', "PasswordFile", 0, "Specify the path to a password file", 0 },
-        { 0, 0, 0, 0, 0, 0 }
-    };
-    struct argp argp = { options, parse_opt, args_doc, doc, NULL, NULL, NULL };
-    status = argp_parse(&argp, argc, argv, 0, 0, &arguments);
+        switch(arg)
+        {
+            case 'b':
+                arguments.state_size = getSkeinSize(optarg);
+            break;
+            case 'd':
+                arguments.encrypt = true;
+            break;
+            case 'e':
+                if(!arguments.encrypt)
+                {
+                    perror("Both encrypt and decrypt flag are set\n");
+                    parsing = false;
+                    status = ARG_PARSING_ERROR;
+                }
+            break;
+            case 'n':
+                arguments.hash = false;
+            break;
+            case 'p':
+                if(strlen(optarg) > 6)
+                {
+                    arguments.password = (uint8_t*)optarg;
+                    arguments.pw_length = strlen(optarg);
+                }
+                else 
+                {
+                    parsing = false; 
+                    status = PASSWORD_TOO_SHORT;
+                }
+            break;
+            case 'P':
+                if(exists(optarg))
+                {
+                    arguments.free = true;
+                    arguments.hash_from_file = true;
+                    arguments.key_file = (uint8_t*)optarg;
+                }
+                else
+                {
+                    parsing = false;
+                    status = INVALID_PASSWORD_FILE;
+                }
+            break;
+            case 'u':
+                printf("%s", usage);
+                parsing = false;
+            break;
+            case 'V':
+                printf("%s", program_version);
+                parsing = false;
+            break;
+            case '?':
+                printf("%s", usage);
+                printf("\n%s\n", about);
+                printOptions();
+                printf("\nMandatory or optional arguments to long options are also mandatory or optional for any corresponding short options.\n");
+                printf("\nReport bugs to %s\n", program_bug_address);
+                parsing = false;
+
+            break;
+            default:
+                status = ARG_PARSING_ERROR;
+            break;
+        }
+    }
+ 
     if(status == 0)
     {
-      const char *prev = NULL;
-      char* arg = 0;
-      while((arg = argz_next(arguments.argz, arguments.argz_len, prev))) //parse argz 
-      {
-       prev = arg;
-       if(exists(arg))
-       {
-           if (arguments.password == NULL && arguments.key_file == NULL)
-           { 
-               askPassword(&arguments); 
-           }
-           //perform the requested action on each file entered into the command line
-           status = runThreefizer(&arguments);
-	   if(status != 0) { printError(status); }
-	   else { printf("Operation succeeded"); }
-       }
-       else
-       {
-           fprintf(stderr, "Unable to open file %s for cipher operation\n", arg);
-           status = 4;
-       }
-      }
-      free(arguments.argz);
-      if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv
+        /*
+        if(exists(arg))
+        {
+            if (arguments.password == NULL && arguments.key_file == NULL)
+            { 
+                askPassword(&arguments); 
+            }
+
+            //perform the requested action on each file entered into the command line
+            status = runThreefizer(&arguments);
+	    if(status != 0) { printError(status); }
+	    else { printf("Operation succeeded"); }
+        }
+        else
+        {
+            fprintf(stderr, "Unable to open file %s for cipher operation\n", arg);
+            status = 4;
+        }*/
     }
+    //free(arguments.argz);
+    if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv
+
     return status;
 }

@@ -7,18 +7,20 @@
 * Compile Time Constants *
 **************************/
 
-#define CIPHER_OPERATION_FAIL -1
-#define FILE_IO_FAIL -2
-#define FILE_TOO_SMALL -3
-#define HEADER_CHECK_FAIL -4
-#define KEY_GENERATION_FAIL -5
-#define MAC_CHECK_FAIL -6
-#define MAC_GENERATION_FAIL -7
-#define MEMORY_ALLOCATION_FAIL -8
-#define PASSWORD_FILE_READ_FAIL -9
-#define PASSWORD_TOO_SHORT -10
-#define QUEUE_OPERATION_FAIL -11
-#define TOO_FEW_ARGUMENTS -12
+#define ARG_PARSING_ERROR -1
+#define CIPHER_OPERATION_FAIL -2
+#define FILE_IO_FAIL -3
+#define FILE_TOO_SMALL -4
+#define HEADER_CHECK_FAIL -5
+#define INVALID_PASSWORD_FILE -6
+#define KEY_GENERATION_FAIL -7
+#define MAC_CHECK_FAIL -8
+#define MAC_GENERATION_FAIL -9
+#define MEMORY_ALLOCATION_FAIL -10
+#define PASSWORD_FILE_READ_FAIL -11
+#define PASSWORD_TOO_SHORT -12
+#define QUEUE_OPERATION_FAIL -13
+#define TOO_FEW_ARGUMENTS -14
 
 /************
 * Functions *
