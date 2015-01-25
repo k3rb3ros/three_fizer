@@ -33,7 +33,7 @@ int runThreefizer(const arguments* args)
     {
         //Init resources
         //the temp file name is a partial skein hash of the original file name
-        const uint8_t* temp_file_name = binToHex(hash((uint8_t*)args->argz, TEMP_FILE_NAME_SIZE, args->state_size), TEMP_FILE_NAME_SIZE);
+        const uint8_t* temp_file_name = binToHex(hash((uint8_t*)args->target_file, TEMP_FILE_NAME_SIZE, args->state_size), TEMP_FILE_NAME_SIZE);
         pthread_mutex_init(&crypto_mutex, NULL);
         pthread_mutex_init(&mac_mutex, NULL);
 	pthread_mutex_init(&progress_mutex, NULL);

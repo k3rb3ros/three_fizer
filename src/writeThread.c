@@ -4,7 +4,7 @@ void* asyncWrite(void* parameters)
 {
     pdebug("asyncWrite()\n");
     writeParams* params = parameters;
-    int64_t write = openForWrite((const char*)params->temp_file_name);
+    int64_t write = openForWrite(params->temp_file_name);
 
     if(write < 0)
     {
@@ -82,7 +82,7 @@ void* asyncWrite(void* parameters)
     if(*(params->error) == 0)
     {
         pdebug("^^^^ renaming %s to %s ^^^^\n", params->temp_file_name, params->args->argz);
-        rename((const char*)params->temp_file_name, params->args->argz);
+        rename((char*)params->temp_file_name, (char*)params->args->target_file);
         *(params->running) = false; //signal any other running threads to stop (should be redundant)
     }
     

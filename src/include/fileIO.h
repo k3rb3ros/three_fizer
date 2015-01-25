@@ -10,16 +10,16 @@
 #include <sys/stat.h> //stat()
 #include <unistd.h> //fseek() write() 
 
-bool exists(const char* fname);
+bool exists(const uint8_t* fname);
 
 bool writeBytes(const uint8_t* data, const uint64_t data_size, int64_t write_fd);
 
-int openForRead(const char* fname);
+int openForRead(const uint8_t* fname);
 
-int openForWrite(const char* fname);
+int openForWrite(const uint8_t* fname);
 
 uint8_t* readBytes(const uint64_t data_size, int64_t read_rd);
 
-uint64_t getFileSize(const char* fname);
+uint64_t getFileSize(const uint8_t* fname);
 
 #endif

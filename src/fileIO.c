@@ -1,8 +1,8 @@
 #include "include/fileIO.h"
 
-inline bool exists(const char* fname)
+inline bool exists(const uint8_t* fname)
 {
-    return access(fname, R_OK) != -1;
+    return access((char*)fname, R_OK) != -1;
 }
 
 bool writeBytes(const uint8_t* data, const uint64_t data_size, int64_t write_fd)
@@ -15,16 +15,16 @@ bool writeBytes(const uint8_t* data, const uint64_t data_size, int64_t write_fd)
     return true;
 }
 
-inline int openForRead(const char* fname)
+inline int openForRead(const uint8_t* fname)
 {
-    return open(fname, O_RDONLY);
+    return open((char*)fname, O_RDONLY);
 }
 
-inline int openForWrite(const char* fname)
+inline int openForWrite(const uint8_t* fname)
 {
     int flags = 0x0 | O_WRONLY | O_CREAT ; //Write only and create file if it does not exist
     int mode = S_IRUSR | S_IWUSR; //user has read and write permission 
-    return open(fname, flags, mode);
+    return open((char*)fname, flags, mode);
 }
 
 uint8_t* readBytes(const uint64_t data_size, int64_t fd)
@@ -43,8 +43,8 @@ uint8_t* readBytes(const uint64_t data_size, int64_t fd)
     return data;
 }
 
-inline uint64_t getFileSize(const char* fname)
+inline uint64_t getFileSize(const uint8_t* fname)
 {
     struct stat st;
-    return stat(fname, &st) == 0 ? st.st_size : 0;
+    return stat((char*)fname, &st) == 0 ? st.st_size : 0;
 }

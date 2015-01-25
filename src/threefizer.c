@@ -5,86 +5,6 @@
 
 #include "include/threefizer.h"
 
-/*static error_t parse_opt(int key, char* arg, struct argp_state* state)
-{
-    arguments* a = state->input;
-    switch(key)
-    {
-        pdebug("Parse_opt %c\n" , key);
-        case ARGP_KEY_ARG:
-	{
-            if(exists(arg))
-            {
-                argz_add(&a->argz, &a->argz_len, arg);
-                a->file_size = getFileSize(a->argz);
-	    }
-            else
-            {
-                 char msg[FNAME_BUFFER_SIZE] = { 0 }; 
-                 sprintf(msg, "unable to open file: %s", arg);
-                 argp_failure(state, 1, 0, msg);
-            }
-	}
-        break;
-	case ARGP_KEY_INIT:
-        {
-            a->free = false;
-            a->encrypt = true;
-	    a->hash_from_file = false;
-            a->hash = true;
-            a->argz= NULL;
-            a->argz_len = 0;
-            a->state_size = Skein512;
-	    a->key_file = NULL;
-            a->password = NULL;
-            a->pw_length = 0;
-            a->file_size = 0;
-	}
-        break;
-        case ARGP_KEY_END:
-        {
-            const size_t count = argz_count(a->argz, a->argz_len);
-            if (count < 1) { argp_failure (state, 1, TOO_FEW_ARGUMENTS, "too few arguments"); }
-        }
-        break;
-        case 'b': a->state_size = getSkeinSize(arg);
-	break;
-        case 'd': a->encrypt = false;
-        break;
-        case 'e': a->encrypt = true;
-        break;
-        case 'n': a->hash = false;
-        break;
-        case 'p':
-        {
-            if(strlen(arg) > 6)
-            {
-                a->password = (uint8_t*)arg;
-                a->pw_length = strlen(arg);
-            }
-            else { argp_failure(state, 1, PASSWORD_TOO_SHORT, "password is too short, try something less whimpy"); }
-        }
-        break;
-        case 'P':
-        {
-            if(exists(arg))
-            {
-                a->free = true;
-		a->hash_from_file = true;
-		a->key_file = (uint8_t*)arg;
-            }
-            else
-            {
-                argp_failure(state, 1, PASSWORD_FILE_READ_FAIL, "Unable to read password file");
-            }
-        }
-        break;
-        default:
-        break;
-    }
-    return 0;
-}*/
-
 void printOptions()
 {
     printf("OPTIONS\n");
@@ -116,11 +36,15 @@ void printOptions()
 
 int main(int argc, char*argv[])
 {
+    bool mand_arg = false;
     bool parsing = true;
     arguments arguments;
     int arg = 0;
     int option_index = 0; 
     int status = 0;
+
+    extern char *optarg;
+    extern int optind, opterr, optopt;
 
     initArguments(&arguments);
 
@@ -134,7 +58,7 @@ int main(int argc, char*argv[])
                 arguments.state_size = getSkeinSize(optarg);
             break;
             case 'd':
-                arguments.encrypt = true;
+                arguments.encrypt = false;
             break;
             case 'e':
                 if(!arguments.encrypt)
@@ -143,6 +67,14 @@ int main(int argc, char*argv[])
                     parsing = false;
                     status = ARG_PARSING_ERROR;
                 }
+            break;
+            case 'h':
+                printf("%s", usage);
+                printf("\n%s\n", about);
+                printOptions();
+                printf("\nMandatory or optional arguments to long options are also mandatory or optional for any corresponding short options.\n");
+                printf("\nReport bugs to %s\n", program_bug_address);
+                parsing = false;
             break;
             case 'n':
                 arguments.hash = false;
@@ -160,7 +92,7 @@ int main(int argc, char*argv[])
                 }
             break;
             case 'P':
-                if(exists(optarg))
+                if(exists((uint8_t*)optarg))
                 {
                     arguments.free = true;
                     arguments.hash_from_file = true;
@@ -180,42 +112,39 @@ int main(int argc, char*argv[])
                 printf("%s", program_version);
                 parsing = false;
             break;
-            case '?':
-                printf("%s", usage);
-                printf("\n%s\n", about);
-                printOptions();
-                printf("\nMandatory or optional arguments to long options are also mandatory or optional for any corresponding short options.\n");
-                printf("\nReport bugs to %s\n", program_bug_address);
-                parsing = false;
-
-            break;
             default:
                 status = ARG_PARSING_ERROR;
             break;
         }
     }
- 
-    if(status == 0)
-    {
-        /*
-        if(exists(arg))
-        {
-            if (arguments.password == NULL && arguments.key_file == NULL)
-            { 
-                askPassword(&arguments); 
-            }
 
-            //perform the requested action on each file entered into the command line
-            status = runThreefizer(&arguments);
-	    if(status != 0) { printError(status); }
-	    else { printf("Operation succeeded"); }
-        }
-        else
+    if(parsing)
+    {
+        //there should always be a file name specified as the last argument
+        if(optind < argc)
         {
-            fprintf(stderr, "Unable to open file %s for cipher operation\n", arg);
-            status = 4;
-        }*/
+            arguments.target_file = (uint8_t*)argv[argc-1];
+            arguments.file_size = getFileSize((uint8_t*)argv[argc-1]);
+            mand_arg = true;
+        }
+        else { status = ARG_PARSING_ERROR; }
     }
+ 
+    if(status == 0 && mand_arg)
+    {
+        //ask the user password if one was not specified
+        if(!arguments.hash_from_file && arguments.password == NULL)
+        { 
+            askPassword(&arguments); 
+        }
+
+        //perform the requested action on each file entered into the command line
+        status = runThreefizer(&arguments);
+    
+        if(status != 0) { printError(status); }
+        else { printf("\nOperation succeeded"); }
+    }
+
     //free(arguments.argz);
     if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv
 

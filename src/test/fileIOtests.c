@@ -3,27 +3,27 @@
 static void testFileExists()
 {
     printf("testFileExists()");
-    assert(exists("src/test/file_tests/simple_lines.dat") == true);
-    assert(exists("src/test/file_teses/obviously_invalid_file") == false);
+    assert(exists((uint8_t*)"src/test/file_tests/simple_lines.dat") == true);
+    assert(exists((uint8_t*)"src/test/file_teses/obviously_invalid_file") == false);
     printf(" passed\n");
 }
 
 static void testGetFileSize()
 {
     printf("testGetSize()");       
-    assert(getFileSize("src/test/file_tests/empty_file") == 0LU);
-    assert(getFileSize("src/test/file_tests/null_file") == 0LU);
-    assert(getFileSize("src/test/file_tests/simple_lines.dat") == 2160LU);
+    assert(getFileSize((uint8_t*)"src/test/file_tests/empty_file") == 0LU);
+    assert(getFileSize((uint8_t*)"src/test/file_tests/null_file") == 0LU);
+    assert(getFileSize((uint8_t*)"src/test/file_tests/simple_lines.dat") == 2160LU);
     printf(" passed\n");
 }
 
 static void testReadBytes()
 {
     printf("testReadBlock()");
-    int read = openForRead("src/test/file_tests/simple_lines.dat");
+    int read = openForRead((uint8_t*)"src/test/file_tests/simple_lines.dat");
     assert(read > 0);
 
-    uint64_t file_size = getFileSize("src/test/file_tests/simple_lines.dat");
+    uint64_t file_size = getFileSize((uint8_t*)"src/test/file_tests/simple_lines.dat");
     while(file_size > 0)
     {
         const uint8_t* line = readBytes(TEST_FILE_LINE_LENGTH, read);
@@ -40,8 +40,8 @@ static void testWriteBytes()
     const static uint64_t a_size = 27;
     const static uint8_t alphabet[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 'q', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '\n' };
 
-    int wr_fd = openForWrite("writeTest.dat");
-    int re_fd = openForRead("writeTest.dat");
+    int wr_fd = openForWrite((uint8_t*)"writeTest.dat");
+    int re_fd = openForRead((uint8_t*)"writeTest.dat");
     assert(wr_fd > 0);
     assert(re_fd > 0);
 
@@ -58,7 +58,7 @@ static void testWriteBytes()
 	free(data);
     }
 
-    assert(getFileSize("writeTest.dat") == 702); //check that the file size is correct
+    assert(getFileSize((uint8_t*)"writeTest.dat") == 702); //check that the file size is correct
     printf(" passed\n");
 
     //close files

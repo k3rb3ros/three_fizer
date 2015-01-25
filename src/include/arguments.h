@@ -7,14 +7,13 @@
 
 typedef struct //arguments passed to argp containing argz (all non optional args)
 {
-     char* argz;
      uint8_t* key_file;
      uint8_t* password;
+     uint8_t* target_file;
      bool encrypt;
      bool free;
      bool hash;
      bool hash_from_file;
-     size_t argz_len;
      SkeinSize_t state_size;
      uint64_t file_size;
      uint64_t pw_length;

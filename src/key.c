@@ -19,7 +19,7 @@ bool handleKeys(const arguments* args,
     else if(args->hash == true && args->hash_from_file == true)
     {
         //hash the key file to a key of state size
-        cipher_key = hashKeyFromFile((char*)args->key_file, args->state_size);
+        cipher_key = hashKeyFromFile(args->key_file, args->state_size);
     }
     else if(args->hash == false && args->hash_from_file == false)
     {

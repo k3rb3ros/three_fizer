@@ -16,12 +16,12 @@ void* queueFileForDecrypt(void* parameters)
    chunk* data_chunk = NULL;
    const uint64_t block_byte_size = ((uint64_t)params->args->state_size/8); //get threefish block size
    const uint64_t header_byte_size = 2*(block_byte_size);
-   const uint64_t orig_file_size = getFileSize(params->args->argz); //get the file size in bytes
+   const uint64_t orig_file_size = getFileSize(params->args->target_file); //get the file size in bytes
 
    uint64_t bytes_read = 0;
    uint64_t read_progress = 0;
 
-   const int64_t read = openForRead(params->args->argz); //open a handle to the file
+   const int64_t read = openForRead(params->args->target_file); //open a handle to the file
    if(read < 0)
    {
        *(params->error) = FILE_IO_FAIL;
@@ -113,7 +113,7 @@ void* queueFileForEncrypt(void* parameters)
     pdebug("queueFileForEncrypt()\n");
 
     const readParams* params = parameters;
-    const uint64_t orig_file_size = getFileSize(params->args->argz); //get the file size in bytes
+    const uint64_t orig_file_size = getFileSize(params->args->target_file); //get the file size in bytes
     if(orig_file_size == 0) //check that we are actually encrypting something
     {
         *(params->error) = FILE_TOO_SMALL;
@@ -122,7 +122,7 @@ void* queueFileForEncrypt(void* parameters)
 
     chunk* data_chunk = NULL;
     
-    int64_t read = (openForRead(params->args->argz)); //attempt to open a handle to the file
+    int64_t read = (openForRead(params->args->target_file)); //attempt to open a handle to the file
     if(read < 0)
     {
         *(params->error) = FILE_IO_FAIL;

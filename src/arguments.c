@@ -6,8 +6,7 @@ void initArguments(arguments* arg)
     arg->encrypt = true;
     arg->hash_from_file = false;
     arg->hash = true;
-    arg->argz= NULL;
-    arg->argz_len = 0;
+    arg->target_file = NULL;
     arg->state_size = Skein512;
     arg->key_file = NULL;
     arg->password = NULL;
