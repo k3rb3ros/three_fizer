@@ -2,6 +2,5 @@
 * Add key derrivation function for all hashed keys 
 * Add tests for util 
 * Add tests for pad operations
-* Add a progress bar
 * Modify header and cbc to use explicit initialization vector
 * Get code reviewed by a security expert

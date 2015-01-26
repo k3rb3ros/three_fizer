@@ -28,7 +28,7 @@
 const static char* about = "A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentiall insecure cloud backup services\n";
 
 //program version
-const static char* program_version = "Threefizer 0.4.1";
+const static char* program_version = "Threefizer 0.4.2";
 
 //support email
 const static char* program_bug_address = "<M.or.riser.ryan+threefizer@gmail.com>";
