@@ -112,7 +112,7 @@ void askPassword(arguments* args)
         getLine((uint8_t*)pw2, BUFF_SIZE);
 
         /* restore terminal */
-        if (tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
+        if(tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
         {
             perror("tcsetattr");
             exit(6);

@@ -29,4 +29,12 @@ void cbc1024Decrypt(ThreefishKey_t* key,
                     uint64_t* cipher_text,
                     const uint64_t num_blocks);
 
+/*
+* This function assumes padding and allocation has already been taken care of
+*/
+void decryptInPlace(ThreefishKey_t* key,
+                    const uint64_t* chain,
+                    uint64_t* plain_text,
+                    const uint64_t num_blocks);
+
 #endif

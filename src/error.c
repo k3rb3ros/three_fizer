@@ -4,7 +4,7 @@ void printError(int error)
 {
     if(error == 0) { return; }
 
-    fprintf(stderr, "Error\n");
+    fprintf(stderr, "\nError\n");
 
     switch(error)
     {

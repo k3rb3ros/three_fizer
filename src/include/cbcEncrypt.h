@@ -28,4 +28,13 @@ void cbc1024Encrypt(ThreefishKey_t* key,
 		    uint64_t* plain_text,
 		    const uint64_t num_blocks);
 
+/*
+* This function assumes padding and allocation has already been taken care of
+* Chain is the iv if the plaintext passed in is the first block otherwise it is the last block of cipher text that is cbc encrypted
+*/
+void encryptInPlace(ThreefishKey_t* key,
+                    const uint64_t* chain,
+                    uint64_t* plain_text,
+                    const uint64_t num_blocks);
+
 #endif
