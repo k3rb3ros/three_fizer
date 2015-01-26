@@ -6,6 +6,7 @@
 #include <pthread.h> //pthread_t
 #include <stdint.h> //uint types
 #include <stdio.h> //rename()
+#include <unistd.h> //unlink()
 #include "cbc.h" //getChainInPlace() and getChainInBuffer()
 #include "chunk.h" //chunk type
 #include "chunkQueue.h" //queue type and supporting functions

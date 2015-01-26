@@ -86,7 +86,11 @@ int runThreefizer(const arguments* args)
             pthread_join(write_thread, NULL);
 	    pdebug("All threads joined\n");
         }
-        if(error != 0) { status = error; } //return the error if 1 occured
+        if(error != 0)
+        {
+            status = error;
+            if(temp_file_name != NULL) { unlink(temp_file_name); }
+        } //return the error if 1 occured
 
         //free alloated resources
         pthread_mutex_destroy(&crypto_mutex);
@@ -100,6 +104,7 @@ int runThreefizer(const arguments* args)
         pdebug("Resources freed\n");
     }
     else { status = KEY_GENERATION_FAIL; }
+
 
     return status;
 }
