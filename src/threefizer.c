@@ -13,7 +13,7 @@ void printOptions()
         printf("-%c, --%s", long_options[i].val, long_options[i].name);
         if(long_options[i].has_arg == required_argument)
         { 
-            printf("="); 
+            printf(" "); 
             int c = long_options[i].val;
             switch(c)
             {
@@ -25,6 +25,9 @@ void printOptions()
                 break;
                 case 'P':
                     printf("Passwordfile");
+                break;
+                case 'r':
+                    printf("NewFileName");
                 break;
                 default:
                 break;
@@ -48,7 +51,7 @@ int main(int argc, char*argv[])
 
     initArguments(&arguments);
 
-    while ((arg = getopt_long(argc, argv, "b:dehnp:P:uV", long_options, &option_index)) != -1
+    while ((arg = getopt_long(argc, argv, "b:dehnp:P:r:uV", long_options, &option_index)) != -1
            && parsing
           )
     {
@@ -92,7 +95,7 @@ int main(int argc, char*argv[])
                 }
             break;
             case 'P':
-                if(exists((uint8_t*)optarg))
+                if(exists((uint8_t*)optarg) && isFile((uint8_t*)optarg))
                 {
                     arguments.free = true;
                     arguments.hash_from_file = true;
@@ -103,6 +106,10 @@ int main(int argc, char*argv[])
                     parsing = false;
                     status = INVALID_PASSWORD_FILE;
                 }
+            break;
+            case 'r':
+                arguments.rename = true;
+                arguments.rename_file = (uint8_t*)optarg; 
             break;
             case 'u':
                 printf("%s", usage);
@@ -123,9 +130,16 @@ int main(int argc, char*argv[])
         //there should always be a file name specified as the last argument
         if(optind < argc)
         {
-            arguments.target_file = (uint8_t*)argv[argc-1];
-            arguments.file_size = getFileSize((uint8_t*)argv[argc-1]);
-            mand_arg = true;
+            if(exists((uint8_t*)argv[argc-1]) && isFile((uint8_t*)argv[argc-1]))
+            {
+                arguments.target_file = (uint8_t*)argv[argc-1];
+                arguments.file_size = getFileSize((uint8_t*)argv[argc-1]);
+                mand_arg = true;
+            }
+            else
+            {
+                status = INVALID_TARGET_FILE; 
+            }
         }
         else { status = ARG_PARSING_ERROR; }
     }
@@ -140,10 +154,10 @@ int main(int argc, char*argv[])
 
         //perform the requested action on each file entered into the command line
         status = runThreefizer(&arguments);
-    
-        if(status != 0) { printError(status); }
-        else { printf("\nOperation succeeded"); }
     }
+
+    if(status != 0) { printError(status); }
+    else { printf("\nOperation succeeded"); }
 
     //free(arguments.argz);
     if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv

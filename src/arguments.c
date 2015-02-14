@@ -2,9 +2,10 @@
 
 void initArguments(arguments* arg)
 {
-    arg->free = false;
     arg->encrypt = true;
+    arg->free = false;
     arg->hash_from_file = false;
+    arg->rename = false;
     arg->hash = true;
     arg->target_file = NULL;
     arg->state_size = Skein512;

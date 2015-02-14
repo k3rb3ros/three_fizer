@@ -47,6 +47,7 @@ const static struct option long_options[] =
     { "password", required_argument, 0, 'p' },
     { "passwordFile", required_argument, 0, 'P' },
     { "no-hash", no_argument, 0, 'n' },
+    { "rename", required_argument, 0, 'r' },
     { "usage", no_argument, 0, 'u' },
     { "version", no_argument, 0, 'V' },
     { 0, 0, 0, 0} 

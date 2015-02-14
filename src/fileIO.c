@@ -1,5 +1,12 @@
 #include "include/fileIO.h"
 
+inline bool isFile(const uint8_t* fname)
+{
+    struct stat st;
+    stat((char*)fname, &st);
+    return S_ISREG(st.st_mode);
+}
+
 inline bool exists(const uint8_t* fname)
 {
     return access((char*)fname, R_OK) != -1;

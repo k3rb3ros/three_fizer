@@ -23,6 +23,9 @@ void printError(int error)
         case INVALID_PASSWORD_FILE:
             fprintf(stderr, "The password file specified is invalid\n");
         break;
+        case INVALID_TARGET_FILE:
+            fprintf(stderr, "The target file specified is not a valid file. Ensure that it exists you have access to it and that it is a regular file\n");
+        break;
 	case KEY_GENERATION_FAIL:
 	    fprintf(stderr, "Key generation failed\n");
 	break;

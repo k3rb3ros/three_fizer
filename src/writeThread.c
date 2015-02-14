@@ -82,7 +82,9 @@ void* asyncWrite(void* parameters)
     if(*(params->error) == 0)
     {
         pdebug("^^^^ renaming %s to %s ^^^^\n", params->temp_file_name, params->args->argz);
-        rename((char*)params->temp_file_name, (char*)params->args->target_file);
+        if(params->args->rename)
+        { rename((char*)params->temp_file_name, (char*)params->args->rename_file); }
+        else { rename((char*)params->temp_file_name, (char*)params->args->target_file); }
         *(params->running) = false; //signal any other running threads to stop (should be redundant)
     }
     

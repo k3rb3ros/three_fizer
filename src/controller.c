@@ -105,6 +105,5 @@ int runThreefizer(const arguments* args)
     }
     else { status = KEY_GENERATION_FAIL; }
 
-
     return status;
 }

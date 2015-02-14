@@ -10,6 +10,10 @@
 #include <sys/stat.h> //stat()
 #include <unistd.h> //fseek() write() 
 
+//return true if the file name passed in is a regular file
+bool isFile(const uint8_t* name);
+
+//return true if the the file passed in exists
 bool exists(const uint8_t* fname);
 
 bool writeBytes(const uint8_t* data, const uint64_t data_size, int64_t write_fd);

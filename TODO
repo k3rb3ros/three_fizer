@@ -2,5 +2,6 @@
 * Add key derrivation function for all hashed keys 
 * Add tests for util 
 * Add tests for pad operations
-* Modify header and cbc to use explicit initialization vector
+* Add test to keep program from attempting to encrypt directories #DONE#
+* Add the option to rename an encrypted file #DONE#
 * Get code reviewed by a security expert
