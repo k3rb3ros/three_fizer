@@ -6,7 +6,7 @@
 #include <stdint.h> //uint64_t type
 #include <stdio.h> //printf()
 #include <string.h> //strcmp()
-#include "threefizer/fileIO.h" //all fileIO operations
+#include "fileIO.h" //all fileIO operations
 
 #define REF_LINE "abcdefghijklmnopqrstuvwxyz\n"
 #define TEST_FILE_LINE_LENGTH 27

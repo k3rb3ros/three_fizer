@@ -5,13 +5,13 @@
 #include <stdint.h> //uintxx_t types
 #include <string.h> //strcpy(), memcpy()
 #include "print.h" //showBuff()
-#include "threefizer/cbc.h" //getChainInBuffer()
-#include "threefizer/cbcDecrypt.h"
-#include "threefizer/cbcEncrypt.h"
-#include "threefizer/encrypt.h"
-#include "threefizer/decrypt.h"
-#include "threefizer/threefishApi.h" //ThreefishKey_t, threefishSetKey()
-#include "threefizer/tweak.h" //threefizer_tweak the same tweak constant used in program operation
+#include "cbc.h" //getChainInBuffer()
+#include "cbcDecrypt.h"
+#include "cbcEncrypt.h"
+#include "encrypt.h"
+#include "decrypt.h"
+#include "threefishApi.h" //ThreefishKey_t, threefishSetKey()
+#include "tweak.h" //threefizer_tweak the same tweak constant used in program operation
 
 void runCBCTests();
 

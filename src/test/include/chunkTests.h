@@ -1,8 +1,8 @@
 #ifndef CHUNKTESTS_H
 #define CHUNKTESTS_H
 
-#include "threefizer/chunkQueue.h" //chunk and queue structures and supporting functions 
-#include "threefizer/debug.h" //pdebug()
+#include "chunkQueue.h" //chunk and queue structures and supporting functions 
+#include "debug.h" //pdebug()
 #include <assert.h> //assert()
 #include <stdlib.h> //malloc()
 #include <stdio.h> //printf()

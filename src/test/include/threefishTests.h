@@ -5,7 +5,7 @@
 #include <stdint.h> //uintxx_t types
 #include <stdio.h> //printf()
 #include "print.h" //showBuff()
-#include "threefizer/threefishApi.h" //all threefish cipher and init functions
+#include "threefishApi.h" //all threefish cipher and init functions
 
 /*********************************
 * Block sizes as 64 bit integers *

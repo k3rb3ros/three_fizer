@@ -1,4 +1,4 @@
-INCLUDES=-Iinclude -Iinclude/threefizer 
+INCLUDES=-Iinclude -I../include 
 CFLAGS= $(STDFLAG) $(INCLUDES) $(DBGFLAGS) $(DEFINITIONS)
 DEPS=$(wildcard include/*.h)
 SRC=$(wildcard *.c)
