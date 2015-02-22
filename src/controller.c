@@ -27,7 +27,7 @@ int runThreefizer(const arguments* args)
 
     pdebug("Threefizer controller\n");
     pdebug("Arguments { ");
-    pdebug("free: %d, encrypt: %d, hash: %d, argz: [%s], argz_len: %zu, State Size: %u, password: [%s], pw_length %lu, file_length %lu }\n", args->free, args->encrypt, args->hash, args->argz, args->argz_len, args->state_size, args->password, args->pw_length, args->file_size);
+    pdebug("free: %d, encrypt: %d, hash: %d, file_path: [%s], file_path_len: %zu, State Size: %u, password: [%s], pw_length %lu, file_length %lu }\n", args->free, args->encrypt, args->hash, args->target_file, args->file_size, args->state_size, args->password, args->pw_length, args->file_size);
 
     if(handleKeys(args, &tf_key, &mac_context)) //generate and initialize the keys we cannot continue if this fails
     {
@@ -89,7 +89,7 @@ int runThreefizer(const arguments* args)
         if(error != 0)
         {
             status = error;
-            if(temp_file_name != NULL) { unlink(temp_file_name); }
+            if(temp_file_name != NULL) { unlink((char*)temp_file_name); }
         } //return the error if 1 occured
 
         //free alloated resources

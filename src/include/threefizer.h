@@ -1,8 +1,6 @@
 #ifndef THREEFIZER_H
 #define THREEFIZER_H
 
-//#include <argp.h> //argp_parse()
-#include <argz.h> //argz
 #include <getopt.h> //get_opt_long()
 #include <stdbool.h> //bool type 
 #include <stdint.h> //uint types
