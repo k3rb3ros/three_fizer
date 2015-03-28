@@ -106,9 +106,9 @@ void askPassword(arguments* args)
             exit(6);
         }
 
-        printf("\nEnter password:");
+        printf("\nEnter password: ");
         getLine((uint8_t*)pw1, BUFF_SIZE);
-        printf("\nConfirm password:");
+        printf("\nConfirm password: ");
         getLine((uint8_t*)pw2, BUFF_SIZE);
 
         /* restore terminal */
