@@ -157,7 +157,7 @@ int main(int argc, char*argv[])
     }
 
     if(status != 0) { printError(status); }
-    else { printf("\nOperation succeeded"); }
+    else { printf("\nOperation succeeded\n"); }
 
     if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv
 

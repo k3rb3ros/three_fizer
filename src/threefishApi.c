@@ -1,6 +1,4 @@
-
-
-#include <threefishApi.h>
+#include "../include/threefishApi.h"
 #include <stdlib.h>
 #include <string.h>
 
