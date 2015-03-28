@@ -1,4 +1,4 @@
-CC=clang
+#CC=clang
 DBGFLAGS=-ggdb -Wall -Wextra -pedantic
 STDFLAG=-std=c11
 #DEFINITIONS=-DDEBUG
@@ -6,7 +6,7 @@ STDFLAG=-std=c11
 #DEFINITIONS=-DDEBUG3
 INCLUDES=-Isrc/include
 CFLAGS= $(STDFLAG) $(INCLUDES) $(DBGFLAGS) $(DEFINITIONS)
-LDFLAGS=-lpthread
+LDFLAGS=-lpthread -lgcrypt
 PRGRAM_OBJECTS=$(patsubst src/%.c, src/obj/%.o, $(wildcard src/*.c))
 TEST_OBJECTS=$(patsubst src/test/%.c, src/test/obj/%.o, $(wildcard src/test/*.c)) 
 OPTFLAGS=-O2
