@@ -13,29 +13,57 @@ bool handleKeys(const arguments* args,
     uint64_t* cipher_key = NULL;
     uint64_t* mac_key = NULL;
 
-    void * passphrase = args->password;
-    size_t passphraselen = args->pw_length;
-    void * salt;
-    gpg_error_t err;
-    size_t saltlen;
-    unsigned long iterations = 100;
+    void * phash;
+    void * fhash;
+    void * ksalt;
+    unsigned long iterations = 1;
+    unsigned long N = 262144; // 2^18
 
+    
     if(args->hash == true && args->hash_from_file == false)
     {
         //hash the user entered password so the key matches state size
         cipher_key = calloc(1, block_byte_size);
-        salt = keyHash(args->password, args->pw_length, args->state_size);
-        printf("Deriving cipher key...\n");
-        err = gcry_kdf_derive ( passphrase, passphraselen, 
-                                GCRY_KDF_SCRYPT, GCRY_MD_SHA512, salt, block_byte_size,
-                                iterations, block_byte_size, cipher_key );
+        phash = keyHash(args->password, args->pw_length, args->state_size);
+        ksalt = calloc(1, block_byte_size);
+        printf("Deriving salt for keys... ");
+        if(gcry_kdf_derive (args->password, args->pw_length,
+                            GCRY_KDF_SCRYPT, 32768, phash, block_byte_size,
+                            iterations, block_byte_size, ksalt) != 0)
+        {
+            return false;
+        }
         printf("done!\n");
-        //cipher_key = (uint64_t*)keyHash(args->password, args->pw_length, args->state_size);
+        printf("Deriving cipher key... ");
+        if(gcry_kdf_derive (phash, block_byte_size,
+                            GCRY_KDF_SCRYPT, N, ksalt, block_byte_size,
+                            iterations, block_byte_size, cipher_key) != 0);
+        {
+            return false;
+        }
+        printf("done!\n");
     }
     else if(args->hash == true && args->hash_from_file == true)
     {
         //hash the key file to a key of state size
-        cipher_key = hashKeyFromFile(args->key_file, args->state_size);
+        fhash = hashKeyFromFile(args->key_file, args->state_size);
+        ksalt = calloc(1, block_byte_size);
+        printf("Deriving salt for keys... ");
+        if(gcry_kdf_derive (fhash, block_byte_size,
+                            GCRY_KDF_SCRYPT, 32768, fhash, block_byte_size,
+                            iterations, block_byte_size, ksalt) != 0)
+        {
+            return false;
+        }
+        printf("done!\n");
+        printf("Deriving cipher key... ");
+        if(gcry_kdf_derive (fhash, block_byte_size,
+                            GCRY_KDF_SCRYPT, N, ksalt, block_byte_size,
+                            iterations, block_byte_size, cipher_key) != 0)
+        {
+            return false;
+        }
+        printf("done!\n");
     }
     else if(args->hash == false && args->hash_from_file == false)
     {
@@ -55,13 +83,14 @@ bool handleKeys(const arguments* args,
     if(cipher_key == NULL) { return false; }
 
     //generate the mac key from the cipher_key
-    //mac_key = (uint64_t*)keyHash((uint8_t*)cipher_key, block_byte_size, args->state_size);
-    salt = keyHash((uint8_t*)cipher_key, block_byte_size, args->state_size);
     mac_key = calloc(1, block_byte_size);
-    printf("Deriving MAC key...\n");
-    err = gcry_kdf_derive ( cipher_key, block_byte_size, 
-                            GCRY_KDF_SCRYPT, GCRY_MD_SHA512, salt, block_byte_size, 
-                            iterations, block_byte_size, mac_key);
+    printf("Deriving MAC key... "); 
+    if(gcry_kdf_derive (cipher_key, block_byte_size, 
+                        GCRY_KDF_SCRYPT, N, ksalt, block_byte_size,
+                        iterations, block_byte_size, mac_key) != 0)
+    {
+        return false;
+    }
     printf("done!\n");
 
     //initialize the key structure for the cipher key
