@@ -19,18 +19,18 @@ void printOptions()
             {
                 case 'b':
                     printf("BlockSize");
-                break;
+                    break;
                 case 'p':
                     printf("Password");
-                break;
+                    break;
                 case 'P':
                     printf("Passwordfile");
-                break;
+                    break;
                 case 'r':
                     printf("NewFileName");
-                break;
+                    break;
                 default:
-                break;
+                    break;
             }
         }
         printf("\n");
