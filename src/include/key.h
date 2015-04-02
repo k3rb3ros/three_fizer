@@ -13,7 +13,7 @@
 * It assumes the user has correctly allocated block size buffers for the cipher and mac key and passes them into the function
 */
 bool handleKeys(const arguments* args,
-                       ThreefishKey_t* cipher_context,
-                       MacCtx_t* mac_context);
+                      ThreefishKey_t* cipher_context,
+                      MacCtx_t* mac_context);
 
 #endif

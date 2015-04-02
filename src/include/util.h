@@ -38,7 +38,8 @@ typedef struct
     SkeinSize_t skein_size;
 } key_t;
 
-//a lookup table containing skein/threefish cipher sizes. Note these are just for parsing block size input not cryptographic operations
+//a lookup table containing skein/threefish cipher sizes.
+//Note these are just for parsing block size input not cryptographic operations
 static key_t block_lookup[] =
 {
     { "256", Skein256 }, { "512", Skein512 }, { "1024", Skein1024 },
