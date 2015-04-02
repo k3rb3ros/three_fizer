@@ -36,7 +36,7 @@ bool handleKeys(const arguments* args,
         printf("Deriving cipher key... ");
         if(gcry_kdf_derive (phash, block_byte_size,
                             GCRY_KDF_SCRYPT, N, ksalt, block_byte_size,
-                            iterations, block_byte_size, cipher_key) != 0);
+                            iterations, block_byte_size, cipher_key) != 0)
         {
             return false;
         }

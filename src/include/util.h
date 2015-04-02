@@ -1,16 +1,16 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "arguments.h" //arguments struct
-#include "debug.h" //pdebug()
-#include "skeinApi.h" //SkenSize_t
-#include "threefishApi.h" //ThreefishKey_t
-#include <stdbool.h> //bool type
-#include <stdint.h> //uint8_t type
-#include <stdlib.h> //free()
-#include <stdio.h> //printf()
-#include <string.h> //strcmp()
-#include <termios.h> //tcsetattr(), tcgetattr()
+#include "arguments.h"      //arguments struct
+#include "debug.h"          //pdebug()
+#include "skeinApi.h"       //SkenSize_t
+#include "threefishApi.h"   //ThreefishKey_t
+#include <stdbool.h>        //bool type
+#include <stdint.h>         //uint8_t type
+#include <stdlib.h>         //free()
+#include <stdio.h>          //printf()
+#include <string.h>         //strcmp()
+#include <termios.h>        //tcsetattr(), tcgetattr()
 
 //Invalid argument type
 #define BADARG -1
