@@ -37,7 +37,7 @@ void printOptions()
     }
 }
 
-int main(int argc, char*argv[])
+int main(int argc, char* argv[])
 {
     bool mand_arg = false;
     bool parsing = true;
