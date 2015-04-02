@@ -19,7 +19,6 @@ bool handleKeys(const arguments* args,
     unsigned long iterations = 1;
     unsigned long N = 262144; // 2^18
 
-    
     if(args->hash == true && args->hash_from_file == false)
     {
         //hash the user entered password so the key matches state size
