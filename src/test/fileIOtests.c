@@ -27,8 +27,8 @@ static void testReadBytes()
     while(file_size > 0)
     {
         const uint8_t* line = readBytes(TEST_FILE_LINE_LENGTH, read);
-	assert(strcmp((char*)line, REF_LINE) == 0);
-	file_size -= TEST_FILE_LINE_LENGTH;
+        assert(strcmp((char*)line, REF_LINE) == 0);
+        file_size -= TEST_FILE_LINE_LENGTH;
     }
     printf(" passed\n");
     close(read);
@@ -37,8 +37,11 @@ static void testReadBytes()
 static void testWriteBytes()
 {
     printf("testWriteBytes()");
-    const static uint64_t a_size = 27;
-    const static uint8_t alphabet[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 'q', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '\n' };
+    static const uint64_t a_size = 27;
+    static const uint8_t alphabet[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+                                        'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                                        'o', 'p', 'r', 'q', 's', 't', 'u',
+                                        'v', 'w', 'x', 'y', 'z', '\n' };
 
     int wr_fd = openForWrite((uint8_t*)"writeTest.dat");
     int re_fd = openForRead((uint8_t*)"writeTest.dat");
