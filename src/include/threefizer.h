@@ -23,20 +23,22 @@
 **********************************/
 
 //program description
-const static char* about = "A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before uploading to potentiall insecure cloud backup services\n";
+static const char* about = "A simple file encryption program that uses Threefish and Skein internally.\n"
+                           "The intended use case is to encrypt files for backup locally \n"
+                           "before uploading to potentiall insecure cloud backup services\n";
 
 //program version
-const static char* program_version = "Threefizer 0.4.3";
+static const char* program_version = "Threefizer 0.4.3";
 
 //support email
-const static char* program_bug_address = "<M.or.riser.ryan+threefizer@gmail.com>";
+static const char* program_bug_address = "<M.or.riser.ryan+threefizer@gmail.com>";
 
-const static char* usage = "Usage: threefizer [OPTION...] [FILE]...\n";
+static const char* usage = "Usage: threefizer [OPTION...] [FILE]...\n";
 
 #define LONG_OPTS_SIZE 9
 
 //params for long options
-const static struct option long_options[] = 
+static const struct option long_options[] =
 {
     { "blocksize", required_argument, 0, 'b' },
     { "decrypt", no_argument, 0, 'd' },
