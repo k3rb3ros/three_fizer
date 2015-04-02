@@ -1,7 +1,7 @@
 #ifndef CBCENCRYPT_H
 #define CBCENCRYPT_H
 
-#include "cbc.h" //Cipher size macros
+#include "cbc.h" 	//Cipher size macros
 #include <stdint.h> //uintxx_t types
 
 /*
@@ -30,7 +30,8 @@ void cbc1024Encrypt(ThreefishKey_t* key,
 
 /*
 * This function assumes padding and allocation has already been taken care of
-* Chain is the iv if the plaintext passed in is the first block otherwise it is the last block of cipher text that is cbc encrypted
+* Chain is the iv if the plaintext passed in is the first block otherwise it is the last block of cipher text that is
+* cbc encrypted
 */
 void encryptInPlace(ThreefishKey_t* key,
                     const uint64_t* chain,

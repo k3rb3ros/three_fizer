@@ -4,9 +4,9 @@
 #include "debug.h"
 #include "hash.h"
 #include "random.h"
-#include "threefishApi.h" //threefish encrypt and decrypt functions
-#include <stdint.h> //uint types
-#include <stdio.h> //printf(), memcpy
+#include "threefishApi.h"   //threefish encrypt and decrypt functions
+#include <stdint.h>         //uint types
+#include <stdio.h>          //printf(), memcpy()
 
 #define SAFE_SLICE 4
 #define SECURE_SLICE 8
@@ -27,7 +27,7 @@ bool getChainInBuffer(const uint64_t* cipher_text,
 
 /*
 * used to get the last block from the previous cbc operation in cases where 
-* continuous chaining is interupted for encryption(so the chain can exist in place)
+* continuous chaining is interrupted for encryption(so the chain can exist in place)
 */
 uint64_t* getChainInPlace(const uint64_t* cipher_text,
                           const uint64_t num_blocks, 

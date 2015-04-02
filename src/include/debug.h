@@ -3,7 +3,7 @@
 #define DEBUG_H
 #define INDENT "    "
 
-#include <stdio.h> //printf()
+#include <stdio.h>  //printf()
 #include <stdint.h> //uintxx_t types
 
     //a function to print every byte in a buffer as a 2 digit hex number in a readable way

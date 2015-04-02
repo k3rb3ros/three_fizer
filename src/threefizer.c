@@ -75,7 +75,8 @@ int main(int argc, char*argv[])
                 printf("%s", usage);
                 printf("\n%s\n", about);
                 printOptions();
-                printf("\nMandatory or optional arguments to long options are also mandatory or optional for any corresponding short options.\n");
+                printf("\nMandatory or optional arguments to long options are also mandatory or\n");
+                printf("optional for any corresponding short options.\n");
                 printf("\nReport bugs to %s\n", program_bug_address);
                 parsing = false;
             break;

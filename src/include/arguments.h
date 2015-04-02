@@ -1,9 +1,9 @@
 #ifndef ARGUMENTS_H
 #define ARGUMENTS_H
 
-#include "skeinApi.h" //SkeinSize_t type
-#include <stdbool.h> //bool type
-#include <stdint.h> //uint_t types
+#include "skeinApi.h"    //SkeinSize_t type
+#include <stdbool.h>     //bool type
+#include <stdint.h>      //uint_t types
 
 typedef struct //arguments passed to argp containing argz (all non optional args)
 {

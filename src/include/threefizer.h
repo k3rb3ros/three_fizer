@@ -1,19 +1,19 @@
 #ifndef THREEFIZER_H
 #define THREEFIZER_H
 
-#include <getopt.h> //get_opt_long()
-#include <stdbool.h> //bool type 
-#include <stdint.h> //uint types
-#include <stdio.h> //printf()
-#include <stdlib.h> //memalloc(), free()
-#include <string.h> //strcmp()
-#include "arguments.h" //argument structure
-#include "cbc.h" //cbc_decrypt, cbc_encrypt(
-#include "controller.h" //runThreefizer()
-#include "error.h" //error codes
-#include "fileIO.h" //exists()
-#include "progressBar.h" //calcOperations()
-#include "util.h" //getSkeinSize()
+#include <getopt.h>         //get_opt_long()
+#include <stdbool.h>        //bool type
+#include <stdint.h>         //uint types
+#include <stdio.h>          //printf()
+#include <stdlib.h>         //memalloc(), free()
+#include <string.h>         //strcmp()
+#include "arguments.h"      //argument structure
+#include "cbc.h"            //cbc_decrypt, cbc_encrypt(
+#include "controller.h"     //runThreefizer()
+#include "error.h"          //error codes
+#include "fileIO.h"         //exists()
+#include "progressBar.h"    //calcOperations()
+#include "util.h"           //getSkeinSize()
 
 //Numerical constants
 #define FNAME_BUFFER_SIZE 256
@@ -23,7 +23,7 @@
 **********************************/
 
 //program description
-const static char* about = "A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentiall insecure cloud backup services\n";
+const static char* about = "A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before uploading to potentiall insecure cloud backup services\n";
 
 //program version
 const static char* program_version = "Threefizer 0.4.3";
@@ -35,7 +35,7 @@ const static char* usage = "Usage: threefizer [OPTION...] [FILE]...\n";
 
 #define LONG_OPTS_SIZE 9
 
-//paramas for long options
+//params for long options
 const static struct option long_options[] = 
 {
     { "blocksize", required_argument, 0, 'b' },
@@ -55,4 +55,4 @@ const static struct option long_options[] =
 * Function prototypes *
 **********************/
 
-#endif 
+#endif
