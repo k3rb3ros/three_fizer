@@ -65,7 +65,7 @@ uint8_t* binToHex(uint8_t* src, uint64_t size)
 
     for(uint64_t i=0; i<size; ++i)
     {
-	//split the byte into two nibble halves and look up their hex representation
+	    //split the byte into two nibble halves and look up their hex representation
         hex[(2*i)+0] = hexLookupNibble((src[i] & 0xf0) >> 4);
         hex[(2*i)+1] = hexLookupNibble(src[i] & 0x0f);
     }      
@@ -119,13 +119,20 @@ void askPassword(arguments* args)
             exit(6);
         }
 
-	if(strlen(pw1) > BUFF_SIZE) exit(7); //If buffer overflow occurs force exit
+	    if(strlen(pw1) > BUFF_SIZE) //If buffer overflow occurs force exit
+        {
+            exit(7);
+        }
 
         if(strlen(pw1) < 6)
-	{
+        {
             printf("\nPassword must be at least 6 characters in length");
-        } 
-        else if(strcmp(pw1, pw2) == 0) { match = true; }
+            exit(0);
+        }
+        else if(strcmp(pw1, pw2) == 0)
+        {
+            match = true;
+        }
     }
 
     printf("\nPassword accepted\n");
@@ -135,5 +142,5 @@ void askPassword(arguments* args)
 
     args->password = (uint8_t*)password; //add our pw to the arguments structurei
     args-> free = true; //set the flag to free it since we allocated memory for this pw
-    args->pw_length = pw_length; //ad the pw length to the arguments structure
+    args->pw_length = pw_length; //add the pw_length to the arguments structure
 }
