@@ -16,6 +16,7 @@ bool handleKeys(const arguments* args,
 
     void * phash;
     void * fhash;
+    void * shash;
     void * ksalt;
     unsigned long iterations = 1;
     unsigned long N = 262144; // 2^18
@@ -25,18 +26,11 @@ bool handleKeys(const arguments* args,
         //hash the user entered password so the key matches state size
         cipher_key = calloc(1, block_byte_size);
         phash = keyHash(args->password, args->pw_length, args->state_size);
-        ksalt = calloc(1, block_byte_size);
-        printf("Deriving salt for keys... ");
-        if(gcry_kdf_derive (args->password, args->pw_length,
-                            GCRY_KDF_SCRYPT, 32768, phash, block_byte_size,
-                            iterations, block_byte_size, ksalt) != 0)
-        {
-            return false;
-        }
-        printf("done!\n");
+        shash = keyHash(args->salt, args->st_length, args->state_size);
+
         printf("Deriving cipher key... ");
         if(gcry_kdf_derive (phash, block_byte_size,
-                            GCRY_KDF_SCRYPT, N, ksalt, block_byte_size,
+                            GCRY_KDF_SCRYPT, N, shash, block_byte_size,
                             iterations, block_byte_size, cipher_key) != 0)
         {
             return false;
@@ -86,7 +80,7 @@ bool handleKeys(const arguments* args,
     mac_key = calloc(1, block_byte_size);
     printf("Deriving MAC key... "); 
     if(gcry_kdf_derive (cipher_key, block_byte_size, 
-                        GCRY_KDF_SCRYPT, N, ksalt, block_byte_size,
+                        GCRY_KDF_SCRYPT, N, shash, block_byte_size,
                         iterations, block_byte_size, mac_key) != 0)
     {
         return false;
@@ -95,7 +89,7 @@ bool handleKeys(const arguments* args,
 
     //initialize the key structure for the cipher key
     threefishSetKey(cipher_context, (ThreefishSize_t)args->state_size, cipher_key, threefizer_tweak);
-    //initialize the mac context and undelying skein structures
+    //initialize the mac context and underlying skein structures
     InitMacCtx(args, mac_context, mac_key);
 
     //free allocated resources

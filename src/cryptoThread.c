@@ -1,7 +1,8 @@
 #include "include/cryptoThread.h"
 
 /*
-* This function assumes the header has been tested to be valid but is still encrypted*/
+* This function assumes the header has been tested to be valid but is still encrypted
+*/
 void* decryptQueue(void* parameters)
 {
     pdebug("decryptQueue()\n");
@@ -66,7 +67,7 @@ void* decryptQueue(void* parameters)
         else if(decrypt_chunk != NULL && !decrypted) //decrypt the chunk
         {
             const uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
-                                              (uint32_t)params->tf_key->stateSize);
+                                                    (uint32_t)params->tf_key->stateSize);
             if(even)
             {
                 getChainInBuffer(decrypt_chunk->data, chain_odd, num_blocks, params->tf_key->stateSize);

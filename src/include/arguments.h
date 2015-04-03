@@ -9,6 +9,7 @@ typedef struct //arguments passed to argp containing argz (all non optional args
 {
      uint8_t* key_file;
      uint8_t* password;
+     uint8_t* salt;
      uint8_t* rename_file;
      uint8_t* target_file;
      bool encrypt;
@@ -19,6 +20,7 @@ typedef struct //arguments passed to argp containing argz (all non optional args
      SkeinSize_t state_size;
      uint64_t file_size;
      uint64_t pw_length;
+     uint64_t st_length;
 } arguments;
 
 void initArguments(arguments* arg);
