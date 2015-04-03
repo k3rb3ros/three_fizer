@@ -62,7 +62,7 @@ void* decryptQueue(void* parameters)
             pdebug("$$$ Stripping out header $$$\n");
         }
 	    //in order to save the last block of cipher text and not overwrite the previous one
-	    // before it is needed we need to store chains for even and odd blocks separately
+	    //before it is needed we need to store chains for even and odd blocks separately
         else if(decrypt_chunk != NULL && !decrypted) //decrypt the chunk
         {
             const uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
