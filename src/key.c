@@ -1,6 +1,7 @@
 #include <gcrypt.h>
 
 #include "include/key.h"
+#include "include/tweak.h"          //cipher_tweak constant
 
 bool handleKeys(const arguments* args,
                       ThreefishKey_t* cipher_context,

@@ -14,7 +14,6 @@
 #include "fileIO.h"         //exists()
 #include "progressBar.h"    //calcOperations()
 #include "util.h"           //getSkeinSize()
-#include "lookup.h"
 
 //Numerical constants
 #define FNAME_BUFFER_SIZE 256
