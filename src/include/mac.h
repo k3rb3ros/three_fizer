@@ -1,10 +1,10 @@
 #ifndef MAC_H
 #define MAC_H
 
-#include <stdbool.h> //bool type
-#include <stdint.h> //stdint types
-#include "arguments.h" //arguments type
-#include "chunk.h" //chunk type and support functions
+#include <stdbool.h>    //bool type
+#include <stdint.h>     //stdint types
+#include "arguments.h"  //arguments type
+#include "chunk.h"      //chunk type and support functions
 #include "chunkQueue.h" //queue type and support functions
 #include "skeinApi.h" 
 

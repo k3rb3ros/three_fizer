@@ -10,4 +10,4 @@
 bool encryptHeader(ThreefishKey_t* key, 
                    const uint64_t* header);
 
-#endif 
+#endif

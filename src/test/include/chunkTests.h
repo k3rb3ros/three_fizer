@@ -1,12 +1,12 @@
 #ifndef CHUNKTESTS_H
 #define CHUNKTESTS_H
 
-#include "chunkQueue.h" //chunk and queue structures and supporting functions 
-#include "debug.h" //pdebug()
-#include <assert.h> //assert()
-#include <stdlib.h> //malloc()
-#include <stdio.h> //printf()
-#include <string.h> //memcpy()
+#include "../../include/chunkQueue.h"   //chunk and queue structures and supporting functions
+#include "../../include/debug.h"        //pdebug()
+#include <assert.h>                     //assert()
+#include <stdlib.h>                     //malloc()
+#include <stdio.h>                      //printf()
+#include <string.h>                     //memcpy()
 
 #define DATA1 "Data 1"
 #define DATA2 "Data 2"

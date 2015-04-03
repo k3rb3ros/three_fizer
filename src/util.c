@@ -1,4 +1,4 @@
-#include "util.h"
+#include "include/util.h"
 
 //A sanity check for decrypting any files smaller then 4 blocks couldn't have been encrypted by this program
 inline bool isGreaterThanThreeBlocks(const arguments* args)
