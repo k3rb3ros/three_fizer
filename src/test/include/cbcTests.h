@@ -11,7 +11,6 @@
 #include "../../include/encrypt.h"
 #include "../../include/decrypt.h"
 #include "../../include/threefishApi.h"   //ThreefishKey_t, threefishSetKey()
-#include "../../include/tweak.h"          //threefizer_tweak the same tweak constant used in program operation
 
 void runCBCTests();
 

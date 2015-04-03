@@ -1,4 +1,5 @@
-#include "cbcTests.h"
+#include "include/cbcTests.h"
+#include "../include/tweak.h"          //threefizer_tweak the same tweak constant used in program operation
 
 static void test256cbcMultiBlockEncryptDecrypt()
 {
