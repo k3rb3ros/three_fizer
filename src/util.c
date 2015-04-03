@@ -107,8 +107,14 @@ void askPassword(arguments* args)
             exit(6);
         }
 
-        printf("\nEnter password: ");
+        printf("\nEnter password (at least 6 characters in length): ");
         getLine((uint8_t*)pw1, BUFF_SIZE);
+        if(strlen(pw1) < 6)
+        {
+            printf("\nPassword must be at least 6 characters in length\n");
+            exit(0);
+        }
+
         printf("\nConfirm password: ");
         getLine((uint8_t*)pw2, BUFF_SIZE);
 
@@ -124,14 +130,14 @@ void askPassword(arguments* args)
             exit(7);
         }
 
-        if(strlen(pw1) < 6)
-        {
-            printf("\nPassword must be at least 6 characters in length");
-            exit(0);
-        }
-        else if(strcmp(pw1, pw2) == 0)
+        if(strcmp(pw1, pw2) == 0)
         {
             match = true;
+        }
+        else
+        {
+            printf("\nDo not match!\n");
+            exit(0);
         }
     }
 
