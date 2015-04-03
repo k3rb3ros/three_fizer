@@ -52,8 +52,7 @@ int main(int argc, char* argv[])
     initArguments(&arguments);
 
     while ((arg = getopt_long(argc, argv, "b:dehnp:P:r:uvV", long_options, &option_index)) != -1
-           && parsing
-          )
+           && parsing)
     {
         switch(arg)
         {
@@ -164,7 +163,8 @@ int main(int argc, char* argv[])
     if(status != 0) { printError(status); }
     else { printf("\nOperation succeeded\n"); }
 
-    if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv
+    //free password if we allocated it instead of taking it from argv
+    if(arguments.free == true) { free(arguments.password); }
 
     return status;
 }

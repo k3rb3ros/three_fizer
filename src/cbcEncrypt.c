@@ -1,4 +1,4 @@
-#include "cbcEncrypt.h"
+#include "include/cbcEncrypt.h"
 
 void cbc256Encrypt(ThreefishKey_t* key,
                    const uint64_t* iv,
@@ -56,8 +56,9 @@ void cbc1024Encrypt(ThreefishKey_t* key,
     plain_text[8] ^= iv[8]; plain_text[9] ^= iv[9]; plain_text[10] ^= iv[10]; plain_text[11] ^= iv[11];
     plain_text[12] ^= iv[12]; plain_text[13] ^= iv[13]; plain_text[14] ^= iv[14]; plain_text[15] ^= iv[15];
 
-    //run each block through the cipher chaining on the previous block 
-    for(uint64_t block=0; block<(num_blocks*FUTURE_PROOF_SLICE); block+=FUTURE_PROOF_SLICE) //run each block through the cipher (in decrypt mode)
+    //run each block through the cipher chaining on the previous block
+    //run each block through the cipher (in decrypt mode)
+    for(uint64_t block=0; block<(num_blocks*FUTURE_PROOF_SLICE); block+=FUTURE_PROOF_SLICE)
     {
        if(block > 0) //feedback the previous into the next block by xoring them together
        {
@@ -80,20 +81,18 @@ void encryptInPlace(ThreefishKey_t* key,
                     uint64_t* plain_text,
                     const uint64_t num_blocks)
 {
-    pd2("encryptInPlace(key:%lu, chain:%lu, plain_text:%lu, num_blocks:%lu)\n", key->key[0], chain[0], plain_text[0], num_blocks);
+    pd2("encryptInPlace(key:%lu, chain:%lu, plain_text:%lu, num_blocks:%lu)\n",
+        key->key[0], chain[0], plain_text[0], num_blocks);
     switch(key->stateSize) //call the corresponding cbc Encrypt function
     {
         case 256: cbc256Encrypt(key, chain, plain_text, num_blocks);
-        break;
+            break;
         case 512: cbc512Encrypt(key, chain, plain_text, num_blocks);
-        break;
+            break;
         case 1024: cbc1024Encrypt(key, chain, plain_text, num_blocks);
-        break;
+            break;
         default:
-        {
-            perror("Invalid state size cannot continue\n");
+            perror("Invalid state size. Cannot continue\n");
             exit(9);
-        }
-        break;
     }
 }
