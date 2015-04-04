@@ -19,25 +19,25 @@ void printOptions()
             {
                 case 'b':
                     printf("BlockSize");
-                break;
+                    break;
                 case 'p':
                     printf("Password");
-                break;
+                    break;
                 case 'P':
                     printf("Passwordfile");
-                break;
+                    break;
                 case 'r':
                     printf("NewFileName");
-                break;
+                    break;
                 default:
-                break;
+                    break;
             }
         }
         printf("\n");
     }
 }
 
-int main(int argc, char*argv[])
+int main(int argc, char* argv[])
 {
     bool mand_arg = false;
     bool parsing = true;
@@ -51,18 +51,17 @@ int main(int argc, char*argv[])
 
     initArguments(&arguments);
 
-    while ((arg = getopt_long(argc, argv, "b:dehnp:P:r:uV", long_options, &option_index)) != -1
-           && parsing
-          )
+    while ((arg = getopt_long(argc, argv, "b:dehnp:P:r:uvV", long_options, &option_index)) != -1
+           && parsing)
     {
         switch(arg)
         {
             case 'b':
                 arguments.state_size = getSkeinSize(optarg);
-            break;
+                break;
             case 'd':
                 arguments.encrypt = false;
-            break;
+                break;
             case 'e':
                 if(!arguments.encrypt)
                 {
@@ -70,18 +69,19 @@ int main(int argc, char*argv[])
                     parsing = false;
                     status = ARG_PARSING_ERROR;
                 }
-            break;
+                break;
             case 'h':
                 printf("%s", usage);
                 printf("\n%s\n", about);
                 printOptions();
-                printf("\nMandatory or optional arguments to long options are also mandatory or optional for any corresponding short options.\n");
+                printf("\nMandatory or optional arguments to long options are also mandatory or\n");
+                printf("optional for any corresponding short options.\n");
                 printf("\nReport bugs to %s\n", program_bug_address);
                 parsing = false;
-            break;
+                break;
             case 'n':
                 arguments.hash = false;
-            break;
+                break;
             case 'p':
                 if(strlen(optarg) > 6)
                 {
@@ -93,7 +93,7 @@ int main(int argc, char*argv[])
                     parsing = false; 
                     status = PASSWORD_TOO_SHORT;
                 }
-            break;
+                break;
             case 'P':
                 if(exists((uint8_t*)optarg) && isFile((uint8_t*)optarg))
                 {
@@ -106,22 +106,26 @@ int main(int argc, char*argv[])
                     parsing = false;
                     status = INVALID_PASSWORD_FILE;
                 }
-            break;
+                break;
             case 'r':
                 arguments.rename = true;
                 arguments.rename_file = (uint8_t*)optarg; 
-            break;
+                break;
             case 'u':
                 printf("%s", usage);
                 parsing = false;
-            break;
+                break;
             case 'V':
                 printf("%s", program_version);
                 parsing = false;
-            break;
+                break;
+            case 'v':
+                printf("%s", program_version);
+                parsing = false;
+                break;
             default:
                 status = ARG_PARSING_ERROR;
-            break;
+                break;
         }
     }
 
@@ -157,9 +161,10 @@ int main(int argc, char*argv[])
     }
 
     if(status != 0) { printError(status); }
-    else { printf("\nOperation succeeded"); }
+    else { printf("\nOperation succeeded\n"); }
 
-    if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv
+    //free password if we allocated it instead of taking it from argv
+    if(arguments.free == true) { free(arguments.password); }
 
     return status;
 }

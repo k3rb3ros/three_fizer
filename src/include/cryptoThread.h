@@ -1,16 +1,16 @@
 #ifndef CRYPTOTHREAD_H
 #define CRYPTOTHREAD_H
 
-#include <pthread.h> //pthread_mutex_t type
-#include "cbc.h" //getChainInBuffer()
-#include "chunkQueue.h" //queue data type
-#include "debug.h" //pdebug()
-#include "decrypt.h" //decryptHeader(), decryptInPlace()
-#include "encrypt.h" //encryptHeader(), encryptInPlace()
-#include "error.h" //error codes
-#include "pad.h" //getNumBlocks()
-#include "progressBar.h" //progress_t type
-#include "threefishApi.h" //ThreefishKey_t
+#include <pthread.h>        //pthread_mutex_t type
+#include "cbc.h"            //getChainInBuffer()
+#include "chunkQueue.h"     //queue data type
+#include "debug.h"          //pdebug()
+#include "decrypt.h"        //decryptHeader(), decryptInPlace()
+#include "encrypt.h"        //encryptHeader(), encryptInPlace()
+#include "error.h"          //error codes
+#include "pad.h"            //getNumBlocks()
+#include "progressBar.h"    //progress_t type
+#include "threefishApi.h"   //ThreefishKey_t
 
 typedef struct
 {
@@ -37,7 +37,7 @@ void setUpCryptoParams(cryptParams* params,
                       pthread_mutex_t* out_mutex,
                       queue* in,
                       queue* out,
-		      progress_t* progress,
+                      progress_t* progress,
                       int32_t* error);
 
 #endif

@@ -1,9 +1,9 @@
 #ifndef CBCDECRYPT_H
 #define CBCDECRYPT_H
 
-#include "cbc.h" //Cipher size macros
-#include "debug.h" //pd2()
-#include <stdint.h> //uintxx_t types
+#include "cbc.h"        //Cipher size macros
+#include "debug.h"      //pd2()
+#include <stdint.h>     //uintxx_t types
 
 /*
 * Used internally to cbc decrypt 256bit blocks

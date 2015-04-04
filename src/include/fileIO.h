@@ -1,14 +1,14 @@
 #ifndef FILEIO_H
 #define FILEIO_H
 
-#include "debug.h" //pdebug()
-#include <fcntl.h> //open()
-#include <stdbool.h> //bool type
-#include <stdio.h> //calloc()
-#include <stdint.h> //uintxx_t and intxx_t types
-#include <stdlib.h> //calloc()
-#include <sys/stat.h> //stat()
-#include <unistd.h> //fseek() write() 
+#include "debug.h"      //pdebug()
+#include <fcntl.h>      //open()
+#include <stdbool.h>    //bool type
+#include <stdio.h>      //calloc()
+#include <stdint.h>     //uintxx_t and intxx_t types
+#include <stdlib.h>     //calloc()
+#include <sys/stat.h>   //stat()
+#include <unistd.h>     //fseek() write()
 
 //return true if the file name passed in is a regular file
 bool isFile(const uint8_t* name);

@@ -2,7 +2,7 @@
 #define RANDOM_H
 
 #include <stdint.h> //uint types
-#include <stdio.h> //frpintf
+#include <stdio.h>  //frpintf
 #include <unistd.h> //close()
 #include "fileIO.h" //exists(), openForRead(), readBytes
 

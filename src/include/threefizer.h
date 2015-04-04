@@ -1,19 +1,19 @@
 #ifndef THREEFIZER_H
 #define THREEFIZER_H
 
-#include <getopt.h> //get_opt_long()
-#include <stdbool.h> //bool type 
-#include <stdint.h> //uint types
-#include <stdio.h> //printf()
-#include <stdlib.h> //memalloc(), free()
-#include <string.h> //strcmp()
-#include "arguments.h" //argument structure
-#include "cbc.h" //cbc_decrypt, cbc_encrypt(
-#include "controller.h" //runThreefizer()
-#include "error.h" //error codes
-#include "fileIO.h" //exists()
-#include "progressBar.h" //calcOperations()
-#include "util.h" //getSkeinSize()
+#include <getopt.h>         //get_opt_long()
+#include <stdbool.h>        //bool type
+#include <stdint.h>         //uint types
+#include <stdio.h>          //printf()
+#include <stdlib.h>         //memalloc(), free()
+#include <string.h>         //strcmp()
+#include "arguments.h"      //argument structure
+#include "cbc.h"            //cbc_decrypt, cbc_encrypt(
+#include "controller.h"     //runThreefizer()
+#include "error.h"          //error codes
+#include "fileIO.h"         //exists()
+#include "progressBar.h"    //calcOperations()
+#include "util.h"           //getSkeinSize()
 
 //Numerical constants
 #define FNAME_BUFFER_SIZE 256
@@ -23,20 +23,22 @@
 **********************************/
 
 //program description
-const static char* about = "A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentiall insecure cloud backup services\n";
+static const char* about = "A simple file encryption program that uses Threefish and Skein internally.\n"
+                           "The intended use case is to encrypt files for backup locally \n"
+                           "before uploading to potentiall insecure cloud backup services\n";
 
 //program version
-const static char* program_version = "Threefizer 0.4.2";
+static const char* program_version = "Threefizer 0.4.3";
 
 //support email
-const static char* program_bug_address = "<M.or.riser.ryan+threefizer@gmail.com>";
+static const char* program_bug_address = "<M.or.riser.ryan+threefizer@gmail.com>";
 
-const static char* usage = "Usage: threefizer [OPTION...] [FILE]...\n";
+static const char* usage = "Usage: threefizer [OPTION...] [FILE]...\n";
 
 #define LONG_OPTS_SIZE 9
 
-//paramas for long options
-const static struct option long_options[] = 
+//params for long options
+static const struct option long_options[] =
 {
     { "blocksize", required_argument, 0, 'b' },
     { "decrypt", no_argument, 0, 'd' },
@@ -55,4 +57,4 @@ const static struct option long_options[] =
 * Function prototypes *
 **********************/
 
-#endif 
+#endif

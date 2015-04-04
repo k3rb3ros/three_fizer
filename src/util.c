@@ -1,4 +1,6 @@
-#include "util.h"
+#include "include/util.h"
+#include "include/lookup.h"
+#include "include/arguments.h"
 
 //A sanity check for decrypting any files smaller then 4 blocks couldn't have been encrypted by this program
 inline bool isGreaterThanThreeBlocks(const arguments* args)
@@ -64,7 +66,7 @@ uint8_t* binToHex(uint8_t* src, uint64_t size)
 
     for(uint64_t i=0; i<size; ++i)
     {
-	//split the byte into two nibble halves and look up their hex representation
+	    //split the byte into two nibble halves and look up their hex representation
         hex[(2*i)+0] = hexLookupNibble((src[i] & 0xf0) >> 4);
         hex[(2*i)+1] = hexLookupNibble(src[i] & 0x0f);
     }      
@@ -79,9 +81,12 @@ void askPassword(arguments* args)
     bool first = true;
     bool match = false;
     char pw1[BUFF_SIZE] = {0};
+    char st[BUFF_SIZE] = {0};
     char pw2[BUFF_SIZE] = {0};
     char* password = NULL;
+    char* salt = NULL;
     int pw_length = 0;
+    int st_length = 0;
     struct termios oflags, nflags;
  
     while(match == false) //TODO this should probably be updated with a newer way of doing this
@@ -106,10 +111,19 @@ void askPassword(arguments* args)
             exit(6);
         }
 
-        printf("\nEnter password:");
+        printf("\nEnter password (at least 6 characters in length): ");
         getLine((uint8_t*)pw1, BUFF_SIZE);
-        printf("\nConfirm password:");
+        if(strlen(pw1) < 6)
+        {
+            printf("\nPassword must be at least 6 characters in length\n");
+            exit(0);
+        }
+
+        printf("\nConfirm password: ");
         getLine((uint8_t*)pw2, BUFF_SIZE);
+
+        printf("\nEnter salt: ");
+        getLine((uint8_t*)st, BUFF_SIZE);
 
         /* restore terminal */
         if(tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
@@ -118,21 +132,34 @@ void askPassword(arguments* args)
             exit(6);
         }
 
-	if(strlen(pw1) > BUFF_SIZE) exit(7); //If buffer overflow occurs force exit
+	    if(strlen(pw1) > BUFF_SIZE) //If buffer overflow occurs force exit
+        {
+            exit(7);
+        }
 
-        if(strlen(pw1) < 6)
-	{
-            printf("\nPassword must be at least 6 characters in length");
-        } 
-        else if(strcmp(pw1, pw2) == 0) { match = true; }
+        if(strcmp(pw1, pw2) == 0)
+        {
+            match = true;
+        }
+        else
+        {
+            printf("\nDo not match!\n");
+            exit(0);
+        }
     }
 
     printf("\nPassword accepted\n");
     pw_length = strlen(pw2);
+    st_length = strlen(st);
     password = calloc(pw_length+1, sizeof(uint8_t));
+    salt = calloc(st_length+1, sizeof(uint8_t));
     memcpy(password, pw2, pw_length);
+    memcpy(salt, st, st_length);
 
     args->password = (uint8_t*)password; //add our pw to the arguments structurei
     args-> free = true; //set the flag to free it since we allocated memory for this pw
-    args->pw_length = pw_length; //ad the pw length to the arguments structure
+    args->pw_length = pw_length; //add the pw_length to the arguments structure
+
+    args->salt = (uint8_t*)salt;
+    args->st_length = st_length;
 }

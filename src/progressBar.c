@@ -11,32 +11,32 @@ void printProgressBar(bool* running, int* error, progress_t* p)
 
     while(*(running) && *(error) == 0 && p->progress < p->operations)
     {
-	if(pthread_mutex_trylock(p->progress_mutex) == 0)
-	{
-	    ratio = ((double)p->progress/(double)p->operations);
-	    usleep(30); //keep from overloading the terminal and the threads actually doing work
-	}
-	pthread_mutex_unlock(p->progress_mutex);
+		if(pthread_mutex_trylock(p->progress_mutex) == 0)
+		{
+			ratio = ((double)p->progress/(double)p->operations);
+			usleep(30); //keep from overloading the terminal and the threads actually doing work
+		}
+		pthread_mutex_unlock(p->progress_mutex);
 
-	printf("%s[", action);
+		printf("%s[", action);
 
-	int bar = ratio * bar_size;
-	for(int i=0; i<bar_size; ++i)
-	{ 
-	    if(i<bar) { printf("#"); }
-	    else if(i == bar)
-            {
-	        //spin the cursor the user feels like something is happening
-	        if(count == 0) printf("|");
-	        else if(count == 1) printf("/");
-	        else if(count == 2) printf("-");
-	        else if(count == 3) printf("\\");
-	    }
-	    else { printf(" "); }
-	}
-        printf("]%.2f%%\r", ratio*100);
- 	fflush(stdout);
-	count = (count+1)%4;
+		int bar = ratio * bar_size;
+		for(int i=0; i<bar_size; ++i)
+		{
+			if(i<bar) { printf("#"); }
+			else if(i == bar)
+			{
+				//spin the cursor the user feels like something is happening
+				if(count == 0) printf("|");
+				else if(count == 1) printf("/");
+				else if(count == 2) printf("-");
+				else if(count == 3) printf("\\");
+			}
+			else { printf(" "); }
+		}
+			printf("]%.2f%%\r", ratio*100);
+		fflush(stdout);
+		count = (count+1)%4;
     }
 }
 
@@ -44,9 +44,11 @@ void setUpProgress(const arguments* args, progress_t* p, pthread_mutex_t* mutex)
 {
     const uint64_t block_byte_size = args->state_size/8;
     uint64_t operations = 0;
-
-    if(args->encrypt) { operations = 3*block_byte_size; } //if we are encrypting add 3 blocks for the header and mac
-    operations += 4*(args->file_size); //each of the steps (read, crypto, mac and write) must be applied to the entire byte size of the file
+	//if we are encrypting add 3 blocks for the header and mac
+    if(args->encrypt) { operations = 3*block_byte_size; }
+	//each of the steps (read, crypto, mac and write) must be applied
+	// to the entire byte size of the file
+    operations += 4*(args->file_size);
 
     p->encrypt = args->encrypt;
     p->progress_mutex = mutex;

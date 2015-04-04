@@ -1,7 +1,8 @@
 #include "include/cryptoThread.h"
 
 /*
-* This function assumes the header has been tested to be valid but is still encrypted*/
+* This function assumes the header has been tested to be valid but is still encrypted
+*/
 void* decryptQueue(void* parameters)
 {
     pdebug("decryptQueue()\n");
@@ -61,23 +62,24 @@ void* decryptQueue(void* parameters)
             header = false;
             pdebug("$$$ Stripping out header $$$\n");
         }
-	    //in order to save the last block of cipher text and not overrite the previous one before it is needed we need to store chains for even and odd blocks separately
+	    //in order to save the last block of cipher text and not overwrite the previous one
+	    //before it is needed we need to store chains for even and odd blocks separately
         else if(decrypt_chunk != NULL && !decrypted) //decrypt the chunk
         {
             const uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
-                                              (uint32_t)params->tf_key->stateSize);
-	    if(even)
-	    {
+                                                    (uint32_t)params->tf_key->stateSize);
+            if(even)
+            {
                 getChainInBuffer(decrypt_chunk->data, chain_odd, num_blocks, params->tf_key->stateSize);
-	        decryptInPlace(params->tf_key, chain_even, decrypt_chunk->data, num_blocks);
-	    }
-	    else
-	    {
+                decryptInPlace(params->tf_key, chain_even, decrypt_chunk->data, num_blocks);
+            }
+            else
+            {
                 getChainInBuffer(decrypt_chunk->data, chain_even, num_blocks, params->tf_key->stateSize);
-	        decryptInPlace(params->tf_key, chain_odd, decrypt_chunk->data, num_blocks);
-	    }
+                decryptInPlace(params->tf_key, chain_odd, decrypt_chunk->data, num_blocks);
+            }
             decrypted = true;
-	    crypto_progress += decrypt_chunk->data_size;
+            crypto_progress += decrypt_chunk->data_size;
             pdebug("$$$ Decrypting chunk of size %lu $$$\n", decrypt_chunk->data_size);
             ++decrypt_count;
         }
@@ -98,14 +100,14 @@ void* decryptQueue(void* parameters)
         } //end queue operation
 
         if(crypto_progress > 0) //update the progress bar
-	{
-	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
 	    {
-	        params->progress->progress += crypto_progress;
-		crypto_progress = 0;
-		pthread_mutex_unlock(params->progress->progress_mutex);
-	    }  
-	}
+            if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+            {
+                params->progress->progress += crypto_progress;
+                crypto_progress = 0;
+                pthread_mutex_unlock(params->progress->progress_mutex);
+            }
+	    }
 
     } //end while loop
 
@@ -146,7 +148,7 @@ void* encryptQueue(void* parameters)
 {
     pdebug("encryptQueue()\n");
     bool first_chunk = true;
-    bool encrypted = false; //a flag to protect a chunk from getting encrpted multiple times
+    bool encrypted = false; //a flag to protect a chunk from getting encrypted multiple times
     cryptParams* params = parameters;
     chunk* encrypt_chunk = NULL;
     uint64_t* chain = NULL;
@@ -168,11 +170,11 @@ void* encryptQueue(void* parameters)
             if(front(params->in) != NULL)
             {
                 encrypt_chunk = front(params->in);
-                if(encrypt_chunk != NULL) 
-		{ 
-		    encrypted = false; //set the encrypted flag
-		    deque(params->in); 
-		}
+                if(encrypt_chunk != NULL)
+		        {
+		            encrypted = false; //set the encrypted flag
+		            deque(params->in);
+		        }
             }
             pthread_mutex_unlock(params->in_mutex);
         }
@@ -188,15 +190,16 @@ void* encryptQueue(void* parameters)
         {
             pdebug("$$$ Encrypting header of size %lu $$$\n", encrypt_chunk->data_size);
             if(!encryptHeader(params->tf_key, encrypt_chunk->data))
-            { //if we failed to encrypt the header
-                 pdebug("$$$ Failed to encrypt header $$$\n");
-                 destroyChunk(encrypt_chunk);
-                 *(params->error) = CIPHER_OPERATION_FAIL; //set the error flag
-                 break; //break out
+            {
+                //if we failed to encrypt the header
+                pdebug("$$$ Failed to encrypt header $$$\n");
+                destroyChunk(encrypt_chunk);
+                *(params->error) = CIPHER_OPERATION_FAIL; //set the error flag
+                break; //break out
             }
             //save the chain of cipher text in the next chunk
             getChainInBuffer(encrypt_chunk->data, chain, 2, params->tf_key->stateSize);
-	    crypto_progress += encrypt_chunk->data_size;
+	        crypto_progress += encrypt_chunk->data_size;
             first_chunk = false;
         }
         else if(!first_chunk && encrypt_chunk != NULL && !encrypted)
@@ -205,8 +208,8 @@ void* encryptQueue(void* parameters)
                                               (uint32_t)params->tf_key->stateSize);
             encryptInPlace(params->tf_key, chain, encrypt_chunk->data, num_blocks);
             getChainInBuffer(encrypt_chunk->data, chain, num_blocks, params->tf_key->stateSize);
-	    crypto_progress += encrypt_chunk->data_size;
-	    encrypted = true;
+	        crypto_progress += encrypt_chunk->data_size;
+	        encrypted = true;
         }
          
         if(encrypt_chunk != NULL && !queueIsFull(params->out)) //attempt to queue the last encrypted chunk
@@ -223,14 +226,14 @@ void* encryptQueue(void* parameters)
         } //end queue operation
 
         if(crypto_progress > 0) //update the progress bar
-	{
-	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
 	    {
-	        params->progress->progress += crypto_progress;
-		crypto_progress = 0;
-		pthread_mutex_unlock(params->progress->progress_mutex);
-	    }  
-	}
+            if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+            {
+                params->progress->progress += crypto_progress;
+                crypto_progress = 0;
+                pthread_mutex_unlock(params->progress->progress_mutex);
+            }
+	    }
     } //end while loop
     
     //queue Done flag
@@ -260,7 +263,7 @@ inline void setUpCryptoParams(cryptParams* params,
                               pthread_mutex_t* out_mutex,
                               queue* in,
                               queue* out,
-			      progress_t* progress,
+                              progress_t* progress,
                               int32_t* error)
 {
     params->args = args;

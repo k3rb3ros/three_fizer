@@ -32,9 +32,9 @@ void* asyncWrite(void* parameters)
         }
 
         //check for termination conditions
-        if((write_chunk != NULL && write_chunk->action == DONE) || 
-            ((params->file_size) != NULL && *(params->valid) && 
-              bytes_written >= *(params->file_size))) 
+        if((write_chunk != NULL && write_chunk->action == DONE) ||
+           ((params->file_size) != NULL && *(params->valid) &&
+           bytes_written >= *(params->file_size)))
             //size constraints
         {
             pdebug("^^^^ AsyncWrite() terminating loop ^^^^\n");
@@ -56,7 +56,7 @@ void* asyncWrite(void* parameters)
             {
                 pdebug("^^^^ File I/O Error ^^^^\n");
                 *(params->error) = FILE_IO_FAIL;
-		close(write);
+		        close(write);
                 break;
             }
             
@@ -68,14 +68,14 @@ void* asyncWrite(void* parameters)
         }
         
         if(write_progress > 0)
-	{
-	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
 	    {
-	        params->progress->progress += write_progress;
-		write_progress = 0;
-		pthread_mutex_unlock(params->progress->progress_mutex);
+            if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+            {
+                params->progress->progress += write_progress;
+                write_progress = 0;
+                pthread_mutex_unlock(params->progress->progress_mutex);
+            }
 	    }
-	}	
     }
     
     close(write);
@@ -98,7 +98,7 @@ void setUpWriteParams(writeParams* params,
                       pthread_mutex_t* mutex, 
                       queue* in, 
                       const uint8_t* temp_file_name,
-		      progress_t* progress, 
+		              progress_t* progress,
                       int32_t* error, 
                       uint64_t* file_size)
 {

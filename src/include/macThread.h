@@ -1,16 +1,16 @@
 #ifndef MACTHREAD_H
 #define MACTHREAD_H
 
-#include <pthread.h> //pthread_mutex_t 
-#include <stdbool.h> //bool type
-#include <stdint.h> //uintxx types
-#include "chunkQueue.h" //queue type and support functions
-#include "debug.h" //pdebug()
-#include "error.h" //error codes
-#include "mac.h" //MacCtx_t type, checkMAC() and genMAC()
-#include "progressBar.h" //progress_t type
-#include "threefishApi.h" //ThreefishKey_t type
-#include "tfHeader.h" //checkHeader()
+#include <pthread.h>        //pthread_mutex_t
+#include <stdbool.h>        //bool type
+#include <stdint.h>         //uintxx types
+#include "chunkQueue.h"     //queue type and support functions
+#include "debug.h"          //pdebug()
+#include "error.h"          //error codes
+#include "mac.h"            //MacCtx_t type, checkMAC() and genMAC()
+#include "progressBar.h"    //progress_t type
+#include "threefishApi.h"   //ThreefishKey_t type
+#include "tfHeader.h"       //checkHeader()
 
 typedef struct
 {
@@ -41,10 +41,9 @@ void setUpMacParams(macParams* params,
                     pthread_mutex_t* out_mutex,
                     queue* in,
                     queue* out, 
-		    progress_t* progress,
+		            progress_t* progress,
                     ThreefishKey_t* tf_key,
                     int32_t* error,
                     uint64_t* file_size);
 
 #endif
-

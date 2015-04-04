@@ -19,14 +19,15 @@ void* authenticateMAC(void* parameters)
              {
                  pdebug("*** attempting to deque chunk to mac ***\n");
                  mac_chunk = front(params->in);
-                 if(mac_chunk != NULL && mac_chunk->action != MAC) { deque(params->in); } //if the operation succeeded deque the chunk
+                 //if the operation succeeded deque the chunk
+                 if(mac_chunk != NULL && mac_chunk->action != MAC) { deque(params->in); }
              }
              pthread_mutex_unlock(params->in_mutex);
         }
 
         //check for loop termination conditions
         if(mac_chunk != NULL && (mac_chunk->action == MAC || mac_chunk->action == DONE))
-        {    break; }
+        { break; }
 
         //check the header
         if(mac_chunk != NULL && header)
@@ -48,14 +49,14 @@ void* authenticateMAC(void* parameters)
                   pdebug("*** Header check failed ***\n");
                   pdebug("*** Ran header check on chunk of size %lu ***\n", mac_chunk->data_size);
                   *(params->error) = HEADER_CHECK_FAIL; //set the error flag
-		  destroyChunk(mac_chunk); //free any resources that are not in the queue
+                  destroyChunk(mac_chunk); //free any resources that are not in the queue
                   if(test_header != NULL) { free(test_header); }
                   return NULL;
              }
 
              pdebug("*** Header check succeeded ***\n");
              header = false;
-	     mac_progress += 2*block_byte_size;
+             mac_progress += 2*block_byte_size;
              *(params->valid) = true; //signal to other processes that the header is valid
              
              if(test_header != NULL) { free(test_header); }
@@ -66,7 +67,7 @@ void* authenticateMAC(void* parameters)
              pdebug("*** Updating mac on chunk of size %lu ***\n", mac_chunk->data_size);
              mac_chunk->action = params->mac_context->out_action; 
              skeinUpdate(params->mac_context->skein_context_ptr, (const uint8_t*)mac_chunk->data, mac_chunk->data_size);
-	     mac_progress += mac_chunk->data_size;
+	         mac_progress += mac_chunk->data_size;
              maced = true;
         }
 
@@ -74,7 +75,8 @@ void* authenticateMAC(void* parameters)
         if(mac_chunk != NULL && maced && !queueIsFull(params->out))
         {
              pdebug("*** Queuing chunk of size %lu ***\n", mac_chunk->data_size);
-	     while(queueIsFull(params->out)) { ; } //spin until the queue has at least one free spot
+             //spin until the queue has at least one free spot
+	         while(queueIsFull(params->out)) { ; }
              pthread_mutex_lock(params->out_mutex);
              if(enque(mac_chunk, params->out))
              {
@@ -84,15 +86,15 @@ void* authenticateMAC(void* parameters)
              pthread_mutex_unlock(params->out_mutex);
         }
         
-	if(mac_progress > 0)
+        if(mac_progress > 0)
         {
-	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
-	    {
-	        params->progress->progress += mac_progress;
-		mac_progress = 0;
-		pthread_mutex_unlock(params->progress->progress_mutex);
-	    }
-	}
+            if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+            {
+                params->progress->progress += mac_progress;
+                mac_progress = 0;
+                pthread_mutex_unlock(params->progress->progress_mutex);
+            }
+        }
    } //end while loop
 
     pdebug("*** authenticateMAC() done with first loop ***\n");
@@ -196,10 +198,11 @@ void* generateMAC(void* parameters)
         {
              pdebug("*** Updating MAC on chunk of size %lu ***\n", update_chunk->data_size);
              //update the MAC with the current chunk
-             skeinUpdate(params->mac_context->skein_context_ptr, (const uint8_t*)update_chunk->data, update_chunk->data_size);
+             skeinUpdate(params->mac_context->skein_context_ptr, (const uint8_t*)update_chunk->data,
+                         update_chunk->data_size);
              //change the action and status
              update_chunk->action = params->mac_context->out_action;
-	     mac_progress += update_chunk->data_size; //update the progress bar
+	         mac_progress += update_chunk->data_size; //update the progress bar
              chunk_maced = true;
         }
         
@@ -211,22 +214,23 @@ void* generateMAC(void* parameters)
             pthread_mutex_lock(params->out_mutex);
             if(enque(update_chunk, params->out)) { update_chunk = NULL; }
             pthread_mutex_unlock(params->out_mutex);
-            //on a successfull queue set mac chunk to NULL so the next chunk will be MACed
+            //on a successful queue set mac chunk to NULL so the next chunk will be MACed
         } //end queue operation
 
-	if(mac_progress > 0)
+        if(mac_progress > 0)
         {
-	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
-	    {
-	        params->progress->progress += mac_progress;
-		mac_progress = 0;
-		pthread_mutex_unlock(params->progress->progress_mutex);
-	    }
-	}
+            if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+            {
+                params->progress->progress += mac_progress;
+                mac_progress = 0;
+                pthread_mutex_unlock(params->progress->progress_mutex);
+            }
+        }
         //otherwise spin and wait for the queue to empty
     } //end thread loop
 
-    if(front(params->in) != NULL && front(params->in)->action == DONE)//if we have reached the end of the in queue then get the MAC and que it to the out que 
+    //if we have reached the end of the in queue then get the MAC and queue it to the out queue
+    if(front(params->in) != NULL && front(params->in)->action == DONE)
     {
         uint64_t* mac = calloc(params->mac_context->digest_byte_size, sizeof(uint8_t));
         skeinFinal(params->mac_context->skein_context_ptr, (uint8_t*)mac);
@@ -246,12 +250,12 @@ void* generateMAC(void* parameters)
         pdebug("*** Queuing MAC chunk to write que of size %lu ***\n", mac_size);
 
         //update the progress bar
-	if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
-	{
-	    params->progress->progress += mac_size;
+        if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+        {
+            params->progress->progress += mac_size;
             mac_progress = 0;
             pthread_mutex_unlock(params->progress->progress_mutex);
-	}
+        }
 
         //queue Done flag
         while(queueIsFull(params->out));
@@ -283,7 +287,7 @@ inline void setUpMacParams(macParams* params,
                            pthread_mutex_t* out_mutex,
                            queue* in,
                            queue* out,
-			   progress_t* progress,
+			               progress_t* progress,
                            ThreefishKey_t* tf_key,
                            int32_t* error,
                            uint64_t* file_size)

@@ -1,14 +1,14 @@
 #ifndef CHUNKQUEUE_H
 #define CHUNKQUEUE_H
 
-#include <pthread.h> //pthread_mutex_t type
-#include <stdbool.h> //bool types
-#include <stdint.h> //std uint types
-#include "arguments.h" //arguments structure
-#include "chunk.h" //chunk type
-#include "debug.h" //pdebug()
-#include "queueActions.h" //que actions
-#include "random.h" //getRand()
+#include <pthread.h>        //pthread_mutex_t type
+#include <stdbool.h>        //bool types
+#include <stdint.h>         //std uint types
+#include "arguments.h"      //arguments structure
+#include "chunk.h"          //chunk type
+#include "debug.h"          //pdebug()
+#include "queueActions.h"   //que actions
+#include "random.h"         //getRand()
 
 /*defines the queue data structure used to queue asymmetric IO and Crypto operation*/
 

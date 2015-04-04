@@ -20,6 +20,7 @@ src/obj
 src/test/obj
 
 # Executables
+threefizer
 tests
 *.exe
 *.out

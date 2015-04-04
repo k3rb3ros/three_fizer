@@ -1,6 +1,7 @@
 #include "include/tfHeader.h"
 
-/*Checks if the header is valid which is a quick and easy way to tell if the encryption key and block size are correct, with out having to try and decrypt the entire file
+/*Checks if the header is valid which is a quick and easy way to tell if the encryption key
+ *and block size are correct, with out having to try and decrypt the entire file
 */
 bool checkHeader(const uint64_t* header,
                  uint64_t* file_size,
@@ -32,7 +33,7 @@ bool checkHeader(const uint64_t* header,
 /**********************************************************************
 * The Header is twice the block size of the cipher                    *
 * The first block being the random initialization vector              *
-* The second block containg a magic number, the unencrypted file size *
+* The second block contains a magic number, the unencrypted file size *
 * the cipher state size a reserved word that is essentially a 2nd     *
 * magic number and NULL padding if the state size > 256 bits          *
 *                  HEADER STRUCTURE                                   *
@@ -40,8 +41,8 @@ bool checkHeader(const uint64_t* header,
 * |MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|RESERVED|PADDING|                *
 ***********************************************************************/
 static uint64_t* genHeader(const uint64_t* iv,
-                    const uint64_t data_size,
-                    const uint32_t state_size)
+                           const uint64_t data_size,
+                           const uint32_t state_size)
 {
     pdebug("genHeader()\n");
     const uint32_t block_byte_size = (state_size/8);
@@ -131,7 +132,9 @@ bool queueHeader(const arguments* args, queue* out)
     return success;
 }
 
-/*Knowing the internal structure of the header it is possible to return a pointer directly to the data of the header ignoring the iv*/
+/*Knowing the internal structure of the header it is possible to return a pointer
+ * directly to the data of the header ignoring the iv
+*/
 inline uint64_t* stripIV(const uint64_t* header, const uint64_t state_size)
 {
     return (uint64_t*)header + (state_size/64);
