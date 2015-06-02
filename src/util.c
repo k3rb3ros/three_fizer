@@ -43,7 +43,7 @@ SkeinSize_t getSkeinSize(const char* key)
 static inline uint8_t hexLookupNibble(uint8_t nibble)
 {
     //this shouldn't happen
-    if(nibble > N_HEX_LOOKUP) return 0;
+    if(nibble > N_HEX_LOOKUP) { return 0; }
     //lookup the hex value from the table
     return hex_lookup[nibble].hex;
 }
@@ -55,7 +55,7 @@ uint8_t* binToHex(uint8_t* src, uint64_t size)
     if(size == 0) 
     { 
         free(src);
-	return NULL;
+	    return NULL;
     }
 
     //allocate storage for the hex buffer
