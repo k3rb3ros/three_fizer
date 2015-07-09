@@ -1,9 +1,8 @@
-cmake_minimum_required (VERSION 2.6)
+#cmake_minimum_required (VERSION 2.6)
 
-find_package(Threads REQUIRED)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-#optional sets to force Clang as compiler
+#optional sets to force CLang as compiler
 set (CMAKE_C_COMPILER clang)
 set (CMAKE_CXX_COMPILER clang++)
 
@@ -51,5 +50,6 @@ set (tests_c_src
 #Optional debugging flags
 #add_definitions("-D DEBUG DEBUG2 DEBUG3")
 
-add_executable (${project} ${threefizer_c_src})
-target_link_libraries(${project} "pthread")
+add_executable (${PROJECT_NAME} ${threefizer_c_src})
+add_dependencies (${PROJECT_NAME} ${THREAD_LIB})
+target_link_libraries (${PROJECT_NAME} ${THREAD_LIB})
