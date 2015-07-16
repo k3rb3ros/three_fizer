@@ -1,4 +1,4 @@
-#include "cbcTests.h"
+#include "include/cbcTests.h"
 
 static void test256cbcMultiBlockEncryptDecrypt()
 {

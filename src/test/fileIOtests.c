@@ -3,32 +3,32 @@
 static void testFileExists()
 {
     printf("testFileExists()");
-    assert(exists((uint8_t*)"src/test/file_tests/simple_lines.dat") == true);
-    assert(exists((uint8_t*)"src/test/file_teses/obviously_invalid_file") == false);
+    assert(exists((uint8_t*)"tests/simple_lines.dat") == true);
+    assert(exists((uint8_t*)"tests/obviously_invalid_file") == false);
     printf(" passed\n");
 }
 
 static void testGetFileSize()
 {
     printf("testGetSize()");       
-    assert(getFileSize((uint8_t*)"src/test/file_tests/empty_file") == 0LU);
-    assert(getFileSize((uint8_t*)"src/test/file_tests/null_file") == 0LU);
-    assert(getFileSize((uint8_t*)"src/test/file_tests/simple_lines.dat") == 2160LU);
+    assert(getFileSize((uint8_t*)"tests/empty_file") == 0LU);
+    assert(getFileSize((uint8_t*)"tests/null_file") == 0LU);
+    assert(getFileSize((uint8_t*)"tests/simple_lines.dat") == 2160LU);
     printf(" passed\n");
 }
 
 static void testReadBytes()
 {
     printf("testReadBlock()");
-    int read = openForRead((uint8_t*)"src/test/file_tests/simple_lines.dat");
+    int read = openForRead((uint8_t*)"tests/simple_lines.dat");
     assert(read > 0);
 
-    uint64_t file_size = getFileSize((uint8_t*)"src/test/file_tests/simple_lines.dat");
+    uint64_t file_size = getFileSize((uint8_t*)"tests/simple_lines.dat");
     while(file_size > 0)
     {
         const uint8_t* line = readBytes(TEST_FILE_LINE_LENGTH, read);
-	assert(strcmp((char*)line, REF_LINE) == 0);
-	file_size -= TEST_FILE_LINE_LENGTH;
+	    assert(strcmp((char*)line, REF_LINE) == 0);
+	    file_size -= TEST_FILE_LINE_LENGTH;
     }
     printf(" passed\n");
     close(read);
@@ -49,13 +49,13 @@ static void testWriteBytes()
     {
         assert(writeBytes(alphabet, a_size, wr_fd) == true); //write a line of the alphabet to the file
 
-	uint8_t* data = readBytes(a_size, re_fd); //read that line back from the file
-	assert(data != NULL);
-	for(uint8_t j=0; j<a_size; ++j) //check that the line we wrote is correct
-	{
-	    assert(data[j] == alphabet[j]);
-	}
-	free(data);
+	    uint8_t* data = readBytes(a_size, re_fd); //read that line back from the file
+	    assert(data != NULL);
+	    for(uint8_t j=0; j<a_size; ++j) //check that the line we wrote is correct
+	    {
+	        assert(data[j] == alphabet[j]);
+	    }
+	    free(data);
     }
 
     assert(getFileSize((uint8_t*)"writeTest.dat") == 702); //check that the file size is correct
