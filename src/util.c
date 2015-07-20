@@ -114,7 +114,7 @@ void askPassword(arguments* args)
         if(pw1 == NULL)
         {
            printf("Unable to allocate memory for password\n");
-           exit(PASSWORD_ASK_ERROR); 
+           exit(MEMORY_ALLOCATION_FAIL); 
         }
         memcpy(pw1, buff, strlen(buff));
 
@@ -124,7 +124,7 @@ void askPassword(arguments* args)
         if(pw2 == NULL)
         {
            printf("Unable to allocate memory for password\n");
-           exit(PASSWORD_ASK_ERROR); 
+           exit(MEMORY_ALLOCATION_FAIL); 
         }
         memcpy(pw2, buff, strlen(buff));
 

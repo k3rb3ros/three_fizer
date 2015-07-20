@@ -68,7 +68,7 @@ int main(int argc, char*argv[])
                 {
                     perror("Both encrypt and decrypt flag are set\n");
                     parsing = false;
-                    status = ARG_PARSING_ERROR;
+                    status = ARG_PARSING_FAIL;
                 }
             break;
             case 'h':
@@ -120,7 +120,7 @@ int main(int argc, char*argv[])
                 parsing = false;
             break;
             default:
-                status = ARG_PARSING_ERROR;
+                status = ARG_PARSING_FAIL;
             break;
         }
     }
