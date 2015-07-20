@@ -18,7 +18,6 @@ set (threefizer_c_src
      chunkQueue.c
      controller.c
      cryptoThread.c
-     debug.c
      decrypt.c
      encrypt.c
      error.c
@@ -29,6 +28,7 @@ set (threefizer_c_src
      macThread.c
      noHash.c
      pad.c
+     print.c
      progressBar.c
      random.c
      readThread.c
@@ -72,9 +72,6 @@ set (files_to_test_against
      threefish256Block.c
      threefishApi.c
     )
-
-#Optional debugging flags
-#add_definitions("-D DEBUG DEBUG2 DEBUG3")
 
 add_executable (${PROJECT_NAME} ${threefizer_c_src})
 add_executable (${TEST_SUITE} ${tests_c_src} ${files_to_test_against})

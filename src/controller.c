@@ -36,12 +36,12 @@ int runThreefizer(const arguments* args)
         const uint8_t* temp_file_name = binToHex(hash((uint8_t*)args->target_file, TEMP_FILE_NAME_SIZE, args->state_size), TEMP_FILE_NAME_SIZE);
         pthread_mutex_init(&crypto_mutex, NULL);
         pthread_mutex_init(&mac_mutex, NULL);
-	pthread_mutex_init(&progress_mutex, NULL);
+	    pthread_mutex_init(&progress_mutex, NULL);
         pthread_mutex_init(&write_mutex, NULL);
         queue* crypto_queue = createQueue(QUE_SIZE);
         queue* mac_queue = createQueue(QUE_SIZE);
         queue* write_queue = createQueue(QUE_SIZE);
-	setUpProgress(args, &progress, &progress_mutex);
+	    setUpProgress(args, &progress, &progress_mutex);
 
         if(args->encrypt == true && args->file_size > 0) //encrypt
         {
@@ -56,7 +56,9 @@ int runThreefizer(const arguments* args)
             pthread_create(&crypto_thread, NULL, encryptQueue, &crypto_params);
             pthread_create(&mac_thread, NULL, generateMAC, &mac_params);
             pthread_create(&write_thread, NULL, asyncWrite, &write_params);
-	    if(args->file_size > MAX_CHUNK_SIZE) { printProgressBar(&running, &error, &progress); }
+
+            //display the progress bar if the file is big enough to require multiple chunks
+	        if(args->file_size > MAX_CHUNK_SIZE) { printProgressBar(&running, &error, &progress); }
         }
         else if(args->file_size == 0)
         {
@@ -74,7 +76,7 @@ int runThreefizer(const arguments* args)
             pthread_create(&mac_thread, NULL, authenticateMAC, &mac_params);
             pthread_create(&crypto_thread, NULL, decryptQueue, &crypto_params);
             pthread_create(&write_thread, NULL, asyncWrite, &write_params);
-	    if(args->file_size > MAX_CHUNK_SIZE) { printProgressBar(&running, &error, &progress); }
+	        if(args->file_size > MAX_CHUNK_SIZE) { printProgressBar(&running, &error, &progress); }
         }
 
         //free all allocated resources
@@ -84,7 +86,7 @@ int runThreefizer(const arguments* args)
             pthread_join(crypto_thread, NULL);
             pthread_join(mac_thread, NULL);
             pthread_join(write_thread, NULL);
-	    pdebug("All threads joined\n");
+	        pdebug("All threads joined\n");
         }
         if(error != 0)
         {
@@ -95,7 +97,7 @@ int runThreefizer(const arguments* args)
         //free alloated resources
         pthread_mutex_destroy(&crypto_mutex);
         pthread_mutex_destroy(&mac_mutex);
-	pthread_mutex_destroy(&progress_mutex);
+	    pthread_mutex_destroy(&progress_mutex);
         pthread_mutex_destroy(&write_mutex);
         destroyQueue(crypto_queue);
         destroyQueue(mac_queue);

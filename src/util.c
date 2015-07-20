@@ -6,7 +6,7 @@ inline bool isGreaterThanThreeBlocks(const arguments* args)
     return args != NULL && (args->file_size >= (uint64_t)(((args->state_size/8) * 3) + 1));
 }
 
-static inline void getLine(uint8_t* buffer, const uint64_t buffer_size) //get a line without the \n character from enter press
+/*static inline void getLine(uint8_t* buffer, const uint64_t buffer_size) //get a line without the \n character from enter press
 {
    uint8_t ch = 0;
    uint16_t count = 0;
@@ -14,7 +14,7 @@ static inline void getLine(uint8_t* buffer, const uint64_t buffer_size) //get a 
    {
        buffer[count++] = ch;
    }
-}
+}*/
 
 static inline void zeroFill(void* buffer, const uint64_t length)
 {
@@ -34,8 +34,8 @@ SkeinSize_t getSkeinSize(const char* key)
 {
     for(unsigned long i=0; i<N_BLOCK_LOOKUP; ++i)
     {
-        key_t* sym = &block_lookup[i];
-        if(strcmp(sym->key, key) ==0) { return sym->skein_size; }
+        const key_t* sym = &block_lookup[i];
+        if(strcmp(sym->key, key) == 0) { return sym->skein_size; }
     }
     return Skein512; //Should not happen
 }
@@ -78,51 +78,59 @@ void askPassword(arguments* args)
 {
     bool first = true;
     bool match = false;
-    char pw1[BUFF_SIZE] = {0};
-    char pw2[BUFF_SIZE] = {0};
+    const char pw_prompt[] = 
+    { 
+        'E', 'n', 't', 'e', 'r', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', ':', '\0'   };
+    const char conf_prompt[] = 
+    {
+        'C', 'o', 'n', 'f', 'i', 'r', 'm', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', ':', '\0'
+    };
+    char* buff = NULL;
+    char* pw1 = NULL;//[BUFF_SIZE] = {0};
+    char* pw2 = NULL;//[BUFF_SIZE] = {0};
     char* password = NULL;
     int pw_length = 0;
-    struct termios oflags, nflags;
  
     while(match == false) //TODO this should probably be updated with a newer way of doing this
     {
         if(!first) 
         {
-            printf("\nPasswords do not match");
-            zeroFill(pw1, BUFF_SIZE);
-            zeroFill(pw2, BUFF_SIZE);
+            printf("\nPasswords do not match\n");
+
+            //clear pw buffs before they are freed to prevent leaking what the user types
+            zeroFill(pw1, strlen(pw1));
+            zeroFill(pw2, strlen(pw2));
+            free(pw1);
+            pw1 = NULL;
+            free(pw2);
+            pw2 = NULL;
         }
+
         first = false;
 
-        /* disabling echo */
-        tcgetattr(fileno(stdin), &oflags);
-        nflags = oflags;
-        nflags.c_lflag &= ~ECHO;
-        nflags.c_lflag |= ECHONL;
+        buff = (char*)getpass(&pw_prompt);
+        pw1 = calloc(strlen(buff), sizeof(char));
 
-        if (tcsetattr(fileno(stdin), TCSANOW, &nflags) != 0)
+        if(pw1 == NULL)
         {
-            perror("tcsetattr");
-            exit(6);
+           printf("Unable to allocate memory for password\n");
+           exit(PASSWORD_ASK_ERROR); 
         }
+        memcpy(pw1, buff, strlen(buff));
 
-        printf("\nEnter password:");
-        getLine((uint8_t*)pw1, BUFF_SIZE);
-        printf("\nConfirm password:");
-        getLine((uint8_t*)pw2, BUFF_SIZE);
+        buff = (char*)getpass(&conf_prompt);
+        pw2 = calloc(strlen(buff), sizeof(char));
 
-        /* restore terminal */
-        if(tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
+        if(pw2 == NULL)
         {
-            perror("tcsetattr");
-            exit(6);
+           printf("Unable to allocate memory for password\n");
+           exit(PASSWORD_ASK_ERROR); 
         }
-
-	if(strlen(pw1) > BUFF_SIZE) exit(7); //If buffer overflow occurs force exit
+        memcpy(pw2, buff, strlen(buff));
 
         if(strlen(pw1) < 6)
-	{
-            printf("\nPassword must be at least 6 characters in length");
+        {
+            printf("\nPassword must be at least 6 characters in length\n");
         } 
         else if(strcmp(pw1, pw2) == 0) { match = true; }
     }
@@ -132,7 +140,7 @@ void askPassword(arguments* args)
     password = calloc(pw_length+1, sizeof(uint8_t));
     memcpy(password, pw2, pw_length);
 
-    args->password = (uint8_t*)password; //add our pw to the arguments structurei
+    args->password = (uint8_t*)password; //add our pw to the arguments structure
     args-> free = true; //set the flag to free it since we allocated memory for this pw
     args->pw_length = pw_length; //ad the pw length to the arguments structure
 }

@@ -141,7 +141,7 @@ int main(int argc, char*argv[])
                 status = INVALID_TARGET_FILE; 
             }
         }
-        else { status = ARG_PARSING_ERROR; }
+        else { status = TOO_FEW_ARGUMENTS; }
     }
  
     if(status == 0 && mand_arg)

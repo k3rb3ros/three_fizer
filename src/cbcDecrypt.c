@@ -10,8 +10,7 @@ void cbc256Decrypt(ThreefishKey_t* key,
     uint64_t prev_block_even[SAFE_SLICE] = {0, 0, 0 ,0}; //allocate 1 block of storage to store the previous cipher text 
 
     pd3("decrypting %lu blocks\n", num_blocks);
-    pd3("Chain :\n");
-    pBuff(32, iv);
+    //pBuff(32, (uint8_t*)iv);
 
     for(uint64_t block=0; block<(num_blocks*SAFE_SLICE); block+=SAFE_SLICE) //run each block through the cipher (in decrypt mode)
     {
@@ -21,13 +20,13 @@ void cbc256Decrypt(ThreefishKey_t* key,
         {
             //save the previous cipher text block if it is even 
             prev_block_even[0] = cipher_text[block]; prev_block_even[1] = cipher_text[block+1];
-	    prev_block_even[2] = cipher_text[block+2]; prev_block_even[3] = cipher_text[block+3];
+	        prev_block_even[2] = cipher_text[block+2]; prev_block_even[3] = cipher_text[block+3];
         }
         else
         {
             //save the previous cipher text block if it is odd
             prev_block_odd[0] = cipher_text[block]; prev_block_odd[1] = cipher_text[block+1];
-	    prev_block_odd[2] = cipher_text[block+2]; prev_block_odd[3] = cipher_text[block+3];
+	        prev_block_odd[2] = cipher_text[block+2]; prev_block_odd[3] = cipher_text[block+3];
         }
         threefishDecryptBlockWords(key, &cipher_text[block], &cipher_text[block]); //decrypt the block
         if(block == 0) //If this is the first block xor it with the iv
@@ -38,19 +37,19 @@ void cbc256Decrypt(ThreefishKey_t* key,
         {
             if(even)
             {
-		pd3("even\n");
+		        pd3("even\n");
                 cipher_text[block] ^= prev_block_odd[0]; cipher_text[block+1] ^= prev_block_odd[1]; 
                 cipher_text[block+2] ^= prev_block_odd[2]; cipher_text[block+3] ^= prev_block_odd[3];
-		pd3("xoring cipher text with: \n");
-		pBuff(32, prev_block_odd);
+		        pd3("xoring cipher text with: \n");
+		        //pBuff(32, (uint8_t*)prev_block_odd);
             }
             else
             {
-		pd3("odd\n");
+		        pd3("odd\n");
                 cipher_text[block] ^= prev_block_even[0]; cipher_text[block+1] ^= prev_block_even[1]; 
                 cipher_text[block+2] ^= prev_block_even[2]; cipher_text[block+3] ^= prev_block_even[3];
-		pd3("xoring cipher text with: \n");
-		pBuff(32, prev_block_even);
+		        pd3("xoring cipher text with: \n");
+		        //pBuff(32, (uint8_t*)prev_block_even);
             }
         }
     }
@@ -66,6 +65,7 @@ void cbc512Decrypt(ThreefishKey_t* key,
     uint64_t prev_block_even[SECURE_SLICE] = {0, 0, 0 ,0 ,0 ,0 ,0 ,0}; //allocate 1 block of storage to store the previous cipher text
     
     pd3("decrypting %lu blocks\n", num_blocks);
+    //pBuff(32, (uint8_t*)iv);
 
     for(uint64_t block=0; block<(num_blocks*SECURE_SLICE); block+=SECURE_SLICE) //run each block through the cipher (in decrypt mode)
     {
@@ -75,17 +75,17 @@ void cbc512Decrypt(ThreefishKey_t* key,
         {
             //save the previous cipher text block if it is even 
             prev_block_even[0] = cipher_text[block]; prev_block_even[1] = cipher_text[block+1];
-	    prev_block_even[2] = cipher_text[block+2]; prev_block_even[3] = cipher_text[block+3];
+	        prev_block_even[2] = cipher_text[block+2]; prev_block_even[3] = cipher_text[block+3];
             prev_block_even[4] = cipher_text[block+4]; prev_block_even[5] = cipher_text[block+5];
-	    prev_block_even[6] = cipher_text[block+6]; prev_block_even[7] = cipher_text[block+7];
+	        prev_block_even[6] = cipher_text[block+6]; prev_block_even[7] = cipher_text[block+7];
         }
 	else
         {
             //save the previous cipher text block if it is odd
             prev_block_odd[0] = cipher_text[block]; prev_block_odd[1] = cipher_text[block+1];
-	    prev_block_odd[2] = cipher_text[block+2]; prev_block_odd[3] = cipher_text[block+3];
+	        prev_block_odd[2] = cipher_text[block+2]; prev_block_odd[3] = cipher_text[block+3];
             prev_block_odd[4] = cipher_text[block+4]; prev_block_odd[5] = cipher_text[block+5];
-	    prev_block_odd[6] = cipher_text[block+6]; prev_block_odd[7] = cipher_text[block+7];
+	        prev_block_odd[6] = cipher_text[block+6]; prev_block_odd[7] = cipher_text[block+7];
         }
 
         threefishDecryptBlockWords(key, &cipher_text[block], &cipher_text[block]); //Run the block through the cipher
@@ -133,11 +133,11 @@ void cbc1024Decrypt(ThreefishKey_t* key,
         {
             //save the previous cipher text block if it is even 
             prev_block_even[0] = cipher_text[block]; prev_block_even[1] = cipher_text[block+1];
-	    prev_block_even[2] = cipher_text[block+2]; prev_block_even[3] = cipher_text[block+3];
+	        prev_block_even[2] = cipher_text[block+2]; prev_block_even[3] = cipher_text[block+3];
             prev_block_even[4] = cipher_text[block+4]; prev_block_even[5] = cipher_text[block+5];
-	    prev_block_even[6] = cipher_text[block+6]; prev_block_even[7] = cipher_text[block+7];
+	        prev_block_even[6] = cipher_text[block+6]; prev_block_even[7] = cipher_text[block+7];
             prev_block_even[8] = cipher_text[block+8]; prev_block_even[9] = cipher_text[block+9];
-	    prev_block_even[10] = cipher_text[block+10]; prev_block_even[11] = cipher_text[block+11];
+	        prev_block_even[10] = cipher_text[block+10]; prev_block_even[11] = cipher_text[block+11];
             prev_block_even[12] = cipher_text[block+12]; prev_block_even[13] = cipher_text[block+13];
 	    prev_block_even[14] = cipher_text[block+14]; prev_block_even[15] = cipher_text[block+15];
         }
@@ -145,13 +145,13 @@ void cbc1024Decrypt(ThreefishKey_t* key,
         {
             //save the previous cipher text block if it is even 
             prev_block_odd[0] = cipher_text[block]; prev_block_odd[1] = cipher_text[block+1];
-	    prev_block_odd[2] = cipher_text[block+2]; prev_block_odd[3] = cipher_text[block+3];
+	        prev_block_odd[2] = cipher_text[block+2]; prev_block_odd[3] = cipher_text[block+3];
             prev_block_odd[4] = cipher_text[block+4]; prev_block_odd[5] = cipher_text[block+5];
-	    prev_block_odd[6] = cipher_text[block+6]; prev_block_odd[7] = cipher_text[block+7];
+	        prev_block_odd[6] = cipher_text[block+6]; prev_block_odd[7] = cipher_text[block+7];
             prev_block_odd[8] = cipher_text[block+8]; prev_block_odd[9] = cipher_text[block+9];
-	    prev_block_odd[10] = cipher_text[block+10]; prev_block_odd[11] = cipher_text[block+11];
+	        prev_block_odd[10] = cipher_text[block+10]; prev_block_odd[11] = cipher_text[block+11];
             prev_block_odd[12] = cipher_text[block+12]; prev_block_odd[13] = cipher_text[block+13];
-	    prev_block_odd[14] = cipher_text[block+14]; prev_block_odd[15] = cipher_text[block+15];
+	        prev_block_odd[14] = cipher_text[block+14]; prev_block_odd[15] = cipher_text[block+15];
         }
 
         threefishDecryptBlockWords(key, &cipher_text[block], &cipher_text[block]); //Run the block through the cipher

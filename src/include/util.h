@@ -3,6 +3,7 @@
 
 #include "arguments.h" //arguments struct
 #include "debug.h" //pdebug()
+#include "error.h" //error codes
 #include "skeinApi.h" //SkenSize_t
 #include "threefishApi.h" //ThreefishKey_t
 #include <stdbool.h> //bool type
@@ -10,7 +11,7 @@
 #include <stdlib.h> //free()
 #include <stdio.h> //printf()
 #include <string.h> //strcmp()
-#include <termios.h> //tcsetattr(), tcgetattr()
+#include <unistd.h> //getpass()
 
 //Invalid argument type
 #define BADARG -1
@@ -39,7 +40,7 @@ typedef struct
 } key_t;
 
 //a lookup table containing skein/threefish cipher sizes. Note these are just for parsing block size input not cryptographic operations
-static key_t block_lookup[] =
+const static key_t block_lookup[] =
 {
     { "256", Skein256 }, { "512", Skein512 }, { "1024", Skein1024 },
     { "SAFE", Skein256 }, { "SECURE", Skein512 }, { "FUTUREPROOF", Skein1024 },
@@ -49,7 +50,7 @@ static key_t block_lookup[] =
 };
 
 //a lookup table for converting binary nibbles(4 bits) to hex
-static hex_t hex_lookup[] =
+const static hex_t hex_lookup[] =
 {
     { 0, '0' }, { 1, '1' }, { 2, '2' }, { 3, '3' }, 
     { 4, '4' }, { 5, '5' }, { 6, '6' }, { 7, '7' }, 

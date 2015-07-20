@@ -40,7 +40,7 @@ inline bool queueDone(queue* q)
 
 inline bool queueIsFull(queue* q)
 {
-   return q->size == q->capacity;
+    return q->size == q->capacity;
 }
 
 //return the first queued element (if any)
@@ -77,6 +77,7 @@ inline void destroyQueue(queue* q)
            destroyChunk(front(q));
            deque(q);
        }
+
        free(q->elements); //free the elements chunk*[]
        free(q); //free the q
    }

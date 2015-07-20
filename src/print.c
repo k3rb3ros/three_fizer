@@ -1,6 +1,6 @@
 #include "print.h"
 
-void ShowBuff(uint64_t cnt, const uint8_t* b)
+void showBuff(uint64_t cnt, const uint8_t* b)
 {
     for (uint64_t i=0;i < cnt;i++)
     {

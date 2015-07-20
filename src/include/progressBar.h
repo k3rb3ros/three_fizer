@@ -5,7 +5,7 @@
 #include <stdint.h> //uintxx_t types
 #include <stdio.h> //printf()
 #include <sys/ioctl.h> //ioctl()
-#include <unistd.h> //usleep()
+#include <time.h> //nanosleep()
 #include "arguments.h" //arguments structure
 
 #define STD_TERM_WIDTH 80
