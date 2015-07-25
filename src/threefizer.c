@@ -51,7 +51,7 @@ int main(int argc, char*argv[])
 
     initArguments(&arguments);
 
-    while ((arg = getopt_long(argc, argv, "b:dehnp:P:r:uV", long_options, &option_index) != -1) &&
+    while (((arg = getopt_long(argc, argv, "b:dehnp:P:r:uV", long_options, &option_index)) != -1) &&
            parsing
           )
     {
