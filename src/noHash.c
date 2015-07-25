@@ -28,12 +28,12 @@ uint64_t* noHashBlockFromFile(const uint8_t* fname, const SkeinSize_t state_size
 
     if(exists(fname) && getFileSize(fname) >= block_byte_size)
     {
-	int fd = openForRead(fname);
-	if(fd > 0)
-	{
-	    block = (uint64_t*)readBytes(block_byte_size, fd);
-	    close(fd); 
-	}
+	    int fd = openForRead(fname);
+	    if(fd > 0)
+	    {
+	        block = (uint64_t*)readBytes(block_byte_size, fd);
+	        close(fd); 
+	    }
     }
 
     return block;

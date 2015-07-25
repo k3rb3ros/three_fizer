@@ -13,9 +13,8 @@ bool checkMAC(chunk* expected, const uint8_t* generated, uint64_t mac_byte_size)
      uint8_t* check = (uint8_t*)expected->data;
 
      for(uint64_t i=0; i<mac_byte_size; ++i)
-     {
-         if(generated[i] != check[i]) { return false; }
-     }
+     { if(generated[i] != check[i]) { return false; } } //MAC check failure
+
      return true;
 }
 
@@ -39,30 +38,34 @@ uint64_t* genMAC(MacCtx_t* mac_context, queue* in, queue* out)
         //check if we are free to MAC a chunk if so do it
         if(update_chunk == NULL)
         {
-             update_chunk = front(in);
-             deque(in); //pop the 
-             if(update_chunk->action != GEN_MAC) //sanity check
-             {
-                  perror("Bad data in mac queue aborting operation\n");
-                  destroyChunk(update_chunk);
-                  return NULL;
-             }
+            update_chunk = front(in);
+            deque(in); //pop the 
+            if(update_chunk->action != GEN_MAC) //sanity check
+            {
+                 perror("Bad data in mac queue aborting operation\n");
+                 destroyChunk(update_chunk);
+                 return NULL;
+            }
 
-             update_chunk->action = mac_context->out_action; //set the chunk action to WRITE
-             skeinUpdate(mac_context->skein_context_ptr, (const uint8_t*)update_chunk->data, update_chunk->data_size);   
+            //set the chunk action to WRITE
+            update_chunk->action = mac_context->out_action;
+            skeinUpdate(mac_context->skein_context_ptr,
+                        (const uint8_t*)update_chunk->data,
+                        update_chunk->data_size);   
         }
 
         if(update_chunk != NULL && enque(update_chunk, out) == true) //attempt to queue the chunk
         {
-             update_chunk = NULL; //Set mac chunk to NULL so the next chunk will be maced
+            update_chunk = NULL;
+            //Set mac chunk to NULL so the next chunk will be maced
         }
         //otherwise spin and wait for the queue to empty
     }
 
     if(in != NULL)
     {
-         mac = calloc(mac_context->digest_byte_size, sizeof(uint8_t));
-         skeinFinal(mac_context->skein_context_ptr, (uint8_t*)mac);
+        mac = calloc(mac_context->digest_byte_size, sizeof(uint8_t));
+        skeinFinal(mac_context->skein_context_ptr, (uint8_t*)mac);
     } 
     
     return mac;
@@ -81,7 +84,6 @@ void InitMacCtx(const arguments* args,
     context->digest_byte_size = (uint64_t)args->state_size/8;
 
     skeinCtxPrepare(context->skein_context_ptr, args->state_size);
-
     skeinMacInit(context->skein_context_ptr, 
                  (uint8_t*)mac_key, 
                  key_byte_size, 

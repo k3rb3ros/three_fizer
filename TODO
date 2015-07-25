@@ -1,6 +1,6 @@
-* Convert the project from Makefiles to CMake *in progress*
+* Convert the project from Makefiles to CMake *DONE*
 * Add the ability for the user to manually specify an IV
-* Add key derrivation function for all hashed keys (script) 
+* Add key derrivation function for all hashed keys 
 * Add backwards compatability for old non-stretched keys (make it non default)
 * Add tests for util 
 * Add tests for pad operations

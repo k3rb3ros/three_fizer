@@ -37,6 +37,7 @@ SkeinSize_t getSkeinSize(const char* key)
         const key_t* sym = &block_lookup[i];
         if(strcmp(sym->key, key) == 0) { return sym->skein_size; }
     }
+
     return Skein512; //Should not happen
 }
 
@@ -44,6 +45,7 @@ static inline uint8_t hexLookupNibble(uint8_t nibble)
 {
     //this shouldn't happen
     if(nibble > N_HEX_LOOKUP) { return 0; }
+
     //lookup the hex value from the table
     return hex_lookup[nibble].hex;
 }
@@ -52,6 +54,7 @@ uint8_t* binToHex(uint8_t* src, uint64_t size)
 {
     //sanity checks
     if(src == NULL) { return NULL; }
+
     if(size == 0) 
     { 
         free(src);
@@ -64,13 +67,14 @@ uint8_t* binToHex(uint8_t* src, uint64_t size)
 
     for(uint64_t i=0; i<size; ++i)
     {
-	//split the byte into two nibble halves and look up their hex representation
+	    //split the byte into two nibble halves and look up their hex representation
         hex[(2*i)+0] = hexLookupNibble((src[i] & 0xf0) >> 4);
         hex[(2*i)+1] = hexLookupNibble(src[i] & 0x0f);
     }      
 
     //free the original buffer and return the hex
-    free(src); 
+    free(src);
+
     return hex;
 }
 
@@ -80,14 +84,15 @@ void askPassword(arguments* args)
     bool match = false;
     const char pw_prompt[] = 
     { 
-        'E', 'n', 't', 'e', 'r', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', ':', '\0'   };
+        'E', 'n', 't', 'e', 'r', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', ':', '\0'    };
     const char conf_prompt[] = 
     {
-        'C', 'o', 'n', 'f', 'i', 'r', 'm', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', ':', '\0'
+        'C', 'o', 'n', 'f', 'i', 'r', 'm', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd',
+        ':', '\0'
     };
     char* buff = NULL;
-    char* pw1 = NULL;//[BUFF_SIZE] = {0};
-    char* pw2 = NULL;//[BUFF_SIZE] = {0};
+    char* pw1 = NULL; //[BUFF_SIZE] = {0};
+    char* pw2 = NULL; //[BUFF_SIZE] = {0};
     char* password = NULL;
     int pw_length = 0;
  
@@ -123,8 +128,8 @@ void askPassword(arguments* args)
 
         if(pw2 == NULL)
         {
-           printf("Unable to allocate memory for password\n");
-           exit(MEMORY_ALLOCATION_FAIL); 
+            printf("Unable to allocate memory for password\n");
+            exit(MEMORY_ALLOCATION_FAIL); 
         }
         memcpy(pw2, buff, strlen(buff));
 

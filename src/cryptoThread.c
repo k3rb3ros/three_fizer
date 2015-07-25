@@ -34,10 +34,11 @@ void* decryptQueue(void* parameters)
             pthread_mutex_lock(params->in_mutex);
             if(front(params->in) != NULL)
             {
-                 decrypt_chunk = front(params->in);
-                 if(decrypt_chunk != NULL) { deque(params->in); }
-                 decrypted = false;
-                 pdebug("$$$ Dequing chunk of size %lu $$$\n", decrypt_chunk->data_size);
+                decrypt_chunk = front(params->in);
+                if(decrypt_chunk != NULL) { deque(params->in); }
+                decrypted = false;
+                pdebug("$$$ Dequing chunk of size %lu $$$\n",
+                       decrypt_chunk->data_size);
             }
             pthread_mutex_unlock(params->in_mutex);
         }
@@ -55,7 +56,11 @@ void* decryptQueue(void* parameters)
         */
         if(header && decrypt_chunk != NULL)
         {
-            getChainInBuffer(decrypt_chunk->data, chain_even, 2, params->tf_key->stateSize);
+            getChainInBuffer(decrypt_chunk->data,
+                             chain_even,
+                             2,
+                             params->tf_key->stateSize);
+
             destroyChunk(decrypt_chunk);
             decrypt_chunk = NULL;
             header = false;
@@ -64,17 +69,33 @@ void* decryptQueue(void* parameters)
 	    //in order to save the last block of cipher text and not overrite the previous one before it is needed we need to store chains for even and odd blocks separately
         else if(decrypt_chunk != NULL && !decrypted) //decrypt the chunk
         {
-            const uint64_t num_blocks = getNumBlocks(decrypt_chunk->data_size,
-                                                    (uint32_t)params->tf_key->stateSize);
+            const uint64_t num_blocks = 
+                getNumBlocks(decrypt_chunk->data_size,
+                             (uint32_t)params->tf_key->stateSize);
+
 	    if(even)
 	    {
-            getChainInBuffer(decrypt_chunk->data, chain_odd, num_blocks, params->tf_key->stateSize);
-	        decryptInPlace(params->tf_key, chain_even, decrypt_chunk->data, num_blocks);
+            getChainInBuffer(decrypt_chunk->data,
+                             chain_odd,
+                             num_blocks,
+                             params->tf_key->stateSize);
+
+            decryptInPlace(params->tf_key,
+                           chain_even,
+                           decrypt_chunk->data,
+                           num_blocks);
 	    }
 	    else
 	    {
-            getChainInBuffer(decrypt_chunk->data, chain_even, num_blocks, params->tf_key->stateSize);
-	        decryptInPlace(params->tf_key, chain_odd, decrypt_chunk->data, num_blocks);
+            getChainInBuffer(decrypt_chunk->data,
+                             chain_even,
+                             num_blocks,
+                             params->tf_key->stateSize);
+
+            decryptInPlace(params->tf_key,
+                           chain_odd,
+                           decrypt_chunk->data,
+                           num_blocks);
 	    }
             decrypted = true;
             crypto_progress += decrypt_chunk->data_size;
@@ -89,7 +110,9 @@ void* decryptQueue(void* parameters)
             {
                 if(enque(decrypt_chunk, params->out))
                 {
-                    pdebug("$$$ Queueing chunk of size %lu $$$\n", decrypt_chunk->data_size);
+                    pdebug("$$$ Queueing chunk of size %lu $$$\n",
+                           decrypt_chunk->data_size);
+
                     decrypt_chunk = NULL;
                     decrypted = false;
                 }
@@ -102,8 +125,8 @@ void* decryptQueue(void* parameters)
 	        if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
 	        {
 	            params->progress->progress += crypto_progress;
-		        crypto_progress = 0;
-		        pthread_mutex_unlock(params->progress->progress_mutex);
+                crypto_progress = 0;
+                pthread_mutex_unlock(params->progress->progress_mutex);
 	        }  
 	    }
     } //end while loop
@@ -171,8 +194,8 @@ void* encryptQueue(void* parameters)
                 encrypt_chunk = front(params->in);
                 if(encrypt_chunk != NULL) 
 		        { 
-		        encrypted = false; //set the encrypted flag
-		        deque(params->in); 
+		            encrypted = false; //set the encrypted flag
+		            deque(params->in); 
 		        }
             }
             pthread_mutex_unlock(params->in_mutex);
@@ -187,9 +210,11 @@ void* encryptQueue(void* parameters)
 
         if(first_chunk && encrypt_chunk != NULL) //assume the first chunk is the header
         {
-            pdebug("$$$ Encrypting header of size %lu $$$\n", encrypt_chunk->data_size);
+            pdebug("$$$ Encrypting header of size %lu $$$\n",
+                   encrypt_chunk->data_size);
+
             if(!encryptHeader(params->tf_key, encrypt_chunk->data))
-            { //if we failed to encrypt the header
+            {    //if we failed to encrypt the header
                  pdebug("$$$ Failed to encrypt header $$$\n");
                  destroyChunk(encrypt_chunk);
                  *(params->error) = CIPHER_OPERATION_FAIL; //set the error flag
@@ -197,7 +222,7 @@ void* encryptQueue(void* parameters)
             }
             //save the chain of cipher text in the next chunk
             getChainInBuffer(encrypt_chunk->data, chain, 2, params->tf_key->stateSize);
-	        crypto_progress += encrypt_chunk->data_size;
+            crypto_progress += encrypt_chunk->data_size;
             first_chunk = false;
         }
         else if(!first_chunk && encrypt_chunk != NULL && !encrypted)
@@ -205,7 +230,11 @@ void* encryptQueue(void* parameters)
             uint64_t num_blocks = getNumBlocks(encrypt_chunk->data_size,
                                               (uint32_t)params->tf_key->stateSize);
             encryptInPlace(params->tf_key, chain, encrypt_chunk->data, num_blocks);
-            getChainInBuffer(encrypt_chunk->data, chain, num_blocks, params->tf_key->stateSize);
+            getChainInBuffer(encrypt_chunk->data,
+                             chain,
+                             num_blocks,
+                             params->tf_key->stateSize);
+
 	        crypto_progress += encrypt_chunk->data_size;
 	        encrypted = true;
         }
@@ -217,21 +246,22 @@ void* encryptQueue(void* parameters)
             pthread_mutex_lock(params->out_mutex);
             if(enque(encrypt_chunk, params->out))
             {
-                pdebug("$$$ Queing encrypted chunk of size %lu $$$\n", encrypt_chunk->data_size); 
+                pdebug("$$$ Queing encrypted chunk of size %lu $$$\n",
+                       encrypt_chunk->data_size);
                 encrypt_chunk = NULL; 
             }
             pthread_mutex_unlock(params->out_mutex);
         } //end queue operation
 
         if(crypto_progress > 0) //update the progress bar
-	    {
+        {
 	        if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
 	        {
 	            params->progress->progress += crypto_progress;
-		        crypto_progress = 0;
-		        pthread_mutex_unlock(params->progress->progress_mutex);
+                crypto_progress = 0;
+                pthread_mutex_unlock(params->progress->progress_mutex);
 	        }  
-	    }
+        }
     } //end while loop
     
     //queue Done flag

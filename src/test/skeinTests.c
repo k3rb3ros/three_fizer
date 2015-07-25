@@ -143,8 +143,10 @@ static void testSkeinNullHash512()
 
 static void testSkeinNullHash1024()
 {
-    static uint64_t byte_hash[Skein1024/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
-    static uint64_t bit_hash[Skein1024/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
+    static uint64_t byte_hash[Skein1024/64] =
+    { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
+    static uint64_t bit_hash[Skein1024/64] =
+    { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
     static struct SkeinCtx skein_state;
 
     skeinCtxPrepare(&skein_state, Skein1024);
@@ -255,7 +257,8 @@ static void testSkeinWordHash512()
 
 static void testSkeinWordHash1024()
 {
-    static uint64_t test_digest[Skein1024/64] = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
+    static uint64_t test_digest[Skein1024/64] =
+    { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
     static struct SkeinCtx skein_state;
 
     skeinCtxPrepare(&skein_state, Skein1024);

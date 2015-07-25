@@ -33,8 +33,9 @@ void* asyncWrite(void* parameters)
 
         //check for termination conditions
         if((write_chunk != NULL && write_chunk->action == DONE) || 
-            ((params->file_size) != NULL && *(params->valid) && 
-              bytes_written >= *(params->file_size))) 
+            ((params->file_size) != NULL &&
+            *(params->valid) && 
+            bytes_written >= *(params->file_size))) 
             //size constraints
         {
             pdebug("^^^^ AsyncWrite() terminating loop ^^^^\n");
@@ -56,7 +57,7 @@ void* asyncWrite(void* parameters)
             {
                 pdebug("^^^^ File I/O Error ^^^^\n");
                 *(params->error) = FILE_IO_FAIL;
-		close(write);
+		        close(write);
                 break;
             }
             
@@ -67,27 +68,32 @@ void* asyncWrite(void* parameters)
             write_chunk = NULL; 
         }
         
-        if(write_progress > 0)
-	{
-	    if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+        if(write_progress > 0) //update the progress bar
 	    {
-	        params->progress->progress += write_progress;
-		write_progress = 0;
-		pthread_mutex_unlock(params->progress->progress_mutex);
-	    }
-	}	
+	        if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+	        {
+	            params->progress->progress += write_progress;
+		        write_progress = 0;
+		        pthread_mutex_unlock(params->progress->progress_mutex);
+	        }
+	    }	
     }
     
     close(write);
+
     if(*(params->error) == 0)
     {
-        if(params->args->rename)
+        if(params->args->rename) //change the output file to what the user wanted
         { rename((char*)params->temp_file_name, (char*)params->args->rename_file); }
-        else { rename((char*)params->temp_file_name, (char*)params->args->target_file); }
-        *(params->running) = false; //signal any other running threads to stop (should be redundant)
+        else //
+        { rename((char*)params->temp_file_name, (char*)params->args->target_file); }
+
+        //signal any other running threads to stop (in case they are stuck)
+        *(params->running) = false;
     }
     
     pdebug("^^^^ writeThread Done ^^^^\n");
+    //we are done
     return NULL;  
 }
 
@@ -98,7 +104,7 @@ void setUpWriteParams(writeParams* params,
                       pthread_mutex_t* mutex, 
                       queue* in, 
                       const uint8_t* temp_file_name,
-		      progress_t* progress, 
+		              progress_t* progress, 
                       int32_t* error, 
                       uint64_t* file_size)
 {

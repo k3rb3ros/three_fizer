@@ -7,10 +7,11 @@ int main()
     #else
         runThreefishTests();
         runSkeinTests();
-	runCBCTests();
+	    runCBCTests();
         runChunkTests();
-	runFileIOTests();
+	    runFileIOTests();
         printf("All tests passed :)\n");
     #endif
+
     return 0;
 }

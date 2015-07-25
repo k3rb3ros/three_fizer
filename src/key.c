@@ -1,8 +1,8 @@
 #include "include/key.h"
 
 bool handleKeys(const arguments* args,
-                      ThreefishKey_t* cipher_context,
-                      MacCtx_t* mac_context)
+                ThreefishKey_t* cipher_context,
+                MacCtx_t* mac_context)
 {
     pdebug("handleKeys()\n");
     if(cipher_context == NULL && mac_context == NULL) { return false; } //sanity check
@@ -29,8 +29,8 @@ bool handleKeys(const arguments* args,
     else if(args->hash == false && args->hash_from_file == true)
     {
         //Use first block of bytes directly from file
-	printf("***Warning*** You have turned off password hashing and specified a password file. If the file you have specified is shorter then the key size it will be rejected. If it is greater then the keysize then all bits greater then the key size will be truncated. This poses a security risk (do not do this unless you know exactly what you are doing)\n");
-	cipher_key = noHashBlockFromFile(args->key_file, args->state_size);
+	    printf("***Warning*** You have turned off password hashing and specified a password file. If the file you have specified is shorter then the key size it will be rejected. If it is greater then the keysize then all bits greater then the key size will be truncated. This poses a security risk (do not do this unless you know exactly what you are doing)\n");
+	    cipher_key = noHashBlockFromFile(args->key_file, args->state_size);
     }
     
     if(cipher_key == NULL) { return false; }

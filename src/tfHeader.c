@@ -1,6 +1,8 @@
 #include "include/tfHeader.h"
 
-/*Checks if the header is valid which is a quick and easy way to tell if the encryption key and block size are correct, with out having to try and decrypt the entire file
+/* Checks if the header is valid which is a quick and easy way to tell if the
+ * encryption key and block size are correct, with out having to try and decrypt the
+ * entire file
 */
 bool checkHeader(const uint64_t* header,
                  uint64_t* file_size,
@@ -40,8 +42,8 @@ bool checkHeader(const uint64_t* header,
 * |MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|RESERVED|PADDING|                *
 ***********************************************************************/
 static uint64_t* genHeader(const uint64_t* iv,
-                    const uint64_t data_size,
-                    const uint32_t state_size)
+                           const uint64_t data_size,
+                           const uint32_t state_size)
 {
     pdebug("genHeader()\n");
     const uint32_t block_byte_size = (state_size/8);
@@ -50,7 +52,8 @@ static uint64_t* genHeader(const uint64_t* iv,
 
     if(iv != NULL && validSize(state_size) && data_size > 1)
     {
-        header = calloc(2*block_uint64_size, sizeof(uint64_t)); //allocate memory for the header
+        //allocate memory for the header
+        header = calloc(2*block_uint64_size, sizeof(uint64_t));
 
         memcpy(header, iv, block_byte_size);
         header[block_uint64_size+0] = MAGIC_NUMBER; 
@@ -80,6 +83,8 @@ bool headerIsValid(ThreefishKey_t* tf_key,
 
     bool success = true;
     const uint64_t header_byte_size = header->data_size;
+
+    //we make a copy of the header so we can pass just the header
     uint64_t* header_copy = calloc(header_byte_size, sizeof(uint8_t));
 
     if(header_copy == NULL)
@@ -128,10 +133,12 @@ bool queueHeader(const arguments* args, queue* out)
     }
 
     if(iv != NULL) { free(iv); }
+
     return success;
 }
 
-/*Knowing the internal structure of the header it is possible to return a pointer directly to the data of the header ignoring the iv*/
+/* Knowing the internal structure of the header it is possible to return a pointer
+ * directly to the data of the header ignoring the iv*/
 inline uint64_t* stripIV(const uint64_t* header, const uint64_t state_size)
 {
     return (uint64_t*)header + (state_size/64);

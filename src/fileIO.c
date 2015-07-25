@@ -29,7 +29,8 @@ inline int openForRead(const uint8_t* fname)
 
 inline int openForWrite(const uint8_t* fname)
 {
-    int flags = 0x0 | O_WRONLY | O_CREAT ; //Write only and create file if it does not exist
+    //Write only and create file if it does not exist
+    int flags = 0x0 | O_WRONLY | O_CREAT ;
     int mode = S_IRUSR | S_IWUSR; //user has read and write permission 
     return open((char*)fname, flags, mode);
 }
@@ -44,7 +45,7 @@ uint8_t* readBytes(const uint64_t data_size, int64_t fd)
     if(read(fd, data, data_size) < (int64_t)data_size)
     {
         free(data);
-	return NULL;
+	    return NULL;
     }
 
     return data;

@@ -38,7 +38,11 @@ static void testWriteBytes()
 {
     printf("testWriteBytes()");
     const static uint64_t a_size = 27;
-    const static uint8_t alphabet[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 'q', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '\n' };
+    const static uint8_t alphabet[] =
+    { 
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+        'r', 'q', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '\n'
+    };
 
     int wr_fd = openForWrite((uint8_t*)"writeTest.dat");
     int re_fd = openForRead((uint8_t*)"writeTest.dat");
