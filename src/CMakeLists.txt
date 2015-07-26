@@ -20,6 +20,7 @@ set (threefizer_c_src
      cryptoThread.c
      decrypt.c
      encrypt.c
+     endianConvert.c
      error.c
      fileIO.c
      hash.c
@@ -28,10 +29,12 @@ set (threefizer_c_src
      macThread.c
      noHash.c
      pad.c
+     pbkdf2Skein512.c
      print.c
      progressBar.c
      random.c
      readThread.c
+     scrypt.c
      skeinApi.c
      skeinBlockNo3F.c
      skein.c

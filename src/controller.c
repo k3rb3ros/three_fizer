@@ -47,7 +47,7 @@ int runThreefizer(arguments* args)
     /* Create the temp file name
      * the temp file name is a partial skein hash of the original file name
      * this should prevent filename collisions in all sane cases. */
-    const uint8_t* temp_file_name = binToHex(hash((uint8_t*)args->target_file,
+    const uint8_t* temp_file_name = binToHex(skeinHash((uint8_t*)args->target_file,
                                              TEMP_FILE_NAME_SIZE,
                                              args->state_size),
                                              TEMP_FILE_NAME_SIZE);

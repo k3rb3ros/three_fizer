@@ -1,8 +1,8 @@
 #include "include/hash.h"
 
-uint8_t* hash(const uint8_t* input, 
-              const uint64_t digest_length, 
-              const SkeinSize_t state_size)
+uint8_t* skeinHash(const uint8_t* input, 
+                   const uint64_t digest_length, 
+                   const SkeinSize_t state_size)
 {
     struct SkeinCtx skein_state; //Skein state
     uint8_t* digest = NULL;
