@@ -169,7 +169,9 @@ void* queueFileForEncrypt(void* parameters)
                 ((orig_file_size - bytes_read) >= MAX_CHUNK_SIZE) ? MAX_CHUNK_SIZE :
                 (orig_file_size - bytes_read)
             }; 
-            uint64_t* data = (uint64_t*)pad(readBytes(chunk_size, read), chunk_size, params->args->state_size);
+            uint64_t* data = (uint64_t*)pad(readBytes(chunk_size, read),
+                                                      chunk_size, 
+                                                      params->args->state_size);
 	        bytes_read += chunk_size;
 	        pdebug("### Reading chunk of size %lu ### \n", chunk_size);
 	        if(data != NULL)

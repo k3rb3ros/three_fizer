@@ -21,18 +21,18 @@ typedef struct
     queue* out;
 } readParams;
 
-void setUpReadParams(readParams* params, 
-                     const arguments* args, 
-                     bool* running,
-                     pthread_mutex_t* mutex,
-                     queue* out,
-		     progress_t* progress,
-                     int32_t* error);
-
 void* queueFileForDecrypt(void* parameters);
 
 void* queueFileForEncrypt(void* parameters);
 
 void* queueFile(void* parameters);
+
+void setUpReadParams(readParams* params, 
+                     const arguments* args, 
+                     bool* running,
+                     pthread_mutex_t* mutex,
+                     queue* out,
+		             progress_t* progress,
+                     int32_t* error);
 
 #endif

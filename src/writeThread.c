@@ -10,6 +10,7 @@ void* asyncWrite(void* parameters)
     {
         pdebug("Error opening file for write\n");
         *(params->error) = FILE_IO_FAIL;
+
         return NULL;
     }
 
@@ -85,7 +86,7 @@ void* asyncWrite(void* parameters)
     {
         if(params->args->rename) //change the output file to what the user wanted
         { rename((char*)params->temp_file_name, (char*)params->args->rename_file); }
-        else //
+        else //rename the temp file to the original file name (replaces file)
         { rename((char*)params->temp_file_name, (char*)params->args->target_file); }
 
         //signal any other running threads to stop (in case they are stuck)

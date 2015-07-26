@@ -41,7 +41,7 @@ void setUpMacParams(macParams* params,
                     pthread_mutex_t* out_mutex,
                     queue* in,
                     queue* out, 
-		    progress_t* progress,
+		            progress_t* progress,
                     ThreefishKey_t* tf_key,
                     int32_t* error,
                     uint64_t* file_size);

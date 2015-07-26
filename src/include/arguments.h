@@ -15,7 +15,9 @@ typedef struct //arguments passed to argp containing argz (all non optional args
      bool free;
      bool hash;
      bool hash_from_file;
+     bool legacy_hash;
      bool rename;
+     bool threads_active;
      SkeinSize_t state_size;
      uint64_t file_size;
      uint64_t pw_length;

@@ -14,7 +14,7 @@ void cbc256Encrypt(ThreefishKey_t* key,
     {
         if(block > 0) //feedback the previous into the next block by xoring them together
         {
-            uint64_t offset = block-SAFE_SLICE;
+            const uint64_t offset = block-SAFE_SLICE;
             plain_text[block] ^= plain_text[offset];
             plain_text[block+1] ^= plain_text[offset+1];
             plain_text[block+2] ^= plain_text[offset+2];
@@ -43,7 +43,7 @@ void cbc512Encrypt(ThreefishKey_t* key,
         //feedback the previous block into the next block by xoring them together
         if(block > 0)
         {
-            uint64_t offset = block-SECURE_SLICE;
+            const uint64_t offset = block-SECURE_SLICE;
             plain_text[block] ^= plain_text[offset];
             plain_text[block+1] ^= plain_text[offset+1];
             plain_text[block+2] ^= plain_text[offset+2];
@@ -77,7 +77,7 @@ void cbc1024Encrypt(ThreefishKey_t* key,
         //feedback the previous block into the next by xoring them together
         if(block > 0)
         {
-            uint64_t offset = block-FUTURE_PROOF_SLICE;
+            const uint64_t offset = block-FUTURE_PROOF_SLICE;
             plain_text[block] ^= plain_text[offset];
             plain_text[block+1] ^= plain_text[offset+1];
             plain_text[block+2] ^= plain_text[offset+2];

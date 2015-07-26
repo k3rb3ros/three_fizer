@@ -51,6 +51,7 @@ int main(int argc, char*argv[])
 
     initArguments(&arguments);
 
+    //parse arguments
     while (((arg = getopt_long(argc, argv, "b:dehnp:P:r:uV", long_options, &option_index)) != -1) &&
            parsing
           )
@@ -157,7 +158,7 @@ int main(int argc, char*argv[])
     }
 
     if(status != 0) { printError(status); }
-    else { printf("\nOperation succeeded"); }
+    else if(arguments.threads_active) { printf("\nOperation succeeded"); }
 
     if(arguments.free == true) { free(arguments.password); } //free password if we allocated it instead of taking it from argv
 

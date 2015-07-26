@@ -34,6 +34,6 @@
 * Functions *
 *************/
 
-int runThreefizer(const arguments* args);
+int runThreefizer(arguments* args);
 
 #endif

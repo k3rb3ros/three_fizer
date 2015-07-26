@@ -30,7 +30,7 @@ void setUpWriteParams(writeParams* params,
                       pthread_mutex_t* mutex,
                       queue* in,
                       const uint8_t* temp_file_name,
-		      progress_t* progress,
+		              progress_t* progress,
                       int32_t* error,
                       uint64_t* file_size);
 
