@@ -28,6 +28,8 @@ uint64_t* noHashBlockFromFile(const uint8_t* fname, const SkeinSize_t state_size
 
     if(exists(fname) && getFileSize(fname) >= block_byte_size)
     {
+        printf("***Warning*** You have turned off password hashing and specified a password file. If the file you have specified is shorter then the key size it will be rejected. If it is greater then the keysize then all bits greater then the key size will be truncated. This poses a security risk (do not do this unless you know exactly what you are doing)\n");
+
 	    int fd = openForRead(fname);
 	    if(fd > 0)
 	    {

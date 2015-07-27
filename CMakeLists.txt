@@ -3,6 +3,7 @@ project (threefizer C)
 
 #Optimization and debug flags
 #add_definitions (-DDEBUG1 -DDEBUG2 -DDEBUG3)
+#add_definitions (-DDEBUG1)
 
 include (CheckIncludeFiles)
 

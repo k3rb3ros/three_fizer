@@ -25,23 +25,33 @@ int runThreefizer(arguments* args)
 
     pdebug("Threefizer controller\n");
     pdebug("Arguments { ");
-    pdebug("free: %d, encrypt: %d, hash: %d, file_path: [%s], file_path_len: %zu, State Size: %u, password: [%s], pw_length %lu, file_length %lu }\n",
-           args->free,
-           args->encrypt,
-           args->hash, args->target_file,
-           args->file_size,
-           args->state_size,
+    pdebug("key_file: %s, password: %s, rename_file: %s, target_file: %s, iv: [%08x] encrypt: %d, free: %d, hash: %d, hash_from_file: %d, legacy_hash: %d, rename: %d, threads_active: %d, state_size: %d, file_size: %d, pw_length: %d",
+           args->key_file,
            args->password,
-           args->pw_length,
-           args->file_size);
+           args->rename_file,
+           args->target_file,
+           &args->iv,
+           args->encrypt,
+           args->free,
+           args->hash,
+           args->hash_from_file,
+           args->legacy_hash,
+           args->rename,
+           args->threads_active,
+           args->state_size,
+           args->file_size,
+           args->pw_length);
+    pdebug(" }\n");
 
-    if(!handleKeys(args, &tf_key, &mac_context)) //generate and initialize keys
-    {
-        return KEY_GENERATION_FAIL; 
-    }
-    else if(args->file_size == 0) //check the file size
+    //check the file size
+    if((args->encrypt == true && args->file_size == 0) ||
+       (args->encrypt == false && !isGreaterThanThreeBlocks(args)))
     {
         return FILE_TOO_SMALL;
+    }
+    else if(!handleKeys(args, &tf_key, &mac_context)) //generate and initialize keys
+    {
+        return KEY_GENERATION_FAIL; 
     }
 
     /* Create the temp file name
@@ -114,19 +124,21 @@ int runThreefizer(arguments* args)
 
         /* generate and queue the Header before we start reading the file so its
          * the first thing in the queue*/
-        queueHeader(args, crypto_queue);
+        if(queueHeader(args, crypto_queue) == true)
+        {
+            //start the threads
+            args->threads_active = true;
+            pthread_create(&read_thread, NULL, queueFileForEncrypt, &read_params);
+            pthread_create(&crypto_thread, NULL, encryptQueue, &crypto_params);
+            pthread_create(&mac_thread, NULL, generateMAC, &mac_params);
+            pthread_create(&write_thread, NULL, asyncWrite, &write_params);
 
-        //start the threads
-        args->threads_active = true;
-        pthread_create(&read_thread, NULL, queueFileForEncrypt, &read_params);
-        pthread_create(&crypto_thread, NULL, encryptQueue, &crypto_params);
-        pthread_create(&mac_thread, NULL, generateMAC, &mac_params);
-        pthread_create(&write_thread, NULL, asyncWrite, &write_params);
-
-        /* Display the progress bar if the files is big enough that we have to break
-         * it into chunks. */
-        if(args->file_size > MAX_CHUNK_SIZE)
-        { printProgressBar(&running, &error, &progress); }
+            /* Display the progress bar if the files is big enough that we have to break
+            * it into chunks. */
+            if(args->file_size > MAX_CHUNK_SIZE)
+            { printProgressBar(&running, &error, &progress); }
+        }
+        else { return QUEUE_OPERATION_FAIL; } 
     } //end encryption
     else //decryption
     {
@@ -207,6 +219,7 @@ int runThreefizer(arguments* args)
     destroyQueue(mac_queue);
     destroyQueue(write_queue);
     if(temp_file_name != NULL) { free((void*)temp_file_name); }
+    if(args->iv != NULL) { free(args->iv); }
 
     if(error != 0)
     {

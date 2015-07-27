@@ -33,8 +33,15 @@
 #include <stdint.h> //uint_xx types
 #include <stdlib.h> //malloc(), free()
 #include "error.h" //predefined error codes
-#include "endianConvert.h"
-#include "pbkdf2Skein512.h"
+#include "endianConvert.h" //le32dec(), le64dec()
+#include "pbkdf2Skein512.h" //PBKDF2_SKEIN512()
+
+/*********************
+ * scrypt parameters *
+ *********************/
+#define SCRYPT_N 16384
+#define SCRYPT_R 32
+#define SCRYPT_P 1
 
 #ifdef __cplusplus
 extern "C"

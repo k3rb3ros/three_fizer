@@ -40,7 +40,7 @@ uint8_t* readBytes(const uint64_t data_size, int64_t fd)
     if(fd < 0 || data_size == 0) { return NULL; }
 
     uint8_t* data = calloc(data_size, sizeof(uint8_t));
-    if(data == NULL) { return 0; }
+    if(data == NULL) { return NULL; }
 
     if(read(fd, data, data_size) < (int64_t)data_size)
     {

@@ -34,23 +34,28 @@ bool checkHeader(const uint64_t* header,
 /**********************************************************************
 * The Header is twice the block size of the cipher                    *
 * The first block being the random initialization vector              *
-* The second block containg a magic number, the unencrypted file size *
-* the cipher state size a reserved word that is essentially a 2nd     *
+* The second block containg a magic number, the unencrypted file size,*
+* the cipher state size and the verison of key generation             *
 * magic number and NULL padding if the state size > 256 bits          *
 *                  HEADER STRUCTURE                                   *
-* |#######################IV#########################|                *
-* |MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|RESERVED|PADDING|                *
+* |#######################IV########################|                 *
+* |MAGIC_NUMBER|DATA_SIZE|STATE_SIZE|VERSION|PADDING|                 *
 ***********************************************************************/
 static uint64_t* genHeader(const uint64_t* iv,
                            const uint64_t data_size,
-                           const uint32_t state_size)
+                           const uint32_t state_size,
+                           const uint16_t version)
 {
     pdebug("genHeader()\n");
     const uint32_t block_byte_size = (state_size/8);
     const uint32_t block_uint64_size = (state_size/64);
     uint64_t* header = NULL;
 
-    if(iv != NULL && validSize(state_size) && data_size > 1)
+    if(iv != NULL && 
+       validSize(state_size) &&
+       data_size > 1 &&
+       (version > 0 && version <= 2) //there are only two valid versions 1 and 2
+       )
     {
         //allocate memory for the header
         header = calloc(2*block_uint64_size, sizeof(uint64_t));
@@ -59,7 +64,11 @@ static uint64_t* genHeader(const uint64_t* iv,
         header[block_uint64_size+0] = MAGIC_NUMBER; 
         header[block_uint64_size+1] = data_size; 
         header[block_uint64_size+2] = state_size;
-        header[block_uint64_size+3] = RESERVED;
+        if(version == 1)
+        { header[block_uint64_size+3] = V1; }
+        else if(version == 2)
+        { header[block_uint64_size+3] = V2; }
+
         pdebug("Header{ ");
         pdebug("%lu, ", header[block_uint64_size+0]);
         pdebug("%lu, ", header[block_uint64_size+1]);
@@ -108,22 +117,23 @@ bool headerIsValid(ThreefishKey_t* tf_key,
         }
     }
 
-    if(header_copy != NULL) { free(header_copy); } //free any allocated resorces
-
     return success;
 }
 
-//generate a header with the arguments given and queue it into the que passed in
-bool queueHeader(const arguments* args, queue* out)
+//generate a header and put it into the crypto queue
+bool queueHeader(arguments* args, queue* out)
 {
     pdebug("queueHeader()\n");
+    
+    if(args->iv == NULL) { return false; } //iv doesn't exist we can't continue
+
     bool success = false;
+    uint16_t header_ver = (args->legacy_hash==true) ? 1 : 2; 
     const uint64_t block_byte_size = ((uint64_t)args->state_size/8);
-    uint64_t* iv = (uint64_t*)getRand((uint64_t)args->state_size);
 
     chunk* header = createChunk();
     header->action = ENCRYPT;
-    header->data = genHeader(iv, args->file_size, args->state_size);
+    header->data = genHeader(args->iv, args->file_size, args->state_size, header_ver);
     header->data_size = 2*block_byte_size;
 
     if(header->data != NULL) //check that allocate succeeded
@@ -132,9 +142,44 @@ bool queueHeader(const arguments* args, queue* out)
         success = true;
     }
 
-    if(iv != NULL) { free(iv); }
+    if(args->iv != NULL) //free the iv
+    { 
+        free(args->iv);
+        args->iv = NULL;
+    } 
 
     return success;
+}
+
+inline bool genIV(arguments* args)
+{
+    //generate the iv from /dev/urandom
+    uint64_t* iv = (uint64_t*)getRand((uint64_t)args->state_size);
+
+    if(iv != NULL)
+    {
+        args->iv = iv;
+        return true;
+    }
+
+    return false;
+}
+
+bool getIV(arguments* args)
+{
+    int64_t read = openForRead(args->target_file);
+
+    if(read > 0)
+    {
+       uint64_t* iv = (uint64_t*)readBytes((uint64_t)(args->state_size/8), read);
+       if(iv != NULL)
+       { 
+           args->iv = iv;
+           return true; 
+       }
+    }
+
+    return false;
 }
 
 /* Knowing the internal structure of the header it is possible to return a pointer

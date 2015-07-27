@@ -91,8 +91,8 @@ void askPassword(arguments* args)
         ':', '\0'
     };
     char* buff = NULL;
-    char* pw1 = NULL; //[BUFF_SIZE] = {0};
-    char* pw2 = NULL; //[BUFF_SIZE] = {0};
+    char* pw1 = NULL;
+    char* pw2 = NULL;
     char* password = NULL;
     int pw_length = 0;
  

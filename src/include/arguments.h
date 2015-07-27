@@ -11,6 +11,7 @@ typedef struct //arguments passed to argp containing argz (all non optional args
      uint8_t* password;
      uint8_t* rename_file;
      uint8_t* target_file;
+     uint64_t* iv;
      bool encrypt;
      bool free;
      bool hash;

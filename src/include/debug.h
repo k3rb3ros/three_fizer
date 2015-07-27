@@ -7,10 +7,10 @@
 #include <stdio.h> //printf()
 #include <stdint.h> //uintxx_t types
 
-    #ifdef DEBUG
+    #ifdef DEBUG1
         #define pdebug(format, ...) printf(format, ##__VA_ARGS__)
     #endif
-    #ifndef DEBUG
+    #ifndef DEBUG1
         #define pdebug(...) do {} while(0)
     #endif
 
