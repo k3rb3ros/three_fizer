@@ -30,7 +30,9 @@ bool handleKeys(arguments* args,
     } //hash user entered password from file
     else if(args->hash == true && args->hash_from_file == true)
     {
+        printf("Hashing key from file... ");
         cipher_key = hashKeyFromFile(args->key_file, args->state_size);
+        printf("Done\n");
     }
     
     if(cipher_key == NULL) { return false; } //failure
@@ -48,7 +50,7 @@ bool handleKeys(arguments* args,
     //stretch the key with scrypt
     if(args->hash == true && args->legacy_hash == false)
     {
-        printf("Stretching key this may take a bit.\n");
+        printf("Stretching key this may take a bit... ");
         if(kdf_scrypt((uint8_t*)cipher_key, (size_t)(args->state_size/8),
                        (uint8_t*)args->iv, (size_t)(args->state_size/8),
                        SCRYPT_N, SCRYPT_R,

@@ -33,7 +33,8 @@ const static char* program_bug_address = "<M.or.riser.ryan+threefizer@gmail.com>
 
 const static char* usage = "Usage: threefizer [OPTION...] [FILE]...\n";
 
-#define LONG_OPTS_SIZE 9
+//number of params in the struct below
+#define LONG_OPTS_SIZE 11
 
 //paramas for long options
 const static struct option long_options[] = 
@@ -42,9 +43,10 @@ const static struct option long_options[] =
     { "decrypt", no_argument, 0, 'd' },
     { "encrypt", no_argument, 0, 'e' },
     { "help", no_argument, 0, 'h' },
+    { "no_hash", no_argument, 0, 'n' },
+    { "legacy-hash", no_argument, 0, 'l' },
     { "password", required_argument, 0, 'p' },
-    { "passwordFile", required_argument, 0, 'P' },
-    { "no-hash", no_argument, 0, 'n' },
+    { "password_file", required_argument, 0, 'P' },
     { "rename", required_argument, 0, 'r' },
     { "usage", no_argument, 0, 'u' },
     { "version", no_argument, 0, 'V' },
