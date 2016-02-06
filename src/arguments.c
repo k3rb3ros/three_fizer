@@ -12,7 +12,8 @@ void initArguments(arguments* arg)
     arg->hash_from_file = false;
     arg->rename = false;
     arg->legacy_hash = false;
+    arg->threads_active = false;
     arg->state_size = Skein512;
-    arg->pw_length = 0;
     arg->file_size = 0;
+    arg->pw_length = 0;
 }
