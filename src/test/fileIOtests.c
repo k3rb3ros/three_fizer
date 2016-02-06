@@ -26,9 +26,10 @@ static void testReadBytes()
     uint64_t file_size = getFileSize((uint8_t*)"tests/simple_lines.dat");
     while(file_size > 0)
     {
-        const uint8_t* line = readBytes(TEST_FILE_LINE_LENGTH, read);
-	    assert(strcmp((char*)line, REF_LINE) == 0);
+        uint8_t* line = readBytes(TEST_FILE_LINE_LENGTH, read);
+	    assert(memcmp(line, REF_LINE, TEST_FILE_LINE_LENGTH) == 0);
 	    file_size -= TEST_FILE_LINE_LENGTH;
+        if(line != NULL) { free(line); }
     }
     printf(" passed\n");
     close(read);
