@@ -8,7 +8,7 @@ void printProgressBar(bool* running, int* error, progress_t* p)
     const size_t term_width = ioctl(1, TIOCGWINSZ, &ws) >= 0 ? ws.ws_col : STD_TERM_WIDTH;
     const uint16_t bar_size = term_width - SUBTRACT_SIZE;
     double ratio = 0.0;
-    static struct timespec sleep_interval = { .tv_sec = 0, .tv_nsec = 30000 }; //interval for nanosleep
+    const static struct timespec sleep_interval = { .tv_sec = 3, .tv_nsec = 0 }; //interval for nanosleep
 
     while(*(running) && *(error) == 0 && p->progress < p->operations)
     {
@@ -16,7 +16,8 @@ void printProgressBar(bool* running, int* error, progress_t* p)
         {
             ratio = ((double)p->progress/(double)p->operations);
             //sleep the progress bar so the program can do some work
-            nanosleep(&sleep_interval, NULL);
+            //TODO figure out what header nanosleep is declared in if not <time.h>
+            nanosleep(&sleep_interval, (struct timespec *)NULL);
         }
 
 	    pthread_mutex_unlock(p->progress_mutex);
