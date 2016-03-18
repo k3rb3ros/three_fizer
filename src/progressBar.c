@@ -17,10 +17,10 @@ void printProgressBar(bool* running, int* error, progress_t* p)
             ratio = ((double)p->progress/(double)p->operations);
             //sleep the progress bar so the program can do some work
             //TODO figure out what header nanosleep is declared in if not <time.h>
-            nanosleep(&sleep_interval, (struct timespec *)NULL);
+	        pthread_mutex_unlock(p->progress_mutex);
         }
+        else { nanosleep(&sleep_interval, (struct timespec *)NULL); }
 
-	    pthread_mutex_unlock(p->progress_mutex);
     	printf("%s[", action);
 
         int bar = ratio * bar_size;
