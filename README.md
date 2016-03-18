@@ -1,4 +1,4 @@
-Threefizer 0.5.0
+Threefizer 0.5.1
 ================
 
 A simple unix command line utitily to encrypt and decrypt files with threefish

@@ -26,7 +26,7 @@
 const static uint8_t* about = (uint8_t*)"A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentiall insecure cloud backup services\n";
 
 //program version
-const static uint8_t* program_version = (uint8_t*)"Threefizer 0.5.0";
+const static uint8_t* program_version = (uint8_t*)"Threefizer 0.5.1";
 
 //support email
 const static uint8_t* program_bug_address = (uint8_t*)"<M.or.riser.ryan+threefizer@gmail.com>";
