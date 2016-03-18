@@ -132,7 +132,7 @@ void* decryptQueue(void* parameters)
     } //end while loop
 
     //queue Done flag
-    while(queueIsFull(params->out));
+    while(queueIsFull(params->out)) { nanosleep(&wait_interval, NULL); }
     pthread_mutex_lock(params->out_mutex);
 
     if(!queueDone(params->out))
@@ -176,7 +176,7 @@ void* encryptQueue(void* parameters)
     uint64_t* chain = NULL;
     
     chain = calloc(params->tf_key->stateSize/64, sizeof(uint64_t));
-    if(chain == NULL) //check that calloc succeeded
+    if (chain == NULL) //check that calloc succeeded
     {
         *(params->error) = MEMORY_ALLOCATION_FAIL;
         return NULL;
@@ -184,15 +184,15 @@ void* encryptQueue(void* parameters)
 
     uint64_t crypto_progress = 0;
 
-    while(*(params->running) && *(params->error) == 0) 
+    while (*(params->running) && *(params->error) == 0) 
     {
-        if(encrypt_chunk == NULL)
+        if (encrypt_chunk == NULL)
         {
             pthread_mutex_lock(params->in_mutex);
-            if(front(params->in) != NULL)
+            if (front(params->in) != NULL)
             {
                 encrypt_chunk = front(params->in);
-                if(encrypt_chunk != NULL) 
+                if (encrypt_chunk != NULL) 
 		        { 
 		            encrypted = false; //set the encrypted flag
 		            deque(params->in); 
@@ -201,19 +201,19 @@ void* encryptQueue(void* parameters)
             pthread_mutex_unlock(params->in_mutex);
         }
          
-        if(encrypt_chunk != NULL && encrypt_chunk->action == DONE)
+        if (encrypt_chunk != NULL && encrypt_chunk->action == DONE)
         {
             pdebug("$$$ encryptQueue() terminating loop $$$\n");
             destroyChunk(encrypt_chunk);
             break;
         }
 
-        if(first_chunk && encrypt_chunk != NULL) //assume the first chunk is the header
+        if (first_chunk && encrypt_chunk != NULL) //assume the first chunk is the header
         {
             pdebug("$$$ Encrypting header of size %lu $$$\n",
                    encrypt_chunk->data_size);
 
-            if(!encryptHeader(params->tf_key, encrypt_chunk->data))
+            if (!encryptHeader(params->tf_key, encrypt_chunk->data))
             {    //if we failed to encrypt the header
                  pdebug("$$$ Failed to encrypt header $$$\n");
                  destroyChunk(encrypt_chunk);
@@ -225,10 +225,11 @@ void* encryptQueue(void* parameters)
             crypto_progress += encrypt_chunk->data_size;
             first_chunk = false;
         }
-        else if(!first_chunk && encrypt_chunk != NULL && !encrypted)
+        else if (!first_chunk && encrypt_chunk != NULL && !encrypted)
         {
             uint64_t num_blocks = getNumBlocks(encrypt_chunk->data_size,
                                               (uint32_t)params->tf_key->stateSize);
+
             encryptInPlace(params->tf_key, chain, encrypt_chunk->data, num_blocks);
             getChainInBuffer(encrypt_chunk->data,
                              chain,
@@ -239,7 +240,7 @@ void* encryptQueue(void* parameters)
 	        encrypted = true;
         }
          
-        if(encrypt_chunk != NULL && !queueIsFull(params->out)) //attempt to queue the last encrypted chunk
+        if (encrypt_chunk != NULL && !queueIsFull(params->out)) //attempt to queue the last encrypted chunk
         {
             encrypt_chunk->action = GEN_MAC; //change the next queued action
             //on success clear the chunk ptr so the next operation can happen
@@ -248,14 +249,15 @@ void* encryptQueue(void* parameters)
             {
                 pdebug("$$$ Queing encrypted chunk of size %lu $$$\n",
                        encrypt_chunk->data_size);
+
                 encrypt_chunk = NULL; 
             }
             pthread_mutex_unlock(params->out_mutex);
         } //end queue operation
 
-        if(crypto_progress > 0) //update the progress bar
+        if (crypto_progress > 0) //update the progress bar
         {
-	        if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+	        if (pthread_mutex_trylock(params->progress->progress_mutex) == 0)
 	        {
 	            params->progress->progress += crypto_progress;
                 crypto_progress = 0;
@@ -265,20 +267,20 @@ void* encryptQueue(void* parameters)
     } //end while loop
     
     //queue Done flag
-    while(queueIsFull(params->out));
+    while (queueIsFull(params->out)) { nanosleep(&wait_interval, NULL); }
     pthread_mutex_lock(params->out_mutex);
-    if(!queueDone(params->out))
+    if (!queueDone(params->out))
     {
         pdebug("Error queueing done\n");
         *(params->error) = QUEUE_OPERATION_FAIL;
-        if(chain != NULL) { free(chain); }
+        if (chain != NULL) { free(chain); }
 
         return NULL;
     }
     pthread_mutex_unlock(params->out_mutex);
     pdebug("$$$ Done queued $$$ \n");
 
-    if(chain != NULL) { free(chain); }
+    if (chain != NULL) { free(chain); }
  
     return NULL;
 } //end encryptQueue() 

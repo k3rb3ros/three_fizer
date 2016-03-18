@@ -218,16 +218,17 @@ int runThreefizer(arguments* args)
     destroyQueue(crypto_queue);
     destroyQueue(mac_queue);
     destroyQueue(write_queue);
-    if(temp_file_name != NULL) { free((void*)temp_file_name); }
     if(args->iv != NULL) { free(args->iv); }
 
     if(error != 0)
     {
         //if an error occured then delete the temp file
         if(temp_file_name != NULL) { unlink((char*)temp_file_name); }
-        return error;
     }
+
+    if(temp_file_name != NULL) { free((void*)temp_file_name); }
+
     pdebug("Resources freed\n");
 
-    return THREEFIZER_SUCCESS;
+    return error == 0 ? THREEFIZER_SUCCESS : error;
 }

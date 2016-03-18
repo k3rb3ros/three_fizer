@@ -5,7 +5,7 @@ void* queueFileForDecrypt(void* parameters)
     pdebug("queueFileForDecrypt()\n");
     const readParams* params = parameters;
 
-    if(!isGreaterThanThreeBlocks(params->args))
+    if (!isGreaterThanThreeBlocks(params->args))
     {
         *(params->error) = FILE_TOO_SMALL;
         return NULL;
@@ -25,25 +25,25 @@ void* queueFileForDecrypt(void* parameters)
 
     //open a handle to the airport
     const int64_t read = openForRead(params->args->target_file);
-    if(read < 0)
+    if (read < 0)
     {
         *(params->error) = FILE_IO_FAIL;
         return NULL;
     }
 
-    while(*(params->running) && *(params->error) == 0 && bytes_read < orig_file_size)
+    while (*(params->running) && *(params->error) == 0 && bytes_read < orig_file_size)
     {
         //attempt to read a new chunk from the file
-        if(data_chunk == NULL)
+        if (data_chunk == NULL)
         {
             uint64_t chunk_size = 0;
             //2block header prepended to data
-            if(header) { chunk_size = header_byte_size; }
-            else if(!header &&
+            if (header) { chunk_size = header_byte_size; }
+            else if (!header &&
                     (orig_file_size-(bytes_read+block_byte_size)) >= MAX_CHUNK_SIZE)
             { chunk_size = MAX_CHUNK_SIZE; } //A full chunk of data
        
-            else if(!header && 
+            else if (!header && 
                     (orig_file_size-(bytes_read+block_byte_size)) < MAX_CHUNK_SIZE &&
                     (orig_file_size-(bytes_read+block_byte_size)) > 0)
             { chunk_size = (orig_file_size - (bytes_read + block_byte_size)); }
@@ -59,17 +59,17 @@ void* queueFileForDecrypt(void* parameters)
                                             params->args->state_size);
 
             pdebug("### Reading chunk of size %lu ### \n", chunk_size);
-            if(data != NULL)
+            if (data != NULL)
             {
                 bytes_read += chunk_size;
                 data_chunk = createChunk();
 
-                if(header)
+                if (header)
                 { 
                     data_chunk->action = CHECK_HEADER;
                     header = false; 
                 }
-                else if(mac) { data_chunk->action = MAC; }
+                else if (mac) { data_chunk->action = MAC; }
                 else { data_chunk->action = GEN_MAC; }
 
                 data_chunk->data = data;
@@ -84,9 +84,9 @@ void* queueFileForDecrypt(void* parameters)
        //attempt to queue the chunk
        if(data_chunk!= NULL)
        {
-           while(queueIsFull(params->out)); //spin until queue is empty
+           while (queueIsFull(params->out)) { nanosleep(&wait_interval, (struct timespec*)NULL); } //spin until queue is empty
            pthread_mutex_lock(params->mutex);
-           if(enque(data_chunk, params->out))
+           if (enque(data_chunk, params->out))
            {
                pdebug("### Queuing data of size %lu ### \n", data_chunk->data_size);
                data_chunk = NULL;
@@ -94,9 +94,9 @@ void* queueFileForDecrypt(void* parameters)
            pthread_mutex_unlock(params->mutex);
        }
 
-       if(read_progress > 0) //update the progress bar
+       if (read_progress > 0) //update the progress bar
        {
-           if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+           if (pthread_mutex_trylock(params->progress->progress_mutex) == 0)
            {
                params->progress->progress += read_progress;
                read_progress = 0;
@@ -106,10 +106,10 @@ void* queueFileForDecrypt(void* parameters)
    }
 
    //queue done
-   while(queueIsFull(params->out));
+   while (queueIsFull(params->out)) { nanosleep(&wait_interval, (struct timespec*)NULL); }
    pthread_mutex_lock(params->mutex);
 
-   if(!queueDone(params->out))
+   if (!queueDone(params->out))
    {
        pdebug("Error queing done\n");
        if(read > 0) { close(read); }
@@ -120,7 +120,7 @@ void* queueFileForDecrypt(void* parameters)
    pthread_mutex_unlock(params->mutex);
 
    //free allocated resorces
-   if(read > 0) { close(read); }
+   if (read > 0) { close(read); }
 
    return NULL;
 }
@@ -135,7 +135,7 @@ void* queueFileForEncrypt(void* parameters)
     //get the file size in bytes
     const uint64_t orig_file_size = getFileSize(params->args->target_file);
 
-    if(orig_file_size == 0) //check that we are actually encrypting something
+    if (orig_file_size == 0) //check that we are actually encrypting something
     {
         *(params->error) = FILE_TOO_SMALL;
         return NULL;
@@ -146,7 +146,7 @@ void* queueFileForEncrypt(void* parameters)
     //attempt to open a handle to the file
     int64_t read = (openForRead(params->args->target_file));
 
-    if(read < 0)
+    if (read < 0)
     {
         *(params->error) = FILE_IO_FAIL;
         return NULL;
@@ -158,10 +158,10 @@ void* queueFileForEncrypt(void* parameters)
     /* Read the File into chunks and queue them while the end hasn't been reached and
      * there is no error
      */
-    while(*(params->running) && *(params->error) == 0 && bytes_read < orig_file_size)
+    while (*(params->running) && *(params->error) == 0 && bytes_read < orig_file_size)
     {
 	    //attepmt to read a new chunk from the file
-        if(data_chunk == NULL)
+        if (data_chunk == NULL)
         {
             //get the largest possible size for the next chunk
             const uint64_t chunk_size = 
@@ -174,7 +174,7 @@ void* queueFileForEncrypt(void* parameters)
                                                       params->args->state_size);
 	        bytes_read += chunk_size;
 	        pdebug("### Reading chunk of size %lu ### \n", chunk_size);
-	        if(data != NULL)
+	        if (data != NULL)
             {
                 data_chunk = createChunk();
 		        data_chunk->action = ENCRYPT;
@@ -187,11 +187,11 @@ void* queueFileForEncrypt(void* parameters)
         }
 
 	    //attempt to queue the chunk
-	    if(data_chunk != NULL)
+	    if (data_chunk != NULL)
 	    {
-	        while(queueIsFull(params->out)); //spin until queue is empty
+	        while (queueIsFull(params->out)) { nanosleep(&wait_interval, (struct timespec*)NULL); } //spin until queue is empty
 	        pthread_mutex_lock(params->mutex);
-            if(enque(data_chunk, params->out))
+            if (enque(data_chunk, params->out))
 	        {
 		        pdebug("### Queing data of size %lu ### \n", data_chunk->data_size);
                 data_chunk = NULL;
@@ -199,9 +199,9 @@ void* queueFileForEncrypt(void* parameters)
 	        pthread_mutex_unlock(params->mutex);
 	    }
 
-        if(read_progress > 0) //update the progress bar
+        if (read_progress > 0) //update the progress bar
         {
-            if(pthread_mutex_trylock(params->progress->progress_mutex) == 0)
+            if (pthread_mutex_trylock(params->progress->progress_mutex) == 0)
             {
 	            params->progress->progress += read_progress;
 	            read_progress = 0;
@@ -211,22 +211,23 @@ void* queueFileForEncrypt(void* parameters)
     }
 
     //queue done
-    while(queueIsFull(params->out));
+    while (queueIsFull(params->out)) { nanosleep(&wait_interval, (struct timespec*)NULL); }
+
     pthread_mutex_lock(params->mutex);
 
     //abort if queueDone fails as queueDone failing causes deadlock
-    if(!queueDone(params->out)) 
+    if (!queueDone(params->out)) 
     {
         pdebug("Error queuing done\n");
 
-	    if(read > 0) { close(read); }
+	    if (read > 0) { close(read); }
 	    *(params->error) = QUEUE_OPERATION_FAIL;
 
 	    return NULL;
     }
     pthread_mutex_unlock(params->mutex);
 
-    if(read > 0) { close(read); }
+    if (read > 0) { close(read); }
 
     return NULL;
 }

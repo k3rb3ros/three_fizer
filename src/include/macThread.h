@@ -4,6 +4,7 @@
 #include <pthread.h> //pthread_mutex_t 
 #include <stdbool.h> //bool type
 #include <stdint.h> //uintxx types
+#include <time.h> //nanosleep()
 #include "chunkQueue.h" //queue type and support functions
 #include "debug.h" //pdebug()
 #include "error.h" //error codes
@@ -11,6 +12,7 @@
 #include "progressBar.h" //progress_t type
 #include "threefishApi.h" //ThreefishKey_t type
 #include "tfHeader.h" //checkHeader()
+#include "wait.h" //wait_interval
 
 typedef struct
 {

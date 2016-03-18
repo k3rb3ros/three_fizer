@@ -4,7 +4,7 @@
 #include <stdint.h> //uint types
 #include <stdlib.h> //calloc()
 #include <string.h> //strlen()
-#include <fileIO.h> //openForRead(), readBytes(), getFileSize()
+#include "fileIO.h" //openForRead(), readBytes(), getFileSize()
 #include "skeinApi.h" //skein functions
 #include "util.h" //validSize()
 

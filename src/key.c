@@ -6,7 +6,7 @@ bool handleKeys(arguments* args,
 {
     pdebug("handleKeys()\n");
     //sanity check
-    if(args == NULL || cipher_context == NULL || mac_context == NULL)
+    if (args == NULL || cipher_context == NULL || mac_context == NULL)
     { return false; }
 
     const uint64_t block_byte_size = (uint64_t)args->state_size/8;
@@ -14,52 +14,50 @@ bool handleKeys(arguments* args,
     uint64_t* mac_key = NULL;
 
     //no hash password (bad idea)
-    if(args->hash == false && args->hash_from_file == false)
+    if (args->hash == false && args->hash_from_file == false)
     {
         cipher_key = noHashKey(args->password, args->pw_length, args->state_size);
     } //no hash from file (bad idea)
-    else if(args->hash == false && args->hash_from_file == true)
+    else if (args->hash == false && args->hash_from_file == true)
     {
 	    cipher_key = noHashBlockFromFile(args->key_file, args->state_size);
-    } //hash user entered password into key
-    else if(args->hash == true && args->hash_from_file == false)
+    } //hash user entered password to be hashed
+    else if (args->hash == true && args->hash_from_file == false)
     {
         cipher_key = (uint64_t*)keyHash(args->password,
                                         args->pw_length,
                                         args->state_size);
     } //hash user entered password from file
-    else if(args->hash == true && args->hash_from_file == true)
+    else if (args->hash == true && args->hash_from_file == true)
     {
         printf("Hashing key from file... ");
         cipher_key = hashKeyFromFile(args->key_file, args->state_size);
         printf("Done\n");
     }
     
-    if(cipher_key == NULL) { return false; } //failure
+    if (cipher_key == NULL) { return false; } //failure
 
     //Generate IV if we are encrypting
-    if(args->encrypt == true)
+    if (args->encrypt == true)
     {
-        if(genIV(args) == false) { return false; } //can't continue without an IV
+        if (genIV(args) == false) { return false; } //can't continue without an IV
     }
     else //and get it from the first part of the file if we are decrypting
     {
-        if(getIV(args) == false) { return false; }
+        if (getIV(args) == false) { return false; }
     }
 
     //stretch the key with scrypt
-    if(args->hash == true && args->legacy_hash == false)
+    if (args->hash == true && args->legacy_hash == false)
     {
         printf("Stretching key this may take a bit... ");
-        if(kdf_scrypt((uint8_t*)cipher_key, (size_t)(args->state_size/8),
+        if (kdf_scrypt((uint8_t*)cipher_key, (size_t)(args->state_size/8),
                        (uint8_t*)args->iv, (size_t)(args->state_size/8),
                        SCRYPT_N, SCRYPT_R,
                        SCRYPT_P, (uint8_t*)cipher_key,
                        (size_t)(args->state_size/8)
-                      
-                     ) != 0
-          )
-          { return false; } //scrypt failed
+                      ) != 0)
+           { return false; } //scrypt failed
         printf("Done\n");
     }
 
@@ -77,8 +75,8 @@ bool handleKeys(arguments* args,
     InitMacCtx(args, mac_context, mac_key);
 
     //free allocated resources
-    if(cipher_key != NULL) { free(cipher_key); }
-    if(mac_key != NULL) { free(mac_key); }
+    if (cipher_key != NULL) { free(cipher_key); }
+    if (mac_key != NULL) { free(mac_key); }
 
     return true;
 }

@@ -4,7 +4,7 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #optional sets to force CLang as compiler
 set (CMAKE_C_COMPILER clang)
-set (CMAKE_CXX_COMPILER clang++)
+#set (CMAKE_CXX_COMPILER clang++) #We don't really need a C++ compiler for a project written entirely in C
 
 set (TEST_SUITE ${PROJECT_NAME}_tests)
 

@@ -46,7 +46,7 @@ int main(int argc, char*argv[])
     int option_index = 0; 
     int status = 0;
 
-    extern char *optarg;
+    extern char* optarg;
     extern int optind, opterr, optopt;
 
     initArguments(&arguments);
@@ -61,7 +61,7 @@ int main(int argc, char*argv[])
         switch(arg)
         {
             case 'b':
-                arguments.state_size = getSkeinSize(optarg);
+                arguments.state_size = getSkeinSize((uint8_t*)optarg);
             break;
             case 'd':
                 arguments.encrypt = false;

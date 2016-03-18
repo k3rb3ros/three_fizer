@@ -1,4 +1,4 @@
-Threefizer 0.4.1
+Threefizer 0.5.0
 ================
 
 A simple unix command line utitily to encrypt and decrypt files with threefish
@@ -34,7 +34,7 @@ This program uses Cipher Block Chaining to prevent blocks containing the same te
 * Passwords used to encrypt data are kept secret (not written down or disclosed).
 * Keyfiles used to encrypt data are not stored with the encrypted files and are kept in a secure and unobvious place (secondary encryption of key files is a not a bad idea).
 
-This is program as a work in progress while I take all best faith measures to ensure this implementation is secure I make no guarantees. USE AT YOUR OWR RISK.
+This is program as a work in progress. I take all best faith measures to ensure this implementation is secure I make no guarantees. USE AT YOUR OWR RISK.
 
 Intended Use
 ------------

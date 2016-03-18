@@ -7,10 +7,12 @@
 #include "skeinApi.h" //SkenSize_t
 #include "threefishApi.h" //ThreefishKey_t
 #include <stdbool.h> //bool type
+#include <stddef.h> //size_t, ssize_t
 #include <stdint.h> //uint8_t type
 #include <stdlib.h> //free()
 #include <stdio.h> //printf()
 #include <string.h> //strcmp()
+#include <termios.h> //tcsetattr()
 #include <unistd.h> //getpass()
 
 //Invalid argument type
@@ -24,7 +26,7 @@
 #define BUFF_SIZE 1024
 
 //Compile time size of our lookup table
-#define N_BLOCK_LOOKUP sizeof(block_lookup)/sizeof(key_t)
+#define N_BLOCK_LOOKUP sizeof(block_lookup)/sizeof(cipher_t)
 #define N_HEX_LOOKUP 15
 
 typedef struct
@@ -35,18 +37,18 @@ typedef struct
 
 typedef struct 
 {
-    char* key;
+    uint8_t* key;
     SkeinSize_t skein_size;
-} key_t;
+} cipher_t;
 
 //a lookup table containing skein/threefish cipher sizes. Note these are just for parsing block size input not cryptographic operations
-const static key_t block_lookup[] =
+const static cipher_t block_lookup[] =
 {
-    { "256", Skein256 }, { "512", Skein512 }, { "1024", Skein1024 },
-    { "SAFE", Skein256 }, { "SECURE", Skein512 }, { "FUTUREPROOF", Skein1024 },
-    { "safe", Skein256 }, { "secure", Skein512 }, { "futureproof", Skein1024 },
-    { "Safe", Skein256 }, { "Secure", Skein512 }, { "FutureProof", Skein1024 },
-    { "FUTURE_PROOF", Skein1024 }, { "future_proof", Skein1024 }, { "Future_Proof", Skein1024 }
+    { (uint8_t*)"256", Skein256 }, { (uint8_t*)"512", Skein512 }, { (uint8_t*)"1024", Skein1024 },
+    { (uint8_t*)"SAFE", Skein256 }, { (uint8_t*)"SECURE", Skein512 }, { (uint8_t*)"FUTUREPROOF", Skein1024 },
+    { (uint8_t*)"safe", Skein256 }, { (uint8_t*)"secure", Skein512 }, { (uint8_t*)"futureproof", Skein1024 },
+    { (uint8_t*)"Safe", Skein256 }, { (uint8_t*)"Secure", Skein512 }, { (uint8_t*)"FutureProof", Skein1024 },
+    { (uint8_t*)"FUTURE_PROOF", Skein1024 }, { (uint8_t*)"future_proof", Skein1024 }, { (uint8_t*)"Future_Proof", Skein1024 }
 };
 
 //a lookup table for converting binary nibbles(4 bits) to hex
@@ -62,9 +64,12 @@ bool isGreaterThanThreeBlocks(const arguments* args);
 
 bool validSize(const size_t size);
 
-SkeinSize_t getSkeinSize(const char* key);
+SkeinSize_t getSkeinSize(const uint8_t* key);
 
 uint8_t* binToHex(uint8_t* src, uint64_t size);
+
+//Turns of console echo so the user can safely type a password
+ssize_t getPassword(uint8_t* prompt, uint8_t** lineptr, size_t n, FILE *stream);
 
 void askPassword(arguments* args);
 

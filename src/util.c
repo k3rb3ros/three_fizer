@@ -6,16 +6,7 @@ inline bool isGreaterThanThreeBlocks(const arguments* args)
     return args != NULL && (args->file_size >= (uint64_t)(((args->state_size/8) * 3) + 1));
 }
 
-/*static inline void getLine(uint8_t* buffer, const uint64_t buffer_size) //get a line without the \n character from enter press
-{
-   uint8_t ch = 0;
-   uint16_t count = 0;
-   while((ch = getchar()) != '\n' && strlen((const char*)buffer) < buffer_size)
-   {
-       buffer[count++] = ch;
-   }
-}*/
-
+/* same as clearBuff but inline */
 static inline void zeroFill(void* buffer, const uint64_t length)
 {
     uint8_t* ptr = buffer;
@@ -30,12 +21,12 @@ inline bool validSize(const size_t size)
     return size == 256 || size == 512 || size == 1024;
 }
 
-SkeinSize_t getSkeinSize(const char* key)
+SkeinSize_t getSkeinSize(const uint8_t* key)
 {
-    for(unsigned long i=0; i<N_BLOCK_LOOKUP; ++i)
+    for(size_t i=0; i<N_BLOCK_LOOKUP; ++i)
     {
-        const key_t* sym = &block_lookup[i];
-        if(strcmp(sym->key, key) == 0) { return sym->skein_size; }
+        const cipher_t* sym = &block_lookup[i];
+        if (strcmp((char*)sym->key, (char*)key) == 0) { return sym->skein_size; }
     }
 
     return Skein512; //Should not happen
@@ -44,7 +35,7 @@ SkeinSize_t getSkeinSize(const char* key)
 static inline uint8_t hexLookupNibble(uint8_t nibble)
 {
     //this shouldn't happen
-    if(nibble > N_HEX_LOOKUP) { return 0; }
+    if (nibble > N_HEX_LOOKUP) { return 0; }
 
     //lookup the hex value from the table
     return hex_lookup[nibble].hex;
@@ -53,9 +44,9 @@ static inline uint8_t hexLookupNibble(uint8_t nibble)
 uint8_t* binToHex(uint8_t* src, uint64_t size)
 {
     //sanity checks
-    if(src == NULL) { return NULL; }
+    if (src == NULL) { return NULL; }
 
-    if(size == 0) 
+    if (size == 0) 
     { 
         free(src);
 	    return NULL;
@@ -82,70 +73,85 @@ void askPassword(arguments* args)
 {
     bool first = true;
     bool match = false;
-    const char pw_prompt[] = 
+    const static uint8_t pw_prompt[] = 
     { 
-        'E', 'n', 't', 'e', 'r', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', ':', '\0'    };
-    const char conf_prompt[] = 
+        'E', 'n', 't', 'e', 'r', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', ':', '\0'
+    };
+    uint8_t* pw_prompt_ = pw_prompt;
+    const static uint8_t conf_prompt[] = 
     {
         'C', 'o', 'n', 'f', 'i', 'r', 'm', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd',
         ':', '\0'
     };
-    char* buff = NULL;
-    char* pw1 = NULL;
-    char* pw2 = NULL;
-    char* password = NULL;
-    int pw_length = 0;
+    uint8_t* conf_prompt_ = conf_prompt;
+
+    uint8_t pw1[BUFF_SIZE] = { 0 };
+    uint8_t pw2[BUFF_SIZE] = { 0 };
+    uint8_t* pw1_ = pw1;
+    uint8_t* pw2_ = pw2;
+    uint16_t pw1_len = 0;
+    uint16_t pw2_len = 0;
  
     while(match == false) //TODO this should probably be updated with a newer way of doing this
     {
-        if(!first) 
-        {
-            printf("\nPasswords do not match\n");
-
-            //clear pw buffs before they are freed to prevent leaking what the user types
-            zeroFill(pw1, strlen(pw1));
-            zeroFill(pw2, strlen(pw2));
-            free(pw1);
-            pw1 = NULL;
-            free(pw2);
-            pw2 = NULL;
-        }
+        if (!first) { printf("Passwords do not match\n"); }
 
         first = false;
 
-        buff = (char*)getpass(&pw_prompt);
-        pw1 = calloc(strlen(buff), sizeof(char));
+        pw1_len = getPassword(pw_prompt_, &pw1_, BUFF_SIZE, stdin); 
+        pw2_len = getPassword(conf_prompt_, &pw2_, BUFF_SIZE, stdin);
 
-        if(pw1 == NULL)
+        if (pw1_len < 6 || pw2_len < 6) { printf("Password must be at least 6 characters in length\n"); } 
+        else if ((pw1_len == pw2_len) && memcmp(pw1_, pw2_, pw2_len) == 0) { match = true; }
+        else //clear buffers from failed pw attempts
         {
-           printf("Unable to allocate memory for password\n");
-           exit(MEMORY_ALLOCATION_FAIL); 
+            zeroFill(pw1_, BUFF_SIZE);
+            zeroFill(pw2_, BUFF_SIZE);
         }
-        memcpy(pw1, buff, strlen(buff));
-
-        buff = (char*)getpass(&conf_prompt);
-        pw2 = calloc(strlen(buff), sizeof(char));
-
-        if(pw2 == NULL)
-        {
-            printf("Unable to allocate memory for password\n");
-            exit(MEMORY_ALLOCATION_FAIL); 
-        }
-        memcpy(pw2, buff, strlen(buff));
-
-        if(strlen(pw1) < 6)
-        {
-            printf("\nPassword must be at least 6 characters in length\n");
-        } 
-        else if(strcmp(pw1, pw2) == 0) { match = true; }
     }
 
-    printf("\nPassword accepted\n");
-    pw_length = strlen(pw2);
-    password = calloc(pw_length+1, sizeof(uint8_t));
-    memcpy(password, pw2, pw_length);
+    printf("Password accepted\n");
+    args->password = calloc(pw2_len+1, sizeof(uint8_t));
+    memcpy(args->password, pw2, pw2_len);
+    args->free = true; //set the flag to free it since we allocated memory for this pw
+    args->pw_length = pw2_len; //ad the pw length to the arguments structure
 
-    args->password = (uint8_t*)password; //add our pw to the arguments structure
-    args-> free = true; //set the flag to free it since we allocated memory for this pw
-    args->pw_length = pw_length; //ad the pw length to the arguments structure
+    //zero_fill the temp pw_buffers
+    zeroFill(pw1_, BUFF_SIZE);
+    zeroFill(pw2_, BUFF_SIZE);
+    pd3("password set to: %s\n", args->password);
+}
+
+//TODO finish me
+ssize_t getPassword(uint8_t* prompt, uint8_t** lineptr, size_t n, FILE* stream)
+{
+    struct termios old, new;
+    int nread = -1;
+
+    /* Display the prompt */
+    if (prompt != NULL) { printf("%s\n", prompt); }
+
+    /* Turn off echoing and fail if we can't */
+    if (tcgetattr(fileno(stream), &old) != 0) { return nread; }
+
+    new = old;
+    new.c_lflag &= ~ECHO;
+
+    if (tcsetattr(fileno(stream), TCSAFLUSH, &new) != 0) { return nread; }
+
+    /* Read the password. */
+    nread = getline(lineptr, &n, stream);
+
+    /* Strip out the carriage return */
+    if(nread >= 1 && (*lineptr)[nread -1] == '\n')
+    {
+        (*lineptr)[nread-1] = 0;
+        nread--;
+    }
+    //printf("\n");
+
+    /* turn echo back on */
+    (void)tcsetattr(fileno(stream), TCSAFLUSH, &old);
+
+    return nread;
 }

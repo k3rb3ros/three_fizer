@@ -1,7 +1,7 @@
-* Convert the project from Makefiles to CMake *DONE*
-* Add the ability for the user to manually specify an IV
-* Add key derrivation function for all hashed keys *DONE*
-* Add backwards compatability for old non-stretched keys (make it non default) *DONE*
 * Add tests for util 
 * Add tests for pad operations
 * Get code reviewed by a security expert
+* optimize code so this can run on a raspii or x86 machine without losing to a snail
+* Optimize fileIO
+* Optimize memory usage
+* when testing headers upon failure test all block sizes in case pw is correct but block size is wrong

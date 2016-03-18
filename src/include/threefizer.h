@@ -23,15 +23,15 @@
 **********************************/
 
 //program description
-const static char* about = "A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentiall insecure cloud backup services\n";
+const static uint8_t* about = (uint8_t*)"A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentiall insecure cloud backup services\n";
 
 //program version
-const static char* program_version = "Threefizer 0.4.2";
+const static uint8_t* program_version = (uint8_t*)"Threefizer 0.5.0";
 
 //support email
-const static char* program_bug_address = "<M.or.riser.ryan+threefizer@gmail.com>";
+const static uint8_t* program_bug_address = (uint8_t*)"<M.or.riser.ryan+threefizer@gmail.com>";
 
-const static char* usage = "Usage: threefizer [OPTION...] [FILE]...\n";
+const static uint8_t* usage = (uint8_t*)"Usage: threefizer [OPTION...] [FILE]...\n";
 
 //number of params in the struct below
 #define LONG_OPTS_SIZE 11

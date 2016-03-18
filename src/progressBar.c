@@ -8,7 +8,7 @@ void printProgressBar(bool* running, int* error, progress_t* p)
     const size_t term_width = ioctl(1, TIOCGWINSZ, &ws) >= 0 ? ws.ws_col : STD_TERM_WIDTH;
     const uint16_t bar_size = term_width - SUBTRACT_SIZE;
     double ratio = 0.0;
-    const static struct timespec sleep_interval = { .tv_sec = 3, .tv_nsec = 0 }; //interval for nanosleep
+    const static struct timespec sleep_interval = { .tv_sec = 0, .tv_nsec = 50000000 }; //interval for nanosleep
 
     while(*(running) && *(error) == 0 && p->progress < p->operations)
     {

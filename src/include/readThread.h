@@ -3,6 +3,7 @@
 
 #include <pthread.h> //pthread_mutex_t type
 #include <stdbool.h> //bool
+#include <time.h> //nanosleep()
 #include <unistd.h> //close()
 #include "chunk.h" //chunk type and createChunk()
 #include "chunkQueue.h" //queue type and enque()
@@ -10,6 +11,7 @@
 #include "pad.h" //pad()
 #include "progressBar.h" //progress_t type
 #include "util.h" //isGreaterThanThreeBlocks()
+#include "wait.h" //struct wait_interval
 
 typedef struct
 {
