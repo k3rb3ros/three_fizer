@@ -5,3 +5,7 @@
 * Optimize fileIO
 * Optimize memory usage
 * when testing headers upon failure test all block sizes in case pw is correct but block size is wrong
+* Replace /dev/urandom with pcg
+* Clean up code
+* Organize code by license and make it apparent
+* Indicate that code includes third party component under a different license
