@@ -1,4 +1,4 @@
-* Add tests for util 
+* Add tests for util #DONE#
 * Add tests for pad operations
 * Get code reviewed by a security expert
 * optimize code so this can run on a raspii or x86 machine without losing to a snail
@@ -9,3 +9,4 @@
 * Clean up code
 * Organize code by license and make it apparent
 * Indicate that code includes third party component under a different license
+* Get threefizer running on Windows

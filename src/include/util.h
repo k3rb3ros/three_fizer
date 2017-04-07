@@ -68,7 +68,7 @@ SkeinSize_t getSkeinSize(const uint8_t* key);
 
 uint8_t* binToHex(uint8_t* src, uint64_t size);
 
-//Turns of console echo so the user can safely type a password
+//Turns off console echo so the user can safely type a password
 ssize_t getPassword(uint8_t* prompt, uint8_t** lineptr, size_t n, FILE *stream);
 
 void askPassword(arguments* args);

@@ -6,10 +6,10 @@
 #include <string.h> //strcpy(), memcpy()
 #include "print.h" //showBuff()
 #include "cbc.h" //getChainInBuffer()
-#include "cbcDecrypt.h"
-#include "cbcEncrypt.h"
-#include "encrypt.h"
-#include "decrypt.h"
+#include "cbcDecrypt.h" //encryptInPlace()
+#include "cbcEncrypt.h" //decryptInPlace()
+#include "encrypt.h" //encryptHeader()
+#include "decrypt.h" //decryptHeader()
 #include "threefishApi.h" //ThreefishKey_t, threefishSetKey()
 #include "tweak.h" //threefizer_tweak the same tweak constant used in program operation
 

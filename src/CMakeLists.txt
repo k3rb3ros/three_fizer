@@ -54,10 +54,11 @@ set (test_dir test)
 set (tests_c_src
      ${test_dir}/cbcTests.c
      ${test_dir}/chunkTests.c
-     ${test_dir}/fileIOtests.c
+     ${test_dir}/fileIoTests.c
      ${test_dir}/skeinTests.c
      ${test_dir}/testSuite.c
      ${test_dir}/threefishTests.c
+     ${test_dir}/utilTests.c
     )
 
 set (files_to_test_against
@@ -74,6 +75,7 @@ set (files_to_test_against
      threefish512Block.c
      threefish256Block.c
      threefishApi.c
+     util.c
     )
 
 add_executable (${PROJECT_NAME} ${threefizer_c_src})

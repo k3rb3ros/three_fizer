@@ -1,16 +1,16 @@
-#include "util.h"
+#include "include/util.h"
 
 //A sanity check for decrypting any files smaller then 4 blocks couldn't have been encrypted by this program
 inline bool isGreaterThanThreeBlocks(const arguments* args)
 {
-    return args != NULL && (args->file_size >= (uint64_t)(((args->state_size/8) * 3) + 1));
+    return args != NULL && (args->file_size > (uint64_t)((args->state_size/8) * 3));
 }
 
 /* same as clearBuff but inline */
 static inline void zeroFill(void* buffer, const uint64_t length)
 {
     uint8_t* ptr = buffer;
-    for(uint64_t i=0; i<length; ++i)
+    for (uint64_t i=0; i<length; ++i)
     {
         ptr[i] = 0;
     }
@@ -23,7 +23,7 @@ inline bool validSize(const size_t size)
 
 SkeinSize_t getSkeinSize(const uint8_t* key)
 {
-    for(size_t i=0; i<N_BLOCK_LOOKUP; ++i)
+    for (size_t i=0; i<N_BLOCK_LOOKUP; ++i)
     {
         const cipher_t* sym = &block_lookup[i];
         if (strcmp((char*)sym->key, (char*)key) == 0) { return sym->skein_size; }
@@ -41,7 +41,7 @@ static inline uint8_t hexLookupNibble(uint8_t nibble)
     return hex_lookup[nibble].hex;
 }
 
-uint8_t* binToHex(uint8_t* src, uint64_t size)
+uint8_t* binToHex(uint8_t* src, size_t size)
 {
     //sanity checks
     if (src == NULL) { return NULL; }
@@ -56,7 +56,7 @@ uint8_t* binToHex(uint8_t* src, uint64_t size)
     const uint64_t hex_size = 2*size;
     uint8_t* hex = calloc(hex_size+1, sizeof(uint8_t));
 
-    for(uint64_t i=0; i<size; ++i)
+    for (uint64_t i=0; i<size; ++i)
     {
 	    //split the byte into two nibble halves and look up their hex representation
         hex[(2*i)+0] = hexLookupNibble((src[i] & 0xf0) >> 4);
@@ -92,7 +92,7 @@ void askPassword(arguments* args)
     uint16_t pw1_len = 0;
     uint16_t pw2_len = 0;
  
-    while(match == false) //TODO this should probably be updated with a newer way of doing this
+    while (match == false) //TODO find a portable way to do this
     {
         if (!first) { printf("Passwords do not match\n"); }
 
@@ -122,7 +122,6 @@ void askPassword(arguments* args)
     pd3("password set to: %s\n", args->password);
 }
 
-//TODO finish me
 ssize_t getPassword(uint8_t* prompt, uint8_t** lineptr, size_t n, FILE* stream)
 {
     struct termios old, new;
@@ -148,7 +147,6 @@ ssize_t getPassword(uint8_t* prompt, uint8_t** lineptr, size_t n, FILE* stream)
         (*lineptr)[nread-1] = 0;
         nread--;
     }
-    //printf("\n");
 
     /* turn echo back on */
     (void)tcsetattr(fileno(stream), TCSAFLUSH, &old);

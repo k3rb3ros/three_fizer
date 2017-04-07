@@ -2,16 +2,19 @@
 
 int main()
 {
+    int status = 0;
     #ifdef NDEBUG
         printf("NDEBUG is defined retest with it off");
+        status = -1;
     #else
-        runThreefishTests();
-        runSkeinTests();
-	    runCBCTests();
+        runCBCTests();
         runChunkTests();
-	    runFileIOTests();
+        runFileIOTests();
+        runSkeinTests();
+        runThreefishTests();
+        runUtilTests();
         printf("All tests passed :)\n");
     #endif
 
-    return 0;
+    return status;
 }
