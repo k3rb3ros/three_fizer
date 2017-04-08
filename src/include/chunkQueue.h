@@ -5,17 +5,12 @@
 #include <stdint.h> //std uint types
 #include "arguments.h" //arguments structure
 #include "chunk.h" //chunk type
+#include "commonConstants.h" //QUE_SIZE, MAX_CHUNK_SIZE
 #include "debug.h" //pdebug()
 #include "queueActions.h" //que actions
 #include "random.h" //getRand()
 
 /* defines the queue data structure used to queue asymmetric IO and Crypto operations*/
-
-//TODO move all tweakable constants to a single header file
-//number of chunks in QUEUE
-#define QUE_SIZE 10 //10*50MB*3Queues = 1.5GB max queue usage
-//size of each queue chunk
-#define MAX_CHUNK_SIZE 51200000 //50MB (whatever this is it must be a multiple of 64)
 
 typedef struct
 {

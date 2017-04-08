@@ -1,5 +1,4 @@
-#ifndef RANDOM_H
-#define RANDOM_H
+#pragma once
 
 #include <stdint.h> //uint types
 #include <stdio.h> //frpintf
@@ -9,5 +8,3 @@
 #include "../pcg/pcg_basic.h" //pcg32_srandom_r() pcg32x2_random_r()
 
 uint8_t* getRand(uint64_t const size);
-
-#endif

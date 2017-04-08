@@ -7,36 +7,17 @@
 #include <stdlib.h> //memalloc(), free()
 #include <string.h> //strcmp()
 #include "arguments.h" //argument structure
-#include "cbc.h" //cbc_decrypt, cbc_encrypt(
+#include "cbc.h" //cbc_decrypt, cbc_encrypt()
+#include "commonConstants.h" //all relevant version and program strings
 #include "controller.h" //runThreefizer()
 #include "error.h" //error codes
 #include "fileIO.h" //exists()
 #include "progressBar.h" //calcOperations()
 #include "util.h" //getSkeinSize()
 
-//Numerical constants
-#define FNAME_BUFFER_SIZE 256
-
-/**********************************
-*  Constants and data structures  *
-**********************************/
-
-//program description
-const static uint8_t* about = (uint8_t*)"A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentially insecure cloud backup services\n";
-
-//program version
-//TODO move this to the tweakable constant header
-const static uint8_t* program_version = (uint8_t*)"Threefizer 0.6.0";
-
-//support email
-const static uint8_t* program_bug_address = (uint8_t*)"k3rb3ros@k3rb3ros.ninja";
-
-const static uint8_t* usage = (uint8_t*)"Usage: threefizer [OPTION...] [FILE]...\n";
-
-//number of params in the struct below
 #define LONG_OPTS_SIZE 11
 
-//paramas for long options
+//params for long options
 const static struct option long_options[] = 
 {
     { "blocksize", required_argument, 0, 'b' },

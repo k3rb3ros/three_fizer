@@ -5,10 +5,15 @@ A simple *nix command line utility to encrypt and decrypt files with threefish
 Specifications
 --------------
 **Key stretching** Scrypt with with SKEIN512
+
 **Block Cipher** Threefish
+
 **Mode of operation** Cipher Block Chaining
+
 **File authentication** Header check + SkeinMAC
+
 **Random number generation** PCG32_basic
+
 **Supported cipher sizes** 256, 512, 1024 bits
 
 Limitations
@@ -52,6 +57,9 @@ Encrypting files locally to be stored for backup in a potentially insecure locat
 Referenced Code
 -------------------
 Components of this project were taken from the following open source projects
+
 https://github.com/wernerd/Skein3Fish
+
 http://www.pcg-random.org/download.html
+
 https://www.tarsnap.com/scrypt.html

@@ -7,7 +7,7 @@ uint8_t* skeinHash(const uint8_t* input,
     struct SkeinCtx skein_state; //Skein state
     uint8_t* digest = NULL;
 
-    if(input != NULL && validSize(state_size))
+    if (input != NULL && validSize(state_size))
     {
         //ensure digest is a null terminated string
         digest = calloc(digest_length+1, sizeof(uint8_t)); 
@@ -37,21 +37,21 @@ uint64_t* hashKeyFromFile(const uint8_t* fname, const SkeinSize_t state_size)
    skeinInit(&skein_state, state_size);
 
    //Iterate through the file and run its contents through Skein
-   while(bytes_to_hash > 0) 
+   while (bytes_to_hash > 0)
    {
        uint64_t chunk_size = 0;
-       if(bytes_to_hash < HASH_BUFFER_SIZE)
+       if (bytes_to_hash < HASH_BUFFER_SIZE)
        {
            chunk_size = bytes_to_hash; 
            hash_chunk = (uint64_t*)readBytes(bytes_to_hash, fd);
        }
-       else if(bytes_to_hash >= HASH_BUFFER_SIZE)
+       else if (bytes_to_hash >= HASH_BUFFER_SIZE)
        {
            chunk_size = HASH_BUFFER_SIZE; 
            hash_chunk = (uint64_t*)readBytes(HASH_BUFFER_SIZE, fd); 
        }
 
-       if(hash_chunk == NULL) 
+       if (hash_chunk == NULL)
        {
            free(key); 
            return NULL;
@@ -74,7 +74,7 @@ uint8_t* keyHash(const uint8_t* input,
     struct SkeinCtx skein_state;
     uint8_t* digest = NULL;
 
-    if(input != NULL && validSize(state_size))
+    if (input != NULL && validSize(state_size))
     {
         digest = calloc((state_size/8), sizeof(uint8_t)); //allocate the digest buffer    
         skeinCtxPrepare(&skein_state, state_size); //Tell skein what size its state is
