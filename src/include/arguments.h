@@ -11,16 +11,16 @@ typedef struct //arguments passed to argp containing argz (all non optional args
      uint8_t* rename_file;
      uint8_t* target_file;
      uint64_t* iv;
-     bool encrypt;
-     bool free;
-     bool hash;
-     bool hash_from_file;
-     bool legacy_hash;
-     bool rename;
-     bool threads_active;
+     size_t file_size;
+     size_t pw_length;
      SkeinSize_t state_size;
-     uint64_t file_size;
-     uint64_t pw_length;
+     bool encrypt : 1;
+     bool free : 1;
+     bool hash : 1;
+     bool hash_from_file : 1;
+     bool legacy_hash : 1;
+     bool rename : 1;
+     bool threads_active : 1;
 } arguments;
 
 void initArguments(arguments* arg);

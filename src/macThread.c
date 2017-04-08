@@ -46,6 +46,7 @@ void* authenticateMAC(void* parameters)
              * in memory*/
             memcpy(test_header, mac_chunk->data, 2*block_byte_size);
             decryptHeader(params->tf_key, test_header);
+
             if (!checkHeader(test_header, params->file_size, params->tf_key->stateSize))
             {
                 pdebug("*** Header check failed ***\n");
@@ -60,7 +61,7 @@ void* authenticateMAC(void* parameters)
             pdebug("*** Header check succeeded ***\n");
             header = false;
             mac_progress += 2*block_byte_size;
-            //signal to other processes that hte header is valid
+            //signal to other processes that the header is valid
             *(params->valid) = true;
              
             if (test_header != NULL) { free(test_header); }

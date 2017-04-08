@@ -16,12 +16,14 @@ bool isFile(const uint8_t* name);
 bool exists(const uint8_t* fname);
 
 //write the given buffer of bytes to the fd passed in
-bool writeBytes(const uint8_t* data, const uint64_t data_size, int64_t write_fd);
+bool writeBytes(const uint8_t* data,
+                const size_t data_size,
+                const int_fast32_t write_fd);
 
-int openForRead(const uint8_t* fname);
+int_fast32_t openForRead(const uint8_t* fname);
 
-int openForWrite(const uint8_t* fname);
+int_fast32_t openForWrite(const uint8_t* fname);
 
-uint8_t* readBytes(const uint64_t data_size, int64_t read_rd);
+uint8_t* readBytes(const size_t data_size, const int_fast32_t read_rd);
 
 uint64_t getFileSize(const uint8_t* fname);
