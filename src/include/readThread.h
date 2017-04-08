@@ -1,5 +1,4 @@
-#ifndef READTHREAD_H
-#define READTHREAD_H
+#pragma once
 
 #include <pthread.h> //pthread_mutex_t type
 #include <stdbool.h> //bool
@@ -36,5 +35,3 @@ void setUpReadParams(readParams* params,
                      queue* out,
 		             progress_t* progress,
                      int32_t* error);
-
-#endif

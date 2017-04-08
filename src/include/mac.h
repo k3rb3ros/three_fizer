@@ -1,12 +1,11 @@
-#ifndef MAC_H
-#define MAC_H
+#pragma once
 
 #include <stdbool.h> //bool type
 #include <stdint.h> //stdint types
 #include "arguments.h" //arguments type
 #include "chunk.h" //chunk type and support functions
 #include "chunkQueue.h" //queue type and support functions
-#include "skeinApi.h" 
+#include "skein3fish/skeinApi.h" 
 
 typedef struct
 {
@@ -27,6 +26,3 @@ uint64_t* genMAC(MacCtx_t* context,
 void InitMacCtx(const arguments* args,
                 MacCtx_t* context,
                 uint64_t* mac_key);
-
-
-#endif

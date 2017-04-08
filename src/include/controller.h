@@ -1,5 +1,4 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include <limits.h> //ULLONG_MAX
 #include <pthread.h> //pthread_t
@@ -22,8 +21,8 @@
 #include "noHash.h" //set_key()
 #include "pad.h" //getNumBlocks()
 #include "readThread.h" //setUpReadParams()
-#include "skeinApi.h" //SkeinCtx
-#include "threefishApi.h" //ThreefishKey_t
+#include "skein3fish/skeinApi.h" //SkeinCtx
+#include "skein3fish/threefishApi.h" //ThreefishKey_t
 #include "tfHeader.h" //checkHeader, genHeader() and stripIV()
 #include "writeThread.h" //asyncWrite()
 
@@ -35,5 +34,3 @@
 *************/
 
 int runThreefizer(arguments* args);
-
-#endif

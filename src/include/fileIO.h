@@ -1,5 +1,4 @@
-#ifndef FILEIO_H
-#define FILEIO_H
+#pragma once
 
 #include "debug.h" //pdebug()
 #include <fcntl.h> //open()
@@ -26,5 +25,3 @@ int openForWrite(const uint8_t* fname);
 uint8_t* readBytes(const uint64_t data_size, int64_t read_rd);
 
 uint64_t getFileSize(const uint8_t* fname);
-
-#endif

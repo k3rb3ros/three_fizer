@@ -1,11 +1,6 @@
-#ifndef ERROR_H
-#define ERROR_H
+#pragma once
 
 #include <stdio.h> //perror()
-
-/*************************
-* Compile Time Constants *
-**************************/
 
 #define ARG_PARSING_FAIL -1
 #define CIPHER_OPERATION_FAIL -2
@@ -24,11 +19,4 @@
 #define SCRYPT_INVALID_VALUE -16
 #define TOO_FEW_ARGUMENTS -17
 
-/************
-* Functions *
-*************/
-
-//Output a human readable message to make sense of the error code
 void printError(int error);
-
-#endif

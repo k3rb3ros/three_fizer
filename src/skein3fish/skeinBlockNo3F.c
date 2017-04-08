@@ -1,7 +1,7 @@
 
 #include <string.h>
-#include "../include/skein.h"
-#include "../include/threefishApi.h"
+#include "include/skein.h"
+#include "include/threefishApi.h"
 
 
 /*****************************  Skein_256 ******************************/

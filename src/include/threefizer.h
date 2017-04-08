@@ -1,5 +1,4 @@
-#ifndef THREEFIZER_H
-#define THREEFIZER_H
+#pragma once
 
 #include <getopt.h> //get_opt_long()
 #include <stdbool.h> //bool type 
@@ -26,7 +25,8 @@
 const static uint8_t* about = (uint8_t*)"A simple file encryption program that uses Threefish and Skein internally. The intended use case is to encrypt files for backup locally before upload to potentially insecure cloud backup services\n";
 
 //program version
-const static uint8_t* program_version = (uint8_t*)"Threefizer 0.5.2";
+//TODO move this to the tweakable constant header
+const static uint8_t* program_version = (uint8_t*)"Threefizer 0.6.0";
 
 //support email
 const static uint8_t* program_bug_address = (uint8_t*)"k3rb3ros@k3rb3ros.ninja";
@@ -52,9 +52,3 @@ const static struct option long_options[] =
     { "version", no_argument, 0, 'V' },
     { 0, 0, 0, 0} 
 };
-
-/**********************
-* Function prototypes *
-**********************/
-
-#endif 

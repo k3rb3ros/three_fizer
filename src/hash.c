@@ -20,7 +20,7 @@ uint8_t* skeinHash(const uint8_t* input,
     return digest;
 }
 
-uint64_t* hashKeyFromFile(const uint8_t* fname, const SkeinSize_t state_size) //TODO make me multithreaded
+uint64_t* hashKeyFromFile(const uint8_t* fname, const SkeinSize_t state_size)
 {
    int64_t fd = openForRead(fname);
    if(fd < 0) { return NULL; }

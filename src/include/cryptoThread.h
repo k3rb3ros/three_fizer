@@ -1,5 +1,4 @@
-#ifndef CRYPTOTHREAD_H
-#define CRYPTOTHREAD_H
+#pragma once
 
 #include <pthread.h> //pthread_mutex_t type
 #include <time.h> //nanosleep()
@@ -11,7 +10,7 @@
 #include "error.h" //error codes
 #include "pad.h" //getNumBlocks()
 #include "progressBar.h" //progress_t type
-#include "threefishApi.h" //ThreefishKey_t
+#include "skein3fish/threefishApi.h" //ThreefishKey_t
 #include "wait.h" //wait_interval
 
 typedef struct
@@ -41,5 +40,3 @@ void setUpCryptoParams(cryptParams* params,
                        queue* out,
                        progress_t* progress,
                        int32_t* error);
-
-#endif

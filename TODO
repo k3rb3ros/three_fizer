@@ -5,8 +5,9 @@
 * Optimize fileIO
 * Optimize memory usage
 * when testing headers upon failure test all block sizes in case pw is correct but block size is wrong
-* Replace /dev/urandom with pcg
+* Replace /dev/urandom with pcg #DONE#
 * Clean up code
-* Organize code by license and make it apparent
-* Indicate that code includes third party component under a different license
+* Organize code by license and make it apparent #DONE#
+* Indicate that code includes third party component under a different license #DONE#
+* find windows portable way to seed rng #DONE#
 * Get threefizer running on Windows

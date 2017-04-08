@@ -1,11 +1,8 @@
-#ifndef CBCDECRYPT_H
-#define CBCDECRYPT_H
+#pragma once
 
+#include <stdint.h> //uintxx_t types
 #include "cbc.h" //Cipher size macros
 #include "debug.h" //pd3()
-#include <stdint.h> //uintxx_t types
-
-#include "print.h" 
 
 /*
 * Used internally to cbc decrypt 256bit blocks
@@ -38,5 +35,3 @@ void decryptInPlace(ThreefishKey_t* key,
                     const uint64_t* chain,
                     uint64_t* plain_text,
                     const uint64_t num_blocks);
-
-#endif

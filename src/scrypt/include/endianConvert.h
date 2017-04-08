@@ -1,5 +1,5 @@
 /*-
- * Copyright 2009 Colin Percival
+ * Copyright 2007-2009 Colin Percival
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,34 @@
  * This file was originally written by Colin Percival as part of the Tarsnap
  * online backup system.
  */
-#ifndef SCRYPT_H
-#define SCRYPT_H
 
-#include <stddef.h> //size_t
-#include <stdint.h> //uint_xx types
-#include <stdlib.h> //malloc(), free()
-#include "error.h" //predefined error codes
-#include "endianConvert.h" //le32dec(), le64dec()
-#include "pbkdf2Skein512.h" //PBKDF2_SKEIN512()
+#ifndef ENDIANCONVERT_H
+#define ENDIANCONVERT_H
 
-/*********************
- * scrypt parameters *
- *********************/
-#define SCRYPT_N 16384
-#define SCRYPT_R 32
-#define SCRYPT_P 1
+#ifdef HAVE_SYS_ENDIAN_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include <sys/endian.h>
 
-/**
- * scrypt(passwd, passwdlen, salt, saltlen, N, r, p, buf, buflen):
- * Compute scrypt(passwd[0 .. passwdlen - 1], salt[0 .. saltlen - 1], N, r,
- * p, buflen) and write the result into buf.
- * N = CPU cost parameter.
- * r = Memory cost parameter.
- * p = Parellization parameter.
- * The parameters r, p, and buflen
- * must satisfy r * p < 2^30 and buflen <= (2^32 - 1) * 32.  The parameter N
- * must be a power of 2 greater than 1.
- *
- * Return 0 on success; or -1 on error.
- */
-int kdf_scrypt(const uint8_t * passwd, size_t passwdlen,
-               const uint8_t * salt, size_t saltlen,
-               uint64_t N, uint32_t r,
-               uint32_t p, uint8_t * buf,
-               size_t buflen);
+#else
 
-#ifdef __cplusplus
-}
-#endif
+#include <stdint.h>
 
-#endif /* SCRYPT_H */
+uint32_t be32dec(const void *pp);
+
+void be32enc(void *pp, uint32_t x);
+
+uint64_t be64dec(const void *pp);
+
+void be64enc(void *pp, uint64_t x);
+
+uint32_t le32dec(const void *pp);
+
+void le32enc(void *pp, uint32_t x);
+
+uint64_t le64dec(const void *pp);
+
+void le64enc(void *pp, uint64_t x);
+
+#endif /* !HAVE_SYS_ENDIAN_H */
+
+#endif /*ENDIANCONVERT_H*/

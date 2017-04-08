@@ -1,5 +1,4 @@
-#ifndef CHUNKQUEUE_H
-#define CHUNKQUEUE_H
+#pragma once
 
 #include <pthread.h> //pthread_mutex_t type
 #include <stdbool.h> //bool types
@@ -10,27 +9,20 @@
 #include "queueActions.h" //que actions
 #include "random.h" //getRand()
 
-/*defines the queue data structure used to queue asymmetric IO and Crypto operation*/
+/* defines the queue data structure used to queue asymmetric IO and Crypto operations*/
 
-/*********************************
-* Compile Time Numeric Constants *
-**********************************/
-
+//TODO move all tweakable constants to a single header file
 //number of chunks in QUEUE
 #define QUE_SIZE 10 //10*50MB*3Queues = 1.5GB max queue usage
 //size of each queue chunk
 #define MAX_CHUNK_SIZE 51200000 //50MB (whatever this is it must be a multiple of 64)
 
-/******************
-* Data Structures *
-*******************/
-
 typedef struct
 {
-    unsigned int capacity;
-    unsigned int size;
-    unsigned int head;
-    unsigned int tail;
+    size_t capacity;
+    size_t size;
+    int_fast32_t head;
+    int_fast32_t tail;
     chunk** elements;
 } queue;
 
@@ -44,8 +36,6 @@ bool queueIsFull(queue* q);
 
 chunk* front(queue* q);
 
-queue* createQueue(const unsigned int max_elements);
+queue* createQueue(const size_t max_elements);
 
 void destroyQueue(queue* q);
-
-#endif

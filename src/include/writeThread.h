@@ -1,5 +1,4 @@
-#ifndef WRITETHREAD_H
-#define WRITETHREAD_H
+#pragma once
 
 #include <pthread.h> //pthead_mutex_t type
 #include "chunkQueue.h" //queue data type
@@ -33,5 +32,3 @@ void setUpWriteParams(writeParams* params,
 		              progress_t* progress,
                       int32_t* error,
                       uint64_t* file_size);
-
-#endif

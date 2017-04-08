@@ -1,11 +1,10 @@
-#ifndef HASH_H
-#define HASH_H
+#pragma once
 
 #include <stdint.h> //uint types
 #include <stdlib.h> //calloc()
 #include <string.h> //strlen()
 #include "fileIO.h" //openForRead(), readBytes(), getFileSize()
-#include "skeinApi.h" //skein functions
+#include "skein3fish/skeinApi.h" //skein functions
 #include "util.h" //validSize()
 
 /*************************
@@ -35,5 +34,3 @@ uint64_t* hashKeyFromFile(const uint8_t* fname, const SkeinSize_t state_size);
 uint8_t* keyHash(const uint8_t* input,
                  const uint64_t input_length,
                  const SkeinSize_t state_size);
-
-#endif

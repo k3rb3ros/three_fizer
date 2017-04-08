@@ -1,5 +1,4 @@
-#ifndef TFHEADER_H
-#define TFHEADER_H
+#pragma once
 
 #include <stdbool.h> //bool type
 #include <stdint.h> //uint types
@@ -12,8 +11,8 @@
 #include "debug.h" //pdebug()
 #include "queueActions.h" //queue actions
 #include "random.h" //getRand()
-#include "skeinApi.h" //SkeinSize_t type
-#include "threefishApi.h" //ThreefishKey_t type
+#include "skein3fish/skeinApi.h" //SkeinSize_t type
+#include "skein3fish/threefishApi.h" //ThreefishKey_t type
 #include "util.h" //validSize()
 
 #define MAGIC_NUMBER 0x0909202009092009ULL
@@ -44,5 +43,3 @@ bool getIV(arguments* args);
 
 //return a pointer to the data of the header w/out an IV
 uint64_t* stripIV(const uint64_t* header, const uint64_t state_size);
-
-#endif

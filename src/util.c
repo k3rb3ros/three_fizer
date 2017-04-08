@@ -77,13 +77,11 @@ void askPassword(arguments* args)
     { 
         'E', 'n', 't', 'e', 'r', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', ':', '\0'
     };
-    uint8_t* pw_prompt_ = pw_prompt;
     const static uint8_t conf_prompt[] = 
     {
         'C', 'o', 'n', 'f', 'i', 'r', 'm', ' ', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd',
         ':', '\0'
     };
-    uint8_t* conf_prompt_ = conf_prompt;
 
     uint8_t pw1[BUFF_SIZE] = { 0 };
     uint8_t pw2[BUFF_SIZE] = { 0 };
@@ -98,8 +96,8 @@ void askPassword(arguments* args)
 
         first = false;
 
-        pw1_len = getPassword(pw_prompt_, &pw1_, BUFF_SIZE, stdin); 
-        pw2_len = getPassword(conf_prompt_, &pw2_, BUFF_SIZE, stdin);
+        pw1_len = getPassword((uint8_t*)pw_prompt, &pw1_, BUFF_SIZE, stdin);
+        pw2_len = getPassword((uint8_t*)conf_prompt, &pw2_, BUFF_SIZE, stdin);
 
         if (pw1_len < 6 || pw2_len < 6) { printf("Password must be at least 6 characters in length\n"); } 
         else if ((pw1_len == pw2_len) && memcmp(pw1_, pw2_, pw2_len) == 0) { match = true; }

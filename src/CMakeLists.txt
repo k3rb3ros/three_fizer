@@ -4,8 +4,10 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #optional sets to force CLang as compiler
 set (CMAKE_C_COMPILER clang)
-#set (CMAKE_CXX_COMPILER clang++) #We don't really need a C++ compiler for a project written entirely in C
 
+set (RNG_LIB PCG)
+set (SCRYPT_LIB SCRYPT)
+set (SKEIN3FISH_LIB SKEIN3FISH)
 set (TEST_SUITE ${PROJECT_NAME}_tests)
 
 #C files for threefizer
@@ -20,7 +22,6 @@ set (threefizer_c_src
      cryptoThread.c
      decrypt.c
      encrypt.c
-     endianConvert.c
      error.c
      fileIO.c
      hash.c
@@ -29,20 +30,11 @@ set (threefizer_c_src
      macThread.c
      noHash.c
      pad.c
-     pbkdf2Skein512.c
      print.c
      progressBar.c
      random.c
      readThread.c
-     scrypt.c
-     skeinApi.c
-     skeinBlockNo3F.c
-     skein.c
      tfHeader.c
-     threefish1024Block.c
-     threefish512Block.c
-     threefish256Block.c
-     threefishApi.c
      threefizer.c
      util.c
      writeThread.c
@@ -68,16 +60,13 @@ set (files_to_test_against
      chunk.c
      chunkQueue.c
      fileIO.c
-     skein.c
-     skeinApi.c
-     skeinBlockNo3F.c
-     threefish1024Block.c
-     threefish512Block.c
-     threefish256Block.c
-     threefishApi.c
      util.c
     )
 
+#build the PCG static lib first
+add_subdirectory (pcg)
+add_subdirectory (scrypt)
+add_subdirectory (skein3fish)
 add_executable (${PROJECT_NAME} ${threefizer_c_src})
 add_executable (${TEST_SUITE} ${tests_c_src} ${files_to_test_against})
 
@@ -85,5 +74,5 @@ execute_process (COMMAND mkdir src/tests)
 execute_process (COMMAND cp ../src/test/file_tests/empty_file src/tests/)
 execute_process (COMMAND cp ../src/test/file_tests/simple_lines.dat src/tests/)
 
-add_dependencies (${PROJECT_NAME} ${THREAD_LIB})
-target_link_libraries (${PROJECT_NAME} ${THREAD_LIB})
+target_link_libraries (${PROJECT_NAME} ${RNG_LIB} ${SKEIN3FISH_LIB} ${SCRYPT_LIB} ${THREAD_LIB})
+target_link_libraries (${TEST_SUITE} ${SKEIN3FISH_LIB})

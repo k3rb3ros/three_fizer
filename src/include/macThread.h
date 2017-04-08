@@ -1,5 +1,4 @@
-#ifndef MACTHREAD_H
-#define MACTHREAD_H
+#pragma once
 
 #include <pthread.h> //pthread_mutex_t 
 #include <stdbool.h> //bool type
@@ -10,7 +9,7 @@
 #include "error.h" //error codes
 #include "mac.h" //MacCtx_t type, checkMAC() and genMAC()
 #include "progressBar.h" //progress_t type
-#include "threefishApi.h" //ThreefishKey_t type
+#include "skein3fish/threefishApi.h" //ThreefishKey_t type
 #include "tfHeader.h" //checkHeader()
 #include "wait.h" //wait_interval
 
@@ -47,6 +46,3 @@ void setUpMacParams(macParams* params,
                     ThreefishKey_t* tf_key,
                     int32_t* error,
                     uint64_t* file_size);
-
-#endif
-

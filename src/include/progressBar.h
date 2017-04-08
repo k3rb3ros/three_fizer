@@ -1,5 +1,4 @@
-#ifndef PROGRESSBAR_H
-#define PROGRESSBAR_H
+#pragma once
 
 #include <pthread.h> //pthead_mutex_t
 #include <stdint.h> //uintxx_t types
@@ -25,5 +24,3 @@ typedef struct
 void printProgressBar(bool* running, int* error, progress_t* p);
 
 void setUpProgress(const arguments* args, progress_t* p, pthread_mutex_t* mutex);
-
-#endif

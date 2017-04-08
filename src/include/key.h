@@ -1,12 +1,11 @@
-#ifndef KEY_H
-#define KEY_H
+#pragma once
 
 #include "hash.h" //sf_hash()
 #include "mac.h" //MacCtx_t type
 #include "noHash.h" //noHash()
-#include "scrypt.h" 
+#include "scrypt/scrypt.h" //kdf_scrypt()
 #include "tfHeader.h" //genIV()
-#include "threefishApi.h" //ThreefishKey_t type
+#include "skein3fish/threefishApi.h" //ThreefishKey_t type
 #include "tweak.h" //cipher_tweak constant
 
 /* This takes the argument and hashed the user specified password into a key of block 
@@ -15,8 +14,4 @@
  * It assumes the user has correctly allocated block size buffers for the cipher and
  * mac key and passes them into the function
 */
-bool handleKeys(arguments* args,
-                ThreefishKey_t* cipher_context,
-                MacCtx_t* mac_context);
-
-#endif
+bool handleKeys(arguments* args, ThreefishKey_t* cipher_context, MacCtx_t* mac_context);

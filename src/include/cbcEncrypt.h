@@ -1,8 +1,7 @@
-#ifndef CBCENCRYPT_H
-#define CBCENCRYPT_H
+#pragma once
 
-#include "cbc.h" //Cipher size macros
 #include <stdint.h> //uintxx_t types
+#include "cbc.h" //Cipher size macros
 
 /*
  * Used internally to cbc encrypt 256bit blocks
@@ -36,5 +35,3 @@ void encryptInPlace(ThreefishKey_t* key,
                     const uint64_t* chain,
                     uint64_t* plain_text,
                     const uint64_t num_blocks);
-
-#endif

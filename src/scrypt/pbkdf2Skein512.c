@@ -10,10 +10,10 @@ void PBKDF2_SKEIN512(const uint8_t* passwd, size_t pw_len,
     uint8_t T[32];
     size_t clen;
 
-    skeinCtxPrepare(&Pctx, SKEIN512);
+    skeinCtxPrepare(&Pctx, Skein512);
 
     /* Compute MAC state after processing P and S. */
-    skeinMacInit(&Pctx, passwd, pw_len, SKEIN512);
+    skeinMacInit(&Pctx, passwd, pw_len, Skein512);
     skeinUpdate(&Pctx, salt, salt_len);
 
     /* Iterate through the blocks. */
@@ -33,7 +33,7 @@ void PBKDF2_SKEIN512(const uint8_t* passwd, size_t pw_len,
         for(uint64_t j = 2; j <= c; ++j)
         {
             /* Compute U_j. */
-            skeinMacInit(&Hctx, passwd, pw_len, SKEIN512);
+            skeinMacInit(&Hctx, passwd, pw_len, Skein512);
             skeinUpdate(&Hctx, U, 32);
             skeinFinal(&Hctx, U);
 

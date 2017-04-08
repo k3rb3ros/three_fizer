@@ -1,31 +1,25 @@
 #include "include/random.h"
 
-uint8_t* getRand(const uint64_t size)
+uint8_t* getRand(const size_t size)
 {
     //pdebug("(getRand)\n");
-    int randFile_fd = 0;
-    uint8_t* randomData = NULL;
-    if(exists((uint8_t*)HWRNG)) //try hardware random number generator first
+    uint8_t* random_data = NULL;
+
+    if (size > 0)
     {
-        randFile_fd = openForRead((uint8_t*)HWRNG);
-        if(randFile_fd < 0)
+        //allocate memory the random output
+        random_data = malloc(size);
+        pcg32_random_t rng;
+
+        //Sead the RNG with the system time and address of function from stdio
+        pcg32_srandom_r(&rng, time(NULL) ^ (intptr_t)sscanf, time(NULL) ^ (intptr_t)printf);
+
+        //call the rng for each byte of randomness (this is overkill)
+        for (size_t s=0; s<size; ++s)
         {
-            fprintf(stderr, "Unable to open %s cannot continue\n", HWRNG);
-            return NULL; 
-        }
-    }
-    else if(exists((uint8_t*)PSRNG)) //use /dev/urandom since /dev/random blocks
-    {
-        randFile_fd = openForRead((uint8_t*)PSRNG);
-        if(randFile_fd < 0)
-        {
-            fprintf(stderr, "Unable to open %s cannot continue\n", PSRNG);
-            return NULL;
+            random_data[s] = (uint8_t)pcg32_random_r(&rng);
         }
     }
 
-    randomData = readBytes(size, randFile_fd);
-    close(randFile_fd);
-
-    return randomData;
+    return random_data;
 }

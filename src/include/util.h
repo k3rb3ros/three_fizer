@@ -1,11 +1,10 @@
-#ifndef UTIL_H
-#define UTIL_H
+#pragma once
 
 #include "arguments.h" //arguments struct
 #include "debug.h" //pdebug()
 #include "error.h" //error codes
-#include "skeinApi.h" //SkenSize_t
-#include "threefishApi.h" //ThreefishKey_t
+#include "skein3fish/skeinApi.h" //SkeinSize_t
+#include "skein3fish/threefishApi.h" //ThreefishKey_t
 #include <stdbool.h> //bool type
 #include <stddef.h> //size_t, ssize_t
 #include <stdint.h> //uint8_t type
@@ -18,12 +17,12 @@
 //Invalid argument type
 #define BADARG -1
 
+#define BUFF_SIZE 1024
+
 //Skein/Threefish block sizes
 #define SAFE 256
 #define SECURE 512
 #define FUTURE_PROOF 1024
-
-#define BUFF_SIZE 1024
 
 //Compile time size of our lookup table
 #define N_BLOCK_LOOKUP sizeof(block_lookup)/sizeof(cipher_t)
@@ -72,5 +71,3 @@ uint8_t* binToHex(uint8_t* src, uint64_t size);
 ssize_t getPassword(uint8_t* prompt, uint8_t** lineptr, size_t n, FILE *stream);
 
 void askPassword(arguments* args);
-
-#endif

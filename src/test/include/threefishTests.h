@@ -4,8 +4,8 @@
 #include <assert.h> //assert()
 #include <stdint.h> //uintxx_t types
 #include <stdio.h> //printf()
-#include "print.h" //showBuff()
-#include "threefishApi.h" //all threefish cipher and init functions
+#include "app/print.h" //showBuff()
+#include "skein3fish/threefishApi.h" //all threefish cipher and init functions
 
 /*********************************
 * Block sizes as 64 bit integers *

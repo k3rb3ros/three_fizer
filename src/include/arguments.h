@@ -1,9 +1,8 @@
-#ifndef ARGUMENTS_H
-#define ARGUMENTS_H
+#pragma once
 
-#include "skeinApi.h" //SkeinSize_t type
 #include <stdbool.h> //bool type
 #include <stdint.h> //uint_t types
+#include "skein3fish/skeinApi.h" //SkeinSize_t type
 
 typedef struct //arguments passed to argp containing argz (all non optional args)
 {
@@ -25,5 +24,3 @@ typedef struct //arguments passed to argp containing argz (all non optional args
 } arguments;
 
 void initArguments(arguments* arg);
-
-#endif
