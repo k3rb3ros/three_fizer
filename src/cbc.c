@@ -1,4 +1,4 @@
-#include "include/cbc.h"
+#include "cbc.h"
 
 bool getChainInBuffer(const uint64_t* cipher_text,
                       uint64_t* buffer, 

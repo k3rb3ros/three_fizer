@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 
-#C files for PCG random number generator
+#C files for Skein/Threefish
 set (skein_threefish_c_src
     skeinApi.c
     skeinBlockNo3F.c

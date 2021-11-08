@@ -1,4 +1,4 @@
-#include "include/macThread.h"
+#include "macThread.h"
 
 void* authenticateMAC(void* parameters)
 {

@@ -1,4 +1,4 @@
-#include "include/hash.h"
+#include "hash.h"
 
 uint8_t* skeinHash(const uint8_t* input, 
                    const uint64_t digest_length, 

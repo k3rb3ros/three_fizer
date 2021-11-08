@@ -2,8 +2,8 @@
 
 #include "debug.h" //pdebug()
 #include "random.h" //getRand()
-#include "skein3fish/skeinApi.h" //SkeinSize_t
-#include "skein3fish/threefishApi.h" //threefish encrypt and decrypt functions
+#include "skeinApi.h" //SkeinSize_t
+#include "threefishApi.h" //threefish encrypt and decrypt functions
 #include <stdint.h> //uint types
 #include <stdio.h> //printf(), memcpy()
 #include <string.h> //memmove()

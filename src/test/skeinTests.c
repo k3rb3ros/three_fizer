@@ -1,4 +1,4 @@
-#include "include/skeinTests.h"
+#include "skeinTests.h"
 
 static void testSkeinInit256()
 {

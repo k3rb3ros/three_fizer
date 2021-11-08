@@ -1,4 +1,4 @@
-#include "include/chunk.h"
+#include "chunk.h"
 
 //allocate storage and init default values for a chunk
 chunk* createChunk()

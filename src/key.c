@@ -1,4 +1,4 @@
-#include "include/key.h"
+#include "key.h"
 
 bool handleKeys(arguments* args,
                 ThreefishKey_t* cipher_context,

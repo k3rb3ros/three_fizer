@@ -1,4 +1,4 @@
-#include "include/error.h"
+#include "error.h"
 
 void printError(int error)
 {

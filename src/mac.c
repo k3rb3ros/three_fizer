@@ -1,4 +1,4 @@
-#include "include/mac.h"
+#include "mac.h"
 
 /*
  * Checks the MAC in the expected chunk and compares it with the generated MAC

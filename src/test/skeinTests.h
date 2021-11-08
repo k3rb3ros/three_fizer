@@ -4,8 +4,8 @@
 #include <assert.h> //assert()
 #include <stdint.h> //uintxx_t types
 #include <stdio.h> //printf()
-#include "app/debug.h" //pdebug()
-#include "app/print.h" //showBuff()
+#include "debug.h" //pdebug()
+#include "print.h" //showBuff()
 #include "skein3fish/skeinApi.h" //skeinCtx type, all skein hash functions and init functions
 
 /*

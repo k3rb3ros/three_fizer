@@ -1,4 +1,4 @@
-#include "include/fileIoTests.h"
+#include "fileIoTests.h"
 
 static void testFileExists()
 {

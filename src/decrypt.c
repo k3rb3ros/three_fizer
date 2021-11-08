@@ -1,4 +1,4 @@
-#include "include/decrypt.h"
+#include "decrypt.h"
 
 bool decryptHeader(ThreefishKey_t* key, uint64_t* header)
 {

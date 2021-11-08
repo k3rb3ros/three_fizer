@@ -1,4 +1,4 @@
-#include "include/endianConvert.h"
+#include "endianConvert.h"
 
 inline uint32_t be32dec(const void *pp)
 {

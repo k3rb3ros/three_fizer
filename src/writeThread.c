@@ -1,4 +1,4 @@
-#include "include/writeThread.h"
+#include "writeThread.h"
 
 void* asyncWrite(void* parameters)
 {

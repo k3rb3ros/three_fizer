@@ -1,4 +1,4 @@
-#include "include/tfHeader.h"
+#include "tfHeader.h"
 
 /* Checks if the header is valid which is a quick and easy way to tell if the
  * encryption key and block size are correct, with out having to try and decrypt the

@@ -3,7 +3,7 @@
 * threefizer command line file encryption/decryption utilitiy
 */
 
-#include "include/threefizer.h"
+#include "threefizer.h"
 
 void printOptions()
 {

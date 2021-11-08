@@ -1,4 +1,4 @@
-#include "include/cryptoThread.h"
+#include "cryptoThread.h"
 
 /*
 * This function assumes the header has been tested to be valid but is still encrypted*/

@@ -1,4 +1,4 @@
-#include "include/util.h"
+#include "util.h"
 
 //A sanity check for decrypting any files smaller then 4 blocks couldn't have been encrypted by this program
 inline bool isGreaterThanThreeBlocks(const arguments* args)
@@ -85,8 +85,6 @@ void askPassword(arguments* args)
 
     uint8_t pw1[BUFF_SIZE] = { 0 };
     uint8_t pw2[BUFF_SIZE] = { 0 };
-    uint8_t* pw1_ = pw1;
-    uint8_t* pw2_ = pw2;
     uint16_t pw1_len = 0;
     uint16_t pw2_len = 0;
  
@@ -96,15 +94,15 @@ void askPassword(arguments* args)
 
         first = false;
 
-        pw1_len = getPassword((uint8_t*)pw_prompt, &pw1_, BUFF_SIZE, stdin);
-        pw2_len = getPassword((uint8_t*)conf_prompt, &pw2_, BUFF_SIZE, stdin);
+        pw1_len = getPassword((uint8_t*)pw_prompt, pw1, BUFF_SIZE, stdin);
+        pw2_len = getPassword((uint8_t*)conf_prompt, pw2, BUFF_SIZE, stdin);
 
         if (pw1_len < 6 || pw2_len < 6) { printf("Password must be at least 6 characters in length\n"); } 
-        else if ((pw1_len == pw2_len) && memcmp(pw1_, pw2_, pw2_len) == 0) { match = true; }
+        else if ((pw1_len == pw2_len) && memcmp(pw1, pw2, pw2_len) == 0) { match = true; }
         else //clear buffers from failed pw attempts
         {
-            zeroFill(pw1_, BUFF_SIZE);
-            zeroFill(pw2_, BUFF_SIZE);
+            zeroFill(pw1, BUFF_SIZE);
+            zeroFill(pw2, BUFF_SIZE);
         }
     }
 
@@ -115,12 +113,12 @@ void askPassword(arguments* args)
     args->pw_length = pw2_len; //ad the pw length to the arguments structure
 
     //zero_fill the temp pw_buffers
-    zeroFill(pw1_, BUFF_SIZE);
-    zeroFill(pw2_, BUFF_SIZE);
+    zeroFill(pw1, BUFF_SIZE);
+    zeroFill(pw2, BUFF_SIZE);
     pd3("password set to: %s\n", args->password);
 }
 
-ssize_t getPassword(uint8_t* prompt, uint8_t** lineptr, size_t n, FILE* stream)
+ssize_t getPassword(uint8_t* prompt, uint8_t* line_buff, size_t buff_size, FILE* stream)
 {
     struct termios old, new;
     int nread = -1;
@@ -137,12 +135,12 @@ ssize_t getPassword(uint8_t* prompt, uint8_t** lineptr, size_t n, FILE* stream)
     if (tcsetattr(fileno(stream), TCSAFLUSH, &new) != 0) { return nread; }
 
     /* Read the password. */
-    nread = getline(lineptr, &n, stream);
+    nread = getline((char**)&line_buff, &buff_size, stream);
 
     /* Strip out the carriage return */
-    if(nread >= 1 && (*lineptr)[nread -1] == '\n')
+    if(nread >= 1 && line_buff[nread -1] == '\n')
     {
-        (*lineptr)[nread-1] = 0;
+        line_buff[nread-1] = 0;
         nread--;
     }
 

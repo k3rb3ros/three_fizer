@@ -1,4 +1,4 @@
-#include "include/testSuite.h"
+#include "testSuite.h"
 
 int main()
 {

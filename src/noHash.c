@@ -1,4 +1,4 @@
-#include "include/noHash.h"
+#include "noHash.h"
 
 uint64_t* noHashKey(const uint8_t* password, const uint64_t length, const SkeinSize_t state_size)
 {

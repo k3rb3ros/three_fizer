@@ -1,4 +1,4 @@
-#include "include/cbcDecrypt.h"
+#include "cbcDecrypt.h"
 
 void cbc256Decrypt(ThreefishKey_t* key,
                    const uint64_t* iv,

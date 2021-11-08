@@ -8,3 +8,4 @@ set (scrypt_c_src
     )
 
 add_library(${SCRYPT_LIB} STATIC ${scrypt_c_src})
+target_include_directories(${SCRYPT_LIB} PRIVATE ${threefizer_inc})

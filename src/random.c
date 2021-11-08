@@ -1,4 +1,4 @@
-#include "include/random.h"
+#include "random.h"
 
 uint8_t* getRand(const size_t size)
 {

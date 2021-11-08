@@ -1,4 +1,4 @@
-#include "include/encrypt.h"
+#include "encrypt.h"
 
 //encrypt a properly formatted header
 bool encryptHeader(ThreefishKey_t* key,

@@ -1,4 +1,4 @@
-#include "include/chunkQueue.h"
+#include "chunkQueue.h"
 
 //pops the first queued element out of the queue
 bool deque(queue* q)

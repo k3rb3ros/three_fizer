@@ -1,4 +1,4 @@
-#include "include/pbkdf2Skein512.h"
+#include "pbkdf2Skein512.h"
 
 void PBKDF2_SKEIN512(const uint8_t* passwd, size_t pw_len,
                      const uint8_t* salt, size_t salt_len,

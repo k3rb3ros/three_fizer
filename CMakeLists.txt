@@ -1,17 +1,22 @@
 cmake_minimum_required (VERSION 2.6)
 project (threefizer C)
 
+#Compiler flags
+set (CMAKE_C_COMPILER clang)
+
 #Optimization and debug flags
-add_definitions("-D_POSIX_C_SOURCE")
+set (DEFINES
+     "POSIX_C_SOURCE")
 #add_definitions (-DDEBUG1 -DDEBUG2 -DDEBUG3)
 #add_definitions (-DDEBUG1)
 #add_definitions (-DDEBUG3)
 
 include (CheckIncludeFiles)
 
-set (CMAKE_C_FLAGS "-std=c11 -Wall -Wextra -pedantic -O2") #RELEASE
-#set (CMAKE_C_FLAGS "-std=c11 -ggdb -Wall -Wextra -pedantic") #DEBUG
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
+set (APP_INC_PATH ${PROJECT_SOURCE_DIR}/src)
+set (PCG_INC_PATH ${PROJECT_SOURCE_DIR}/src/pcg)
+set (SCRYPT_INC_PATH ${PROJECT_SOURCE_DIR}/src/scrypt)
+set (SKEIN_INC_PATH ${PROJECT_SOURCE_DIR}/src/skein3fish)
 
 find_library (THREAD_LIB pthread)
 

@@ -1,4 +1,4 @@
-#include "include/progressBar.h"
+#include "progressBar.h"
 
 void printProgressBar(bool* running, int* error, progress_t* p)
 {

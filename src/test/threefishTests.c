@@ -1,4 +1,4 @@
-#include "include/threefishTests.h"
+#include "threefishTests.h"
 
 //Test that setting up a 256 bit key works
 static void testSetupKey256()

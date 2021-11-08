@@ -1,4 +1,4 @@
-#include "include/arguments.h"
+#include "arguments.h"
 
 void initArguments(arguments* arg)
 {

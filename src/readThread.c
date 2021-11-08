@@ -1,4 +1,4 @@
-#include "include/readThread.h"
+#include "readThread.h"
 
 void* queueFileForDecrypt(void* parameters)
 {

@@ -27,7 +27,7 @@
  * online backup system.
  */
 
-#include "include/scrypt.h"
+#include "scrypt.h"
 
 static inline void blkcpy(uint8_t * dest, uint8_t * src, size_t len)
 {

@@ -1,4 +1,4 @@
-Threefizer 0.6.0
+Threefizer 0.6.1
 ================
 A simple *nix command line utility to encrypt and decrypt files with threefish
 

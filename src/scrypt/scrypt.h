@@ -32,7 +32,7 @@
 #include <stddef.h> //size_t
 #include <stdint.h> //uint_xx types
 #include <stdlib.h> //malloc(), free()
-#include "../../include/error.h" //predefined error codes
+#include "error.h" //predefined error codes
 #include "endianConvert.h" //le32dec(), le64dec()
 #include "pbkdf2Skein512.h" //PBKDF2_SKEIN512()
 

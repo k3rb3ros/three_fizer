@@ -4,7 +4,7 @@
 #include <assert.h> //assert()
 #include <stdint.h> //uintxx_t types
 #include <stdio.h> //printf()
-#include "app/print.h" //showBuff()
+#include "print.h" //showBuff()
 #include "skein3fish/threefishApi.h" //all threefish cipher and init functions
 
 /*********************************

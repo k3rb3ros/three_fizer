@@ -1,4 +1,4 @@
-#include "include/utilTests.h"
+#include "utilTests.h"
 
 static void testIsGreaterThanThreeBlocks()
 {
